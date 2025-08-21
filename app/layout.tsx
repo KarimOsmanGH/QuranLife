@@ -106,9 +106,6 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="application-name" content="QuranLife" />
         
-        {/* Preload critical resources */}
-        <link rel="preload" href="/data/enhanced-quran.json" as="fetch" crossOrigin="anonymous" />
-        
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
