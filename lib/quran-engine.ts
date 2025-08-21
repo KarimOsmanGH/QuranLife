@@ -55,6 +55,33 @@ const PRACTICAL_GUIDANCE: Record<string, string[]> = {
     "Make dua in your own language after each prayer",
     "Join congregation prayers when possible"
   ],
+  health: [
+    "Remember your body is an amanah (trust) from Allah",
+    "Make dua before physical activities: 'Allahumma a'inni wa la tu'in 'alayya' (O Allah, help me and do not help others against me)",
+    "Exercise with the intention of strengthening yourself for worship",
+    "Maintain moderation in all physical activities",
+    "Thank Allah for the strength and ability He has given you",
+    "Use fitness time for dhikr (remembrance of Allah)",
+    "Remember the Prophet's ﷺ emphasis on physical strength and health"
+  ],
+  fitness: [
+    "Set consistent workout schedules as discipline for the soul",
+    "Use gym time for reflection and gratitude",
+    "Remember that physical strength helps in serving Allah better",
+    "Practice moderation - avoid obsession with appearance",
+    "Make intention to be strong for your family and community",
+    "Include walking or movement as Sunnah practices",
+    "Thank Allah for your body's capabilities after each workout"
+  ],
+  strength: [
+    "Seek both physical and spiritual strength from Allah",
+    "Remember: 'The strong believer is better than the weak believer'",
+    "Use physical training to build mental resilience",
+    "Combine physical exercise with spiritual exercises (prayer, dhikr)",
+    "Help others using your physical capabilities",
+    "Maintain humility despite gaining strength",
+    "Use strength to protect and serve, not to show off"
+  ],
   change: [
     "Start with one small habit change this week",
     "Make du'a: 'Rabbana atina fi'd-dunya hasanatan' (Our Lord, give us good in this world)",
@@ -92,7 +119,10 @@ const DUA_RECOMMENDATIONS: Record<string, string> = {
   guidance: "Rabbana la tuzigh qulubana ba'da idh hadaytana (Our Lord, do not let our hearts deviate after You have guided us)",
   family: "Rabbana hab lana min azwajina wa dhurriyyatina qurrata a'yunin (Our Lord, grant us wives and offspring who will be the comfort of our eyes)",
   anxiety: "Hasbunallahu wa ni'mal wakeel (Allah is sufficient for us and He is the best guardian)",
-  success: "Rabbi a'inni wa la tu'in 'alayya (My Lord, help me and do not help against me)"
+  success: "Rabbi a'inni wa la tu'in 'alayya (My Lord, help me and do not help against me)",
+  health: "Allahumma 'afini fi badani, Allahumma 'afini fi sam'i, Allahumma 'afini fi basari (O Allah, grant me health in my body, O Allah, grant me health in my hearing, O Allah, grant me health in my sight)",
+  fitness: "Allahumma a'inni wa la tu'in 'alayya wa'nsurni wa la tansur 'alayya (O Allah, help me and do not help others against me, support me and do not support others against me)",
+  strength: "Allahumma inni as'aluka min quwwatika wa 'afiyatika (O Allah, I ask You for Your strength and Your well-being)"
 };
 
 class QuranEngine {
@@ -328,15 +358,45 @@ class QuranEngine {
   }
 
   private determineTheme(keywords: string[]): string {
+    // Define keyword synonyms and related terms
+    const keywordMapping: Record<string, string[]> = {
+      health: ['gym', 'exercise', 'workout', 'fitness', 'physical', 'body', 'training', 'sport', 'run', 'walk', 'strong'],
+      fitness: ['gym', 'exercise', 'workout', 'training', 'sport', 'muscle', 'cardio', 'strength'],
+      strength: ['strong', 'power', 'muscle', 'force', 'endurance', 'gym', 'training'],
+      prayer: ['pray', 'salah', 'worship', 'dua', 'dhikr', 'mosque', 'qibla'],
+      patience: ['patient', 'wait', 'endure', 'persevere', 'difficult', 'hardship', 'trial'],
+      family: ['family', 'parent', 'child', 'marriage', 'spouse', 'relationship', 'home'],
+      anxiety: ['anxious', 'worry', 'stress', 'fear', 'nervous', 'panic', 'overwhelmed'],
+      success: ['achieve', 'goal', 'accomplish', 'succeed', 'victory', 'win', 'progress'],
+      change: ['change', 'improve', 'transform', 'better', 'habit', 'different', 'new']
+    };
+
     const themeScores: Record<string, number> = {};
     
-    for (const [theme, themeKeywords] of Object.entries(PRACTICAL_GUIDANCE)) {
-      themeScores[theme] = keywords.filter(keyword => 
-        themeKeywords.some(tk => tk.toLowerCase().includes(keyword))
-      ).length;
+    // Initialize scores
+    for (const theme of Object.keys(PRACTICAL_GUIDANCE)) {
+      themeScores[theme] = 0;
     }
 
+    // Calculate scores based on keyword matches and synonyms
+    for (const keyword of keywords) {
+      for (const [theme, synonyms] of Object.entries(keywordMapping)) {
+        if (synonyms.includes(keyword)) {
+          themeScores[theme] = (themeScores[theme] || 0) + 1;
+        }
+      }
+      
+      // Also check direct matches in practical guidance
+      for (const [theme, themeKeywords] of Object.entries(PRACTICAL_GUIDANCE)) {
+        if (themeKeywords.some(tk => tk.toLowerCase().includes(keyword))) {
+          themeScores[theme] = (themeScores[theme] || 0) + 0.5;
+        }
+      }
+    }
+
+    // Find the theme with the highest score
     const topTheme = Object.entries(themeScores)
+      .filter(([, score]) => score > 0)
       .sort(([,a], [,b]) => b - a)[0];
     
     return topTheme ? topTheme[0] : 'guidance';
@@ -404,7 +464,10 @@ class QuranEngine {
       change: 'change transformation growth',
       family: 'family children parents',
       anxiety: 'peace comfort trust',
-      success: 'success achievement blessing'
+      success: 'success achievement blessing',
+      health: 'body strength health care trust',
+      fitness: 'strength power ability body',
+      strength: 'strong power force mighty'
     };
     
     return searchTerms[theme] || 'guidance wisdom';
@@ -417,7 +480,10 @@ class QuranEngine {
       change: "Personal transformation guided by Quranic wisdom",
       family: "Nurturing relationships with Islamic values",
       anxiety: "Finding peace and calm through Islamic practices",
-      success: "Achieving goals while maintaining Islamic principles"
+      success: "Achieving goals while maintaining Islamic principles",
+      health: "Caring for your body as an amanah (trust) from Allah",
+      fitness: "Building physical strength to better serve Allah and community",
+      strength: "Developing both physical and spiritual strength through Islamic guidance"
     };
     return descriptions[theme] || `Islamic guidance for ${theme}`;
   }
