@@ -1,0 +1,20 @@
+OG Image Placeholder
+
+Please add your og-image.png file to this /public directory.
+
+Recommended specifications:
+- Size: 1200x630 pixels
+- Format: PNG or JPG
+- File name: og-image.png
+- Content: QuranLife branding with Islamic design elements
+- Colors: Green theme (#22c55e) matching the app
+- Text: "QuranLife - Personal growth with Quran"
+
+The image is already configured in:
+- Root layout metadata
+- Individual page layouts
+- PWA manifest
+- Structured data
+- Twitter cards
+
+Once you add the og-image.png file, it will automatically be used across all social media platforms when your app is shared. 

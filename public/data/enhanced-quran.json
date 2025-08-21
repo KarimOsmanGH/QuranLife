@@ -1,0 +1,393 @@
+{
+  "_metadata": {
+    "description": "Enhanced Quranic data for QuranLife - Personal growth with Quran",
+    "version": "1.0.0",
+    "sources": {
+      "translations": "Curated from established scholarly works",
+      "arabic_text": "Standard Uthmani script",
+      "practical_guidance": "Original content for spiritual development"
+    },
+    "acknowledgments": {
+      "qul": {
+        "name": "Quranic Universal Library (QUL)",
+        "provider": "TarteelAI",
+        "url": "https://github.com/TarteelAI/quranic-universal-library",
+        "license": "MIT",
+        "description": "Comprehensive Islamic resource for Quranic data management"
+      }
+    },
+    "license": "Content curated for QuranLife under fair use for educational and spiritual purposes",
+    "future_enhancements": "Considering integration with QUL's comprehensive database"
+  },
+  "verses": [
+    {
+      "id": 1,
+      "surah": "Al-Baqarah",
+      "surah_number": 2,
+      "ayah": 286,
+      "text_ar": "لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا",
+      "text_en": "Allah does not burden a soul beyond that it can bear.",
+      "theme": ["Patience", "Strength", "Mental Health", "Self Care"],
+      "reflection": "This verse reminds us that Allah never burdens us beyond our capacity. When setting goals, remember to be realistic and trust in Allah's wisdom.",
+      "practical_guidance": [
+        "Set realistic daily goals that match your current capacity",
+        "When overwhelmed, remind yourself of this verse and take a break",
+        "Practice self-compassion when you can't complete everything"
+      ],
+      "life_application": "Apply this when feeling overwhelmed with work, studies, or life responsibilities.",
+      "dua_connection": "Rabbana la tu'akhidhna in nasina aw akhta'na"
+    },
+    {
+      "id": 2,
+      "surah": "Ar-Ra'd",
+      "surah_number": 13,
+      "ayah": 11,
+      "text_ar": "إِنَّ اللَّهَ لَا يُغَيِّرُ مَا بِقَوْمٍ حَتَّىٰ يُغَيِّرُوا مَا بِأَنفُسِهِمْ",
+      "text_en": "Indeed, Allah will not change the condition of a people until they change what is in themselves.",
+      "theme": ["Change", "Personal Growth", "Responsibility", "Self Improvement"],
+      "reflection": "True change begins from within. Your daily habits and spiritual practices are the foundation for personal transformation.",
+      "practical_guidance": [
+        "Start with changing one small habit daily",
+        "Focus on internal change before expecting external results",
+        "Take responsibility for your spiritual and personal development"
+      ],
+      "life_application": "Use this when setting New Year resolutions, career changes, or relationship improvements.",
+      "dua_connection": "Allahumma ahyini ma kanat al-hayatu khayran li"
+    },
+    {
+      "id": 3,
+      "surah": "Al-Baqarah",
+      "surah_number": 2,
+      "ayah": 155,
+      "text_ar": "وَلَنَبْلُوَنَّكُم بِشَيْءٍ مِّنَ الْخَوْفِ وَالْجُوعِ وَنَقْصٍ مِّنَ الْأَمْوَالِ وَالْأَنفُسِ وَالثَّمَرَاتِ ۗ وَبَشِّرِ الصَّابِرِينَ",
+      "text_en": "And We will surely test you with something of fear and hunger and a loss of wealth and lives and fruits, but give good tidings to the patient.",
+      "theme": ["Trials", "Patience", "Resilience", "Mental Health", "Loss"],
+      "reflection": "Life will bring challenges. Maintain your spiritual practices and goals even during difficult times.",
+      "practical_guidance": [
+        "Maintain your prayers even during difficult times",
+        "Remember that tests are temporary and have wisdom",
+        "Seek support from your Muslim community during hardships"
+      ],
+      "life_application": "Apply during job loss, illness, family problems, or financial difficulties.",
+      "dua_connection": "Rabbana afrigh 'alayna sabran wa thabbit aqdamana"
+    },
+    {
+      "id": 4,
+      "surah": "Ash-Sharh",
+      "surah_number": 94,
+      "ayah": 5,
+      "text_ar": "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا",
+      "text_en": "For indeed, with hardship [will be] ease.",
+      "theme": ["Hope", "Patience", "Relief", "Optimism", "Mental Health"],
+      "reflection": "After every difficulty comes ease. Stay consistent with your practices, knowing that relief is coming.",
+      "practical_guidance": [
+        "During tough times, remind yourself that ease is coming",
+        "Don't give up on your goals during temporary setbacks",
+        "Use hardships as opportunities for spiritual growth"
+      ],
+      "life_application": "Remember this during depression, anxiety, financial stress, or relationship problems.",
+      "dua_connection": "Allahumma la sahla illa ma ja'altahu sahlan"
+    },
+    {
+      "id": 5,
+      "surah": "Al-Fatiha",
+      "surah_number": 1,
+      "ayah": 6,
+      "text_ar": "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ",
+      "text_en": "Guide us to the straight path",
+      "theme": ["Guidance", "Direction", "Prayer", "Decision Making"],
+      "reflection": "Seek Allah's guidance in all your endeavors. Let this prayer guide your daily decisions and goals.",
+      "practical_guidance": [
+        "Make istikharah before important decisions",
+        "Recite Al-Fatiha with understanding in every prayer",
+        "Ask Allah for guidance in your daily choices"
+      ],
+      "life_application": "Use when choosing career paths, life partners, or making any major decisions.",
+      "dua_connection": "Allahumma khir li wa akhtar li"
+    },
+    {
+      "id": 6,
+      "surah": "An-Nisa",
+      "surah_number": 4,
+      "ayah": 36,
+      "text_ar": "وَاعْبُدُوا اللَّهَ وَلَا تُشْرِكُوا بِهِ شَيْئًا ۖ وَبِالْوَالِدَيْنِ إِحْسَانًا",
+      "text_en": "Worship Allah and associate nothing with Him, and to parents do good.",
+      "theme": ["Family", "Parents", "Kindness", "Worship", "Relationships"],
+      "reflection": "After worshipping Allah, the most important obligation is kindness to parents.",
+      "practical_guidance": [
+        "Call or visit your parents regularly",
+        "Make dua for your parents daily",
+        "Speak to parents with respect and patience"
+      ],
+      "life_application": "Apply in daily interactions with parents, especially when they're aging or difficult.",
+      "dua_connection": "Rabbi ighfir li wa li walidayya"
+    },
+    {
+      "id": 7,
+      "surah": "Al-Baqarah",
+      "surah_number": 2,
+      "ayah": 183,
+      "text_ar": "يَا أَيُّهَا الَّذِينَ آمَنُوا كُتِبَ عَلَيْكُمُ الصِّيَامُ كَمَا كُتِبَ عَلَى الَّذِينَ مِن قَبْلِكُمْ لَعَلَّكُمْ تَتَّقُونَ",
+      "text_en": "O you who believe! Fasting is prescribed for you as it was prescribed for those before you, that you may become righteous.",
+      "theme": ["Fasting", "Self Discipline", "Health", "Spirituality", "Taqwa"],
+      "reflection": "Fasting develops self-control and consciousness of Allah in all aspects of life.",
+      "practical_guidance": [
+        "Practice intermittent fasting outside of Ramadan",
+        "Use fasting to develop self-discipline in other areas",
+        "Fast on Mondays and Thursdays as recommended"
+      ],
+      "life_application": "Use fasting principles to control desires, improve health, and develop willpower.",
+      "dua_connection": "Allahumma barik lana fima razaqtana"
+    },
+    {
+      "id": 8,
+      "surah": "Al-Isra",
+      "surah_number": 17,
+      "ayah": 80,
+      "text_ar": "وَقُل رَّبِّ أَدْخِلْنِي مُدْخَلَ صِدْقٍ وَأَخْرِجْنِي مُخْرَجَ صِدْقٍ وَاجْعَل لِّي مِن لَّدُنكَ سُلْطَانًا نَّصِيرًا",
+      "text_en": "And say: My Lord! Cause me to enter a sound entrance and to exit a sound exit and grant me from You a supporting authority.",
+      "theme": ["Success", "Leadership", "Career", "Transitions", "Support"],
+      "reflection": "Ask Allah for success in your endeavors and for His support in leadership roles.",
+      "practical_guidance": [
+        "Make this dua before starting new jobs or projects",
+        "Seek Allah's help in leadership positions",
+        "Enter and exit situations with integrity"
+      ],
+      "life_application": "Use when starting new jobs, moving homes, beginning relationships, or taking leadership roles.",
+      "dua_connection": "Rabbi a'inni wa la tu'in 'alayya"
+    },
+    {
+      "id": 9,
+      "surah": "Al-Furqan",
+      "surah_number": 25,
+      "ayah": 74,
+      "text_ar": "وَالَّذِينَ يَقُولُونَ رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا",
+      "text_en": "And those who say: Our Lord! Grant us wives and offspring who will be the comfort of our eyes, and give us (the grace) to lead the righteous.",
+      "theme": ["Family", "Marriage", "Children", "Leadership", "Righteousness"],
+      "reflection": "A beautiful dua for those seeking righteous families and the ability to lead others to goodness.",
+      "practical_guidance": [
+        "Make this dua when seeking marriage",
+        "Pray for righteous children and family",
+        "Strive to be a positive example for others"
+      ],
+      "life_application": "Use when planning marriage, raising children, or seeking to improve family relationships.",
+      "dua_connection": "Rabbana hab lana min azwajina wa dhurriyyatina qurrata a'yunin"
+    },
+    {
+      "id": 10,
+      "surah": "Al-Kahf",
+      "surah_number": 18,
+      "ayah": 10,
+      "text_ar": "إِذْ أَوَى الْفِتْيَةُ إِلَى الْكَهْفِ فَقَالُوا رَبَّنَا آتِنَا مِن لَّدُنكَ رَحْمَةً وَهَيِّئْ لَنَا مِنْ أَمْرِنَا رَشَدًا",
+      "text_en": "When the youths took refuge in the cave, they said: Our Lord! Give us mercy from Your presence, and provide for us a right course in our affair.",
+      "theme": ["Youth", "Guidance", "Mercy", "Decision Making", "Refuge"],
+      "reflection": "Young people especially need Allah's mercy and guidance in making life decisions.",
+      "practical_guidance": [
+        "Seek Allah's guidance in educational and career choices",
+        "Surround yourself with righteous friends",
+        "Make this dua when facing peer pressure"
+      ],
+      "life_application": "Perfect for students, young professionals, and anyone making major life transitions.",
+      "dua_connection": "Rabbana atina min ladunka rahmatan wa hayyi' lana min amrina rashadan"
+    },
+    {
+      "id": 11,
+      "surah": "Al-Baqarah",
+      "surah_number": 2,
+      "ayah": 201,
+      "text_ar": "وَمِنْهُم مَّن يَقُولُ رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",
+      "text_en": "And of them there are some who say: Our Lord! Give us in this world that which is good and in the Hereafter that which is good, and save us from the torment of the Fire!",
+      "theme": ["Balance", "Dunya", "Akhirah", "Success", "Protection"],
+      "reflection": "The perfect dua that balances worldly success with spiritual preparation for the afterlife.",
+      "practical_guidance": [
+        "Recite this dua daily after prayers",
+        "Balance worldly goals with spiritual objectives",
+        "Seek success that benefits both worlds"
+      ],
+      "life_application": "Use when setting life goals, making career decisions, or planning your future.",
+      "dua_connection": "Rabbana atina fi'd-dunya hasanatan wa fi'l-akhirati hasanatan"
+    },
+    {
+      "id": 12,
+      "surah": "Al-Mu'minun",
+      "surah_number": 23,
+      "ayah": 97,
+      "text_ar": "وَقُل رَّبِّ أَعُوذُ بِكَ مِنْ هَمَزَاتِ الشَّيَاطِينِ",
+      "text_en": "And say: My Lord! I seek refuge with You from the whisperings of the evil ones.",
+      "theme": ["Protection", "Mental Health", "Anxiety", "Negative Thoughts", "Spirituality"],
+      "reflection": "Seek Allah's protection from negative thoughts, anxiety, and evil influences.",
+      "practical_guidance": [
+        "Recite this when feeling anxious or depressed",
+        "Use as protection from negative thoughts",
+        "Say before sleeping to ward off nightmares"
+      ],
+      "life_application": "Apply when dealing with anxiety, negative thoughts, or spiritual attacks.",
+      "dua_connection": "A'udhu billahi min ash-shaytani'r-rajim"
+    },
+    {
+      "id": 13,
+      "surah": "Taha",
+      "surah_number": 20,
+      "ayah": 25,
+      "text_ar": "رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي وَاحْلُلْ عُقْدَةً مِّن لِّسَانِي يَفْقَهُوا قَوْلِي",
+      "text_en": "My Lord, expand for me my breast and ease for me my task and untie the knot from my tongue that they may understand my speech.",
+      "theme": ["Communication", "Confidence", "Leadership", "Public Speaking", "Ease"],
+      "reflection": "Prophet Musa's dua for confidence and clear communication - perfect for modern challenges.",
+      "practical_guidance": [
+        "Recite before job interviews or presentations",
+        "Use when learning new languages",
+        "Say before difficult conversations"
+      ],
+      "life_application": "Perfect for students, professionals, leaders, and anyone who needs to communicate effectively.",
+      "dua_connection": "Rabbi ishrah li sadri wa yassir li amri"
+    },
+    {
+      "id": 14,
+      "surah": "Al-Baqarah",
+      "surah_number": 2,
+      "ayah": 255,
+      "text_ar": "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ",
+      "text_en": "Allah - there is no deity except Him, the Ever-Living, the Sustainer of existence. Neither drowsiness overtakes Him nor sleep.",
+      "theme": ["Protection", "Strength", "Faith", "Security", "Trust"],
+      "reflection": "Ayat al-Kursi provides ultimate protection and reminds us of Allah's constant watchfulness.",
+      "practical_guidance": [
+        "Recite after each prayer for protection",
+        "Say before sleeping for security",
+        "Use when feeling afraid or insecure"
+      ],
+      "life_application": "Use for spiritual protection, when traveling, or when feeling vulnerable.",
+      "dua_connection": "Recite the full Ayat al-Kursi for complete protection"
+    },
+    {
+      "id": 15,
+      "surah": "Ar-Rahman",
+      "surah_number": 55,
+      "ayah": 13,
+      "text_ar": "فَبِأَيِّ آلَاءِ رَبِّكُمَا تُكَذِّبَانِ",
+      "text_en": "So which of the favors of your Lord would you deny?",
+      "theme": ["Gratitude", "Blessings", "Appreciation", "Mindfulness", "Thankfulness"],
+      "reflection": "This repeated verse in Surah Ar-Rahman reminds us to constantly acknowledge Allah's blessings.",
+      "practical_guidance": [
+        "Keep a daily gratitude journal",
+        "List 3 blessings every morning",
+        "Thank Allah for small and big favors"
+      ],
+      "life_application": "Use when feeling ungrateful, depressed, or when you need perspective on your blessings.",
+      "dua_connection": "Alhamdulillahi rabbil alameen"
+    },
+    {
+      "id": 16,
+      "surah": "Al-Ankabut",
+      "surah_number": 29,
+      "ayah": 69,
+      "text_ar": "وَالَّذِينَ جَاهَدُوا فِينَا لَنَهْدِيَنَّهُمْ سُبُلَنَا ۚ وَإِنَّ اللَّهَ لَمَعَ الْمُحْسِنِينَ",
+      "text_en": "And those who strive for Us - We will surely guide them to Our ways. And indeed, Allah is with the doers of good.",
+      "theme": ["Effort", "Guidance", "Success", "Perseverance", "Good Deeds"],
+      "reflection": "Allah promises guidance to those who sincerely strive in His path.",
+      "practical_guidance": [
+        "Put sincere effort into your Islamic learning",
+        "Strive consistently in your spiritual practices",
+        "Do good deeds while seeking Allah's guidance"
+      ],
+      "life_application": "Apply when working towards spiritual goals, learning Islam, or doing charitable work.",
+      "dua_connection": "Allahumma a'inni 'ala dhikrika wa shukrika wa husni 'ibadatika"
+    },
+    {
+      "id": 17,
+      "surah": "Al-Baqarah",
+      "surah_number": 2,
+      "ayah": 216,
+      "text_ar": "وَعَسَىٰ أَن تَكْرَهُوا شَيْئًا وَهُوَ خَيْرٌ لَّكُمْ ۖ وَعَسَىٰ أَن تُحِبُّوا شَيْئًا وَهُوَ شَرٌّ لَّكُمْ ۗ وَاللَّهُ يَعْلَمُ وَأَنتُمْ لَا تَعْلَمُونَ",
+      "text_en": "But perhaps you hate a thing and it is good for you; and perhaps you love a thing and it is bad for you. And Allah knows, while you know not.",
+      "theme": ["Trust", "Wisdom", "Acceptance", "Patience", "Divine Decree"],
+      "reflection": "Trust Allah's wisdom even when things don't go according to your plans.",
+      "practical_guidance": [
+        "Practice acceptance when plans don't work out",
+        "Look for hidden blessings in difficulties",
+        "Trust Allah's timing in your life"
+      ],
+      "life_application": "Use when facing rejection, loss, or unexpected changes in life plans.",
+      "dua_connection": "Hasbunallahu wa ni'mal wakeel"
+    },
+    {
+      "id": 18,
+      "surah": "Luqman",
+      "surah_number": 31,
+      "ayah": 17,
+      "text_ar": "يَا بُنَيَّ أَقِمِ الصَّلَاةَ وَأْمُرْ بِالْمَعْرُوفِ وَانْهَ عَنِ الْمُنكَرِ وَاصْبِرْ عَلَىٰ مَا أَصَابَكَ ۖ إِنَّ ذَٰلِكَ مِنْ عَزْمِ الْأُمُورِ",
+      "text_en": "O my son, establish prayer, enjoin what is right, forbid what is wrong, and be patient over what befalls you. Indeed, all that is of the matters of determination.",
+      "theme": ["Parenting", "Prayer", "Character", "Patience", "Moral Courage"],
+      "reflection": "Luqman's advice to his son encompasses the core of Islamic character development.",
+      "practical_guidance": [
+        "Establish regular prayers as your foundation",
+        "Stand up for what's right with wisdom",
+        "Be patient with people's responses to your good advice"
+      ],
+      "life_application": "Use in parenting, mentoring others, or developing your own character.",
+      "dua_connection": "Rabbi a'inni 'ala tarbiyati awladi"
+    },
+    {
+      "id": 19,
+      "surah": "Az-Zumar",
+      "surah_number": 39,
+      "ayah": 53,
+      "text_ar": "قُلْ يَا عِبَادِيَ الَّذِينَ أَسْرَفُوا عَلَىٰ أَنفُسِهِمْ لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ ۚ إِنَّ اللَّهَ يَغْفِرُ الذُّنُوبَ جَمِيعًا ۚ إِنَّهُ هُوَ الْغَفُورُ الرَّحِيمُ",
+      "text_en": "Say: O My servants who have transgressed against themselves, do not despair of the mercy of Allah. Indeed, Allah forgives all sins. Indeed, it is He who is the Forgiving, the Merciful.",
+      "theme": ["Forgiveness", "Hope", "Mercy", "Repentance", "Second Chances"],
+      "reflection": "No matter how far you've strayed, Allah's mercy is greater than any sin.",
+      "practical_guidance": [
+        "Never lose hope in Allah's forgiveness",
+        "Make sincere tawbah (repentance) regularly",
+        "Help others who feel hopeless about their mistakes"
+      ],
+      "life_application": "Use when dealing with guilt, helping others overcome past mistakes, or encouraging repentance.",
+      "dua_connection": "Astaghfirullaha rabbiya min kulli dhanbin wa atubu ilayh"
+    },
+    {
+      "id": 20,
+      "surah": "Al-Hadid",
+      "surah_number": 57,
+      "ayah": 20,
+      "text_ar": "اعْلَمُوا أَنَّمَا الْحَيَاةُ الدُّنْيَا لَعِبٌ وَلَهْوٌ وَزِينَةٌ وَتَفَاخُرٌ بَيْنَكُمْ وَتَكَاثُرٌ فِي الْأَمْوَالِ وَالْأَوْلَادِ",
+      "text_en": "Know that the life of this world is but amusement and diversion and adornment and boasting to one another and competition in increase of wealth and children.",
+      "theme": ["Perspective", "Priorities", "Materialism", "Balance", "Afterlife"],
+      "reflection": "Don't get so caught up in worldly competition that you forget your real purpose.",
+      "practical_guidance": [
+        "Set spiritual goals alongside material ones",
+        "Avoid unhealthy competition with others",
+        "Remember that worldly success is temporary"
+      ],
+      "life_application": "Use when feeling pressure to keep up with others or when prioritizing life goals.",
+      "dua_connection": "Allahumma a'inni 'ala dhikrika wa shukrika wa husni 'ibadatika"
+    }
+  ],
+  "themes": {
+    "Patience": {
+      "description": "Building resilience and endurance through Islamic teachings",
+      "practical_steps": [
+        "Practice daily dhikr during waiting periods",
+        "Read stories of prophets who showed patience",
+        "Make dua for patience during difficult times"
+      ],
+      "related_habits": ["Daily istighfar", "Morning dhikr", "Quran reading"]
+    },
+    "Change": {
+      "description": "Personal transformation guided by Quranic wisdom",
+      "practical_steps": [
+        "Start with small, consistent changes",
+        "Make tawbah for past mistakes",
+        "Set Islamic goals for improvement"
+      ],
+      "related_habits": ["Self-reflection", "Goal setting", "Regular prayers"]
+    },
+    "Family": {
+      "description": "Nurturing relationships with Islamic values",
+      "practical_steps": [
+        "Make dua for family members daily",
+        "Practice patience with family",
+        "Show kindness and respect to parents"
+      ],
+      "related_habits": ["Family time", "Calling parents", "Teaching children"]
+    }
+  }
+} 

@@ -1,0 +1,104 @@
+{
+  "verses": [
+    {
+      "id": 1,
+      "surah": "Al-Baqarah",
+      "surah_number": 2,
+      "ayah": 286,
+      "text_ar": "لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا ۚ لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا اكْتَسَبَتْ ۗ رَبَّنَا لَا تُؤَاخِذْنَا إِن نَّسِينَا أَوْ أَخْطَأْنَا ۚ رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَا إِصْرًا كَمَا حَمَلْتَهُ عَلَى الَّذِينَ مِن قَبْلِنَا ۚ رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِ ۖ وَاعْفُ عَنَّا وَاغْفِرْ لَنَا وَارْحَمْنَا ۚ أَنتَ مَوْلَانَا فَانصُرْنَا عَلَى الْقَوْمِ الْكَافِرِينَ",
+      "text_en": "Allah does not burden a soul beyond that it can bear. It will have [the consequence of] what [good] it has gained, and it will bear [the consequence of] what [evil] it has earned. Our Lord, do not impose blame upon us if we have forgotten or erred. Our Lord, and lay not upon us a burden like that which You laid upon those before us. Our Lord, and burden us not with that which we have no ability to bear. And pardon us; and forgive us; and have mercy upon us. You are our protector, so give us victory over the disbelieving people.",
+      "theme": ["patience", "strength", "prayer"],
+      "reflection": "This verse reminds us that Allah never burdens us beyond our capacity. When setting goals, remember to be realistic and trust in Allah's wisdom."
+    },
+    {
+      "id": 2,
+      "surah": "Ar-Ra'd",
+      "surah_number": 13,
+      "ayah": 11,
+      "text_ar": "إِنَّ اللَّهَ لَا يُغَيِّرُ مَا بِقَوْمٍ حَتَّىٰ يُغَيِّرُوا مَا بِأَنفُسِهِمْ",
+      "text_en": "Indeed, Allah will not change the condition of a people until they change what is in themselves.",
+      "theme": ["change", "personal_growth", "responsibility"],
+      "reflection": "True change begins from within. Your daily habits and spiritual practices are the foundation for personal transformation."
+    },
+    {
+      "id": 3,
+      "surah": "Al-Asr",
+      "surah_number": 103,
+      "ayah": 1,
+      "text_ar": "وَالْعَصْرِ",
+      "text_en": "By time,",
+      "theme": ["time", "productivity", "urgency"],
+      "reflection": "Time is precious and limited. Use your daily planning to make every moment count in your spiritual and personal journey."
+    },
+    {
+      "id": 4,
+      "surah": "Al-Asr",
+      "surah_number": 103,
+      "ayah": 2,
+      "text_ar": "إِنَّ الْإِنسَانَ لَفِي خُسْرٍ",
+      "text_en": "Indeed, mankind is in loss,",
+      "theme": ["time", "productivity", "awareness"],
+      "reflection": "Without purpose and righteous action, we are at a loss. Let your goals align with what truly matters."
+    },
+    {
+      "id": 5,
+      "surah": "Al-Asr",
+      "surah_number": 103,
+      "ayah": 3,
+      "text_ar": "إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ وَتَوَاصَوْا بِالْحَقِّ وَتَوَاصَوْا بِالصَّبْرِ",
+      "text_en": "Except for those who have believed and done righteous deeds and advised each other to truth and advised each other to patience.",
+      "theme": ["faith", "good_deeds", "patience", "community"],
+      "reflection": "Success comes through faith, righteous actions, speaking truth, and practicing patience. Include all these elements in your daily goals."
+    },
+    {
+      "id": 6,
+      "surah": "Al-Fatiha",
+      "surah_number": 1,
+      "ayah": 6,
+      "text_ar": "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ",
+      "text_en": "Guide us to the straight path",
+      "theme": ["guidance", "direction", "prayer"],
+      "reflection": "Seek Allah's guidance in all your endeavors. Let this prayer guide your daily decisions and goals."
+    },
+    {
+      "id": 7,
+      "surah": "Al-Baqarah",
+      "surah_number": 2,
+      "ayah": 155,
+      "text_ar": "وَلَنَبْلُوَنَّكُم بِشَيْءٍ مِّنَ الْخَوْفِ وَالْجُوعِ وَنَقْصٍ مِّنَ الْأَمْوَالِ وَالْأَنفُسِ وَالثَّمَرَاتِ ۗ وَبَشِّرِ الصَّابِرِينَ",
+      "text_en": "And We will surely test you with something of fear and hunger and a loss of wealth and lives and fruits, but give good tidings to the patient,",
+      "theme": ["patience", "trials", "perseverance"],
+      "reflection": "Life will bring challenges. Maintain your spiritual practices and goals even during difficult times."
+    },
+    {
+      "id": 8,
+      "surah": "Ash-Sharh",
+      "surah_number": 94,
+      "ayah": 5,
+      "text_ar": "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا",
+      "text_en": "For indeed, with hardship [will be] ease.",
+      "theme": ["hope", "patience", "relief"],
+      "reflection": "After every difficulty comes ease. Stay consistent with your practices, knowing that relief is coming."
+    },
+    {
+      "id": 9,
+      "surah": "Al-Mulk",
+      "surah_number": 67,
+      "ayah": 2,
+      "text_ar": "الَّذِي خَلَقَ الْمَوْتَ وَالْحَيَاةَ لِيَبْلُوَكُمْ أَيُّكُمْ أَحْسَنُ عَمَلًا ۚ وَهُوَ الْعَزِيزُ الْغَفُورُ",
+      "text_en": "[He] who created death and life to test you [as to] which of you is best in deed - and He is the Exalted in Might, the Forgiving.",
+      "theme": ["purpose", "good_deeds", "accountability"],
+      "reflection": "Life is a test to see who does the best deeds. Focus on quality and sincerity in your daily actions."
+    },
+    {
+      "id": 10,
+      "surah": "At-Tawbah",
+      "surah_number": 9,
+      "ayah": 105,
+      "text_ar": "وَقُلِ اعْمَلُوا فَسَيَرَى اللَّهُ عَمَلَكُمْ وَرَسُولُهُ وَالْمُؤْمِنُونَ",
+      "text_en": "And say, 'Do [as you will], for Allah will see your deed, and [so, will] His Messenger and the believers.",
+      "theme": ["action", "accountability", "motivation"],
+      "reflection": "Your actions are seen by Allah. Let this awareness motivate you to maintain excellence in your daily habits and goals."
+    }
+  ]
+} 
