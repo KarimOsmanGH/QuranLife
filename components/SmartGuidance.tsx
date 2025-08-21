@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { QuranEngine, GoalMatchResult } from '@/lib/quran-engine';
+import { quranEngine, GoalMatchResult } from '@/lib/quran-engine';
 
 interface SmartGuidanceProps {
   goalTitle: string;
@@ -21,94 +21,23 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
 
   const loadGuidance = async () => {
     try {
-      const response = await fetch('/data/enhanced-quran.json');
-      const data = await response.json();
+      setLoading(true);
       
-      // Create QuranEngine instance (simplified for client-side)
-      const matches = findMatchingVerses(data.verses, goalTitle, goalDescription, goalCategory);
+      // Use the new QuranEngine API to find verses for the goal
+      const goalText = `${goalTitle} ${goalDescription} ${goalCategory}`.trim();
+      const matches = await quranEngine.findVersesForGoal(goalText);
+      
       setGuidance(matches);
     } catch (error) {
       console.error('Failed to load guidance:', error);
+      setGuidance([]); // Set empty array on error
     } finally {
       setLoading(false);
     }
   };
 
-  // Simplified matching logic for client-side
-  const findMatchingVerses = (verses: any[], title: string, description: string, category: string) => {
-    const searchText = `${title} ${description} ${category}`.toLowerCase();
-    const matches: GoalMatchResult[] = [];
-
-    for (const verse of verses) {
-      let score = 0;
-      
-      // Check theme matches
-      if (verse.theme) {
-        for (const theme of verse.theme) {
-          const themeNormalized = theme.toLowerCase();
-          const categoryNormalized = category.toLowerCase();
-          
-          if (searchText.includes(themeNormalized) || 
-              themeNormalized.includes(categoryNormalized) ||
-              categoryNormalized.includes(themeNormalized)) {
-            score += 0.8;
-          }
-          
-          // Enhanced matching for common goal categories
-          if (categoryNormalized === 'health' && themeNormalized.includes('health')) score += 1.0;
-          if (categoryNormalized === 'spiritual' && (themeNormalized.includes('prayer') || themeNormalized.includes('spirituality'))) score += 1.0;
-          if (categoryNormalized === 'family' && themeNormalized.includes('family')) score += 1.0;
-          if (categoryNormalized === 'career' && (themeNormalized.includes('success') || themeNormalized.includes('leadership'))) score += 1.0;
-          if (categoryNormalized === 'personal' && (themeNormalized.includes('change') || themeNormalized.includes('growth'))) score += 1.0;
-        }
-      }
-
-      // Check text matches
-      const verseText = `${verse.text_en} ${verse.reflection}`.toLowerCase();
-      const searchWords = searchText.split(' ').filter(word => word.length > 2);
-      
-      for (const word of searchWords) {
-        if (verseText.includes(word)) {
-          score += 0.3;
-        }
-      }
-
-      if (score > 0.5) {
-        matches.push({
-          verse,
-          relevanceScore: score,
-          practicalSteps: verse.practical_guidance || [],
-          duaRecommendation: verse.dua_connection,
-          relatedHabits: getRelatedHabits(verse.theme, category)
-        });
-      }
-    }
-
-    return matches.sort((a, b) => b.relevanceScore - a.relevanceScore).slice(0, 3);
-  };
-
-  const getRelatedHabits = (themes: string[], category: string): string[] => {
-    const habits: string[] = [];
-    const themesLower = themes?.map(t => t.toLowerCase()) || [];
-    const categoryLower = category.toLowerCase();
-    
-    if (themesLower.includes('prayer') || themesLower.includes('spirituality') || categoryLower === 'spiritual') {
-      habits.push('Daily 5 prayers', 'Morning dhikr', 'Evening dua', 'Quran reading');
-    }
-    if (themesLower.includes('patience') || themesLower.includes('change') || categoryLower === 'personal') {
-      habits.push('Daily istighfar', 'Gratitude journaling', 'Self-reflection', 'Goal review');
-    }
-    if (themesLower.includes('family') || themesLower.includes('parents') || categoryLower === 'family') {
-      habits.push('Family time', 'Call parents', 'Help with chores', 'Family dua');
-    }
-    if (themesLower.includes('health') || themesLower.includes('fasting') || categoryLower === 'health') {
-      habits.push('Healthy eating', 'Regular exercise', 'Adequate sleep', 'Drink water');
-    }
-    if (themesLower.includes('success') || themesLower.includes('leadership') || categoryLower === 'career') {
-      habits.push('Skill development', 'Network building', 'Goal setting', 'Time management');
-    }
-    
-    return habits.slice(0, 4);
+  const handleToggleExpand = (index: number) => {
+    setExpanded(expanded === index ? null : index);
   };
 
   if (loading) {
@@ -167,7 +96,7 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
                   {Math.round(match.relevanceScore * 100)}% match
                 </span>
                 <button
-                  onClick={() => setExpanded(expanded === index ? null : index)}
+                  onClick={() => handleToggleExpand(index)}
                   className="text-green-600 hover:text-green-700"
                 >
                   {expanded === index ? '−' : '+'}

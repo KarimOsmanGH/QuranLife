@@ -1,8 +1,11 @@
 /**
  * Advanced Quran Engine for QuranLife
  * Provides intelligent verse matching, practical guidance, and thematic organization
+ * Now powered by AlQuran.cloud API for complete Quran access
  * Author: Karim Osman (https://kar.im)
  */
+
+import { quranAPI, type Verse, type RandomVerseResponse } from './quran-api';
 
 export interface QuranVerse {
   id: number;
@@ -35,41 +38,7 @@ export interface ThematicCollection {
   recommendedActions: string[];
 }
 
-// Expanded thematic mappings for better goal-verse matching
-const THEME_KEYWORDS = {
-  // Personal Development
-  patience: ['patience', 'sabr', 'endurance', 'perseverance', 'waiting', 'trials', 'difficulty'],
-  strength: ['strength', 'power', 'resilience', 'courage', 'steadfastness', 'determination'],
-  change: ['change', 'transformation', 'improvement', 'growth', 'development', 'progress'],
-  
-  // Spiritual Growth
-  prayer: ['prayer', 'salah', 'worship', 'dua', 'remembrance', 'dhikr'],
-  faith: ['faith', 'iman', 'belief', 'trust', 'conviction', 'certainty'],
-  guidance: ['guidance', 'hidayah', 'direction', 'path', 'way', 'light'],
-  
-  // Life Areas
-  family: ['family', 'parents', 'children', 'spouse', 'relatives', 'kinship'],
-  health: ['health', 'healing', 'wellness', 'body', 'medicine', 'cure'],
-  wealth: ['wealth', 'money', 'rizq', 'provision', 'sustenance', 'work'],
-  knowledge: ['knowledge', 'ilm', 'learning', 'wisdom', 'education', 'understanding'],
-  
-  // Character Development
-  honesty: ['honesty', 'truth', 'sincerity', 'integrity', 'trustworthiness'],
-  kindness: ['kindness', 'compassion', 'mercy', 'gentleness', 'care'],
-  justice: ['justice', 'fairness', 'rights', 'equality', 'balance'],
-  
-  // Challenges
-  anxiety: ['anxiety', 'worry', 'fear', 'stress', 'concern', 'unease'],
-  depression: ['sadness', 'grief', 'sorrow', 'despair', 'hope', 'healing'],
-  addiction: ['addiction', 'habit', 'compulsion', 'self-control', 'discipline'],
-  
-  // Success & Achievement
-  success: ['success', 'achievement', 'victory', 'accomplishment', 'triumph'],
-  leadership: ['leadership', 'responsibility', 'authority', 'management', 'guidance'],
-  business: ['business', 'trade', 'commerce', 'work', 'profession', 'career']
-};
-
-// Practical guidance templates for different themes
+// Enhanced guidance for transforming API verses into practical advice
 const PRACTICAL_GUIDANCE: Record<string, string[]> = {
   patience: [
     "Make dua during difficult times: 'Rabbana afrigh 'alayna sabran' (Our Lord, pour upon us patience)",
@@ -86,263 +55,357 @@ const PRACTICAL_GUIDANCE: Record<string, string[]> = {
     "Join congregation prayers when possible"
   ],
   change: [
-    "Start with one small change and build momentum",
-    "Write down your 'why' for wanting to change",
+    "Start with one small habit change this week",
+    "Make du'a: 'Rabbana atina fi'd-dunya hasanatan' (Our Lord, give us good in this world)",
+    "Write down 3 specific steps toward your goal",
     "Find an accountability partner in your community",
-    "Track your progress weekly",
     "Celebrate small victories along the way"
   ],
   family: [
     "Schedule weekly family time without devices",
-    "Make dua for your family members daily",
-    "Practice active listening with family",
-    "Express gratitude to family members regularly",
-    "Resolve conflicts with wisdom and patience"
+    "Teach children one new Islamic value each month",
+    "Practice forgiveness and patience with family members",
+    "Make family du'a together before meals",
+    "Share stories of the Prophet's family life"
   ],
   anxiety: [
-    "Practice dhikr: Say 'La hawla wa la quwwata illa billah' 100 times",
-    "Do wudu when feeling anxious - it brings calm",
-    "Read Surah Al-Fatiha 7 times",
-    "Practice deep breathing with 'Astaghfirullah'",
-    "Seek professional help if anxiety persists"
+    "Recite Ayat al-Kursi when feeling anxious",
+    "Practice deep breathing with 'La hawla wa la quwwata illa billah'",
+    "Maintain regular prayer times for structure",
+    "Seek support from trusted friends or counselors",
+    "Remember that Allah does not burden a soul beyond its capacity"
   ],
   success: [
-    "Begin every project with 'Bismillah'",
-    "Set SMART goals aligned with Islamic values",
-    "Work hard but trust in Allah's decree (Tawakkul)",
-    "Help others succeed alongside your own journey",
-    "Give charity (sadaqah) from your earnings"
+    "Begin every endeavor with 'Bismillah'",
+    "Set intentions (niyyah) aligned with Islamic values",
+    "Balance worldly goals with spiritual growth",
+    "Give charity (sadaqah) as you progress",
+    "Remember success comes from Allah alone"
   ]
 };
 
-// Dua recommendations for different situations
+// Enhanced dua recommendations for different life situations
 const DUA_RECOMMENDATIONS: Record<string, string> = {
-  patience: "Rabbana afrigh 'alayna sabran wa thabbit aqdamana (Our Lord, pour upon us patience and plant firmly our feet)",
-  guidance: "Rabbana la tuzigh qulubana ba'd idh hadaytana (Our Lord, let not our hearts deviate after You have guided us)",
-  success: "Rabbi a'inni wa la tu'in 'alayya (My Lord, help me and do not help against me)",
-  anxiety: "Hasbunallahu wa ni'mal wakeel (Allah is sufficient for us, and He is the best disposer of affairs)",
-  change: "Allahumma ahyini ma kanat al-hayatu khayran li (O Allah, keep me alive as long as life is good for me)",
-  family: "Rabbi aw zi'ni an ashkura ni'mataka (My Lord, enable me to be grateful for Your favor)"
+  patience: "Rabbana afrigh 'alayna sabran wa thabbit aqdamana (Our Lord, pour upon us patience and make our steps firm)",
+  change: "Rabbana atina fi'd-dunya hasanatan wa fi'l-akhirati hasanatan (Our Lord, give us good in this world and good in the hereafter)",
+  guidance: "Rabbana la tuzigh qulubana ba'da idh hadaytana (Our Lord, do not let our hearts deviate after You have guided us)",
+  family: "Rabbana hab lana min azwajina wa dhurriyyatina qurrata a'yunin (Our Lord, grant us wives and offspring who will be the comfort of our eyes)",
+  anxiety: "Hasbunallahu wa ni'mal wakeel (Allah is sufficient for us and He is the best guardian)",
+  success: "Rabbi a'inni wa la tu'in 'alayya (My Lord, help me and do not help against me)"
 };
 
-export class QuranEngine {
-  private verses: QuranVerse[] = [];
-  private thematicCollections: Map<string, ThematicCollection> = new Map();
+class QuranEngine {
+  private apiCache: Map<string, any> = new Map();
+  private cacheExpiry: Map<string, number> = new Map();
+  private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
-  constructor(verses: QuranVerse[]) {
-    this.verses = verses;
-    this.buildThematicCollections();
+  /**
+   * Get daily verse with guidance - now powered by live API
+   */
+  async getDailyVerse(): Promise<QuranVerse | null> {
+    try {
+      const randomVerseResponse = await quranAPI.getRandomVerse();
+      return this.convertAPIVerseToQuranVerse(randomVerseResponse);
+    } catch (error) {
+      console.error('Error fetching daily verse:', error);
+      
+      // Fallback to a default verse if API fails
+      return this.getFallbackVerse();
+    }
   }
 
   /**
-   * Find verses that match a specific goal or theme
+   * Find verses matching specific goals or themes
    */
-  findMatchingVerses(goalTitle: string, goalDescription: string = '', category: string = ''): GoalMatchResult[] {
-    const searchText = `${goalTitle} ${goalDescription} ${category}`.toLowerCase();
-    const matches: GoalMatchResult[] = [];
+  async findVersesForGoal(goal: string): Promise<GoalMatchResult[]> {
+    try {
+      // Extract keywords from goal
+      const keywords = this.extractKeywords(goal);
+      const theme = this.determineTheme(keywords);
+      
+      // Search for verses using the API
+      const searchResults = await quranAPI.searchVerses(goal, 'en');
+      
+      if (searchResults.length === 0) {
+        // If no direct matches, try thematic search
+        return await this.getThematicVersesForGoal(theme, goal);
+      }
 
-    for (const verse of this.verses) {
-      const score = this.calculateRelevanceScore(searchText, verse);
-      if (score > 0.3) { // Minimum relevance threshold
-        matches.push({
-          verse,
-          relevanceScore: score,
-          practicalSteps: this.generatePracticalSteps(verse.theme, goalTitle),
-          duaRecommendation: this.getDuaRecommendation(verse.theme),
-          relatedHabits: this.getRelatedHabits(verse.theme)
+      // Convert API results to goal matches
+      const matches: GoalMatchResult[] = [];
+      
+      for (const apiVerse of searchResults.slice(0, 3)) { // Limit to top 3 results
+        const quranVerse = await this.convertAPIVerseToQuranVerse({
+          verse: apiVerse,
+          surah: { number: Math.floor(apiVerse.number / 1000) + 1 } as any, // Approximate surah from verse number
+          theme,
+          context: `Guidance for: ${goal}`
         });
+
+        if (quranVerse) {
+          matches.push({
+            verse: quranVerse,
+            relevanceScore: this.calculateRelevanceScore(goal, quranVerse),
+            practicalSteps: this.generatePracticalSteps(theme, goal),
+            duaRecommendation: DUA_RECOMMENDATIONS[theme],
+            relatedHabits: this.getRelatedHabits(theme)
+          });
+        }
       }
+
+      return matches;
+    } catch (error) {
+      console.error('Error finding verses for goal:', error);
+      return [];
     }
-
-    return matches.sort((a, b) => b.relevanceScore - a.relevanceScore).slice(0, 3);
   }
 
   /**
-   * Get verses by specific theme
+   * Get thematic collection of verses
    */
-  getVersesByTheme(theme: string): QuranVerse[] {
-    return this.verses.filter(verse => 
-      verse.theme.some(t => t.toLowerCase().includes(theme.toLowerCase()))
-    );
-  }
-
-  /**
-   * Get a random verse for daily inspiration
-   */
-  getDailyVerse(date: Date = new Date()): QuranVerse {
-    const dayOfYear = Math.floor(
-      (date.getTime() - new Date(date.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24)
-    );
-    const index = dayOfYear % this.verses.length;
-    return this.verses[index];
-  }
-
-  /**
-   * Get contextual guidance based on user's current challenges
-   */
-  getContextualGuidance(challenges: string[]): {
-    verses: QuranVerse[];
-    practicalAdvice: string[];
-    recommendedDuas: string[];
-  } {
-    const relevantVerses: QuranVerse[] = [];
-    const practicalAdvice: string[] = [];
-    const recommendedDuas: string[] = [];
-
-    for (const challenge of challenges) {
-      const matchingVerses = this.findVersesByKeywords(challenge);
-      relevantVerses.push(...matchingVerses.slice(0, 2));
-
-      // Add practical advice
-      const theme = this.identifyTheme(challenge);
-      if (PRACTICAL_GUIDANCE[theme]) {
-        practicalAdvice.push(...PRACTICAL_GUIDANCE[theme].slice(0, 3));
+  async getThematicCollection(theme: string): Promise<ThematicCollection | null> {
+    try {
+      const cacheKey = `theme_${theme}`;
+      
+      // Check cache first
+      if (this.isCacheValid(cacheKey)) {
+        return this.apiCache.get(cacheKey);
       }
 
-      // Add dua recommendations
-      if (DUA_RECOMMENDATIONS[theme]) {
-        recommendedDuas.push(DUA_RECOMMENDATIONS[theme]);
+      // Get verses related to the theme
+      const searchTerms = this.getThemeSearchTerms(theme);
+      const searchResults = await quranAPI.searchVerses(searchTerms, 'en');
+      
+      const verses: QuranVerse[] = [];
+      
+      // Convert up to 5 verses for the collection
+      for (const apiVerse of searchResults.slice(0, 5)) {
+        const quranVerse = await this.convertAPIVerseToQuranVerse({
+          verse: apiVerse,
+          surah: { number: Math.floor(apiVerse.number / 1000) + 1 } as any,
+          theme,
+          context: `Thematic guidance: ${theme}`
+        });
+
+        if (quranVerse) {
+          verses.push(quranVerse);
+        }
       }
+
+      const collection: ThematicCollection = {
+        theme: this.capitalizeTheme(theme),
+        description: this.getThemeDescription(theme),
+        verses,
+        practicalGuidance: PRACTICAL_GUIDANCE[theme] || [],
+        recommendedActions: this.getRecommendedActions(theme)
+      };
+
+      // Cache the result
+      this.apiCache.set(cacheKey, collection);
+      this.cacheExpiry.set(cacheKey, Date.now() + this.CACHE_DURATION);
+
+      return collection;
+    } catch (error) {
+      console.error('Error getting thematic collection:', error);
+      return null;
     }
+  }
 
+  /**
+   * Convert API verse response to QuranVerse format
+   */
+  private async convertAPIVerseToQuranVerse(apiResponse: RandomVerseResponse): Promise<QuranVerse | null> {
+    try {
+      const { verse, surah, theme, context } = apiResponse;
+      
+      return {
+        id: verse.number,
+        surah: surah.englishName || `Surah ${surah.number}`,
+        surah_number: surah.number,
+        ayah: verse.numberInSurah,
+        text_ar: verse.text,
+        text_en: verse.translation || '',
+        theme: theme ? [theme] : ['guidance'],
+        reflection: this.generateReflection(verse.translation || '', theme || 'guidance'),
+        practical_guidance: PRACTICAL_GUIDANCE[theme || 'guidance']?.slice(0, 3),
+        context: context || `From ${surah.englishName}`,
+        life_application: this.generateLifeApplication(verse.translation || '', theme || 'guidance')
+      };
+    } catch (error) {
+      console.error('Error converting API verse:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Generate practical reflection for a verse
+   */
+  private generateReflection(translation: string, theme: string): string {
+    const reflectionTemplates: Record<string, string[]> = {
+      patience: [
+        "This verse reminds us that patience is not just waiting, but maintaining faith during challenges.",
+        "True patience involves trusting Allah's timing while continuing to make effort.",
+        "Every test is an opportunity to grow closer to Allah and strengthen our character."
+      ],
+      prayer: [
+        "Prayer is our direct connection to Allah, offering guidance and peace in all situations.",
+        "This verse emphasizes that consistent worship transforms our hearts and daily actions.",
+        "Through prayer, we align our will with Allah's guidance and find purpose in our days."
+      ],
+      change: [
+        "Personal transformation begins with sincere intention and trust in Allah's support.",
+        "This verse teaches us that positive change requires both effort and reliance on Allah.",
+        "Growth happens gradually - each small step taken with faith leads to lasting transformation."
+      ],
+      guidance: [
+        "Divine guidance illuminates our path when we sincerely seek Allah's direction.",
+        "This verse reminds us that true wisdom comes from following Islamic teachings.",
+        "Guidance is available to all who approach Allah with humility and openness to learn."
+      ]
+    };
+
+    const templates = reflectionTemplates[theme] || reflectionTemplates.guidance;
+    return templates[Math.floor(Math.random() * templates.length)];
+  }
+
+  /**
+   * Generate life application advice
+   */
+  private generateLifeApplication(translation: string, theme: string): string {
+    const applications: Record<string, string[]> = {
+      patience: [
+        "When facing delays in your goals, use this time for extra dhikr and self-improvement.",
+        "Practice gratitude daily to maintain perspective during challenging periods.",
+        "Set small, achievable milestones to maintain motivation while exercising patience."
+      ],
+      prayer: [
+        "Incorporate this verse into your daily dhikr routine for spiritual strengthening.",
+        "Use prayer times as natural breaks to refocus on your priorities and values.",
+        "Share the wisdom of this verse with family during your daily conversations."
+      ],
+      change: [
+        "Apply this verse's wisdom by taking one concrete step toward your goal today.",
+        "Create a accountability system with someone who shares your Islamic values.",
+        "Reflect on this verse weekly to stay motivated on your transformation journey."
+      ]
+    };
+
+    const options = applications[theme] || applications.prayer;
+    return options[Math.floor(Math.random() * options.length)];
+  }
+
+  /**
+   * Fallback verse when API is unavailable
+   */
+  private getFallbackVerse(): QuranVerse {
     return {
-      verses: this.removeDuplicates(relevantVerses),
-      practicalAdvice: this.removeDuplicates(practicalAdvice),
-      recommendedDuas: this.removeDuplicates(recommendedDuas)
+      id: 2255,
+      surah: "Al-Baqarah",
+      surah_number: 2,
+      ayah: 255,
+      text_ar: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ",
+      text_en: "Allah - there is no deity except Him, the Ever-Living, the Sustainer of existence.",
+      theme: ["faith", "strength"],
+      reflection: "This powerful verse reminds us that Allah is always present and in control, providing strength and comfort in all situations.",
+      practical_guidance: [
+        "Recite Ayat al-Kursi for protection and peace",
+        "Remember Allah's constant presence during challenges",
+        "Trust in Allah's perfect timing and wisdom"
+      ],
+      context: "Ayat al-Kursi - The Throne Verse",
+      life_application: "Use this verse as a source of strength and comfort throughout your day, especially during moments of uncertainty or stress."
     };
   }
 
-  /**
-   * Get thematic collection for structured learning
-   */
-  getThematicCollection(theme: string): ThematicCollection | null {
-    return this.thematicCollections.get(theme) || null;
+  // Helper methods for theme analysis and guidance generation
+  private extractKeywords(text: string): string[] {
+    return text.toLowerCase()
+      .split(/\s+/)
+      .filter(word => word.length > 2)
+      .map(word => word.replace(/[^\w]/g, ''));
   }
 
-  /**
-   * Search verses by keywords
-   */
-  searchVerses(query: string): QuranVerse[] {
-    const keywords = query.toLowerCase().split(' ');
-    return this.verses.filter(verse => {
-      const searchableText = `${verse.text_en} ${verse.reflection} ${verse.theme.join(' ')}`.toLowerCase();
-      return keywords.some(keyword => searchableText.includes(keyword));
-    });
-  }
-
-  // Private helper methods
-
-  private calculateRelevanceScore(searchText: string, verse: QuranVerse): number {
-    let score = 0;
-    const searchWords = searchText.split(' ').filter(word => word.length > 2);
-
-    // Check theme matches
-    for (const theme of verse.theme) {
-      if (searchWords.some(word => theme.toLowerCase().includes(word))) {
-        score += 0.8;
-      }
-    }
-
-    // Check keyword matches in themes
-    for (const [themeKey, keywords] of Object.entries(THEME_KEYWORDS)) {
-      if (verse.theme.includes(themeKey)) {
-        for (const keyword of keywords) {
-          if (searchWords.some(word => keyword.includes(word) || word.includes(keyword))) {
-            score += 0.6;
-          }
-        }
-      }
-    }
-
-    // Check text matches
-    const verseText = `${verse.text_en} ${verse.reflection}`.toLowerCase();
-    for (const word of searchWords) {
-      if (verseText.includes(word)) {
-        score += 0.4;
-      }
-    }
-
-    return Math.min(score, 1.0); // Cap at 1.0
-  }
-
-  private generatePracticalSteps(themes: string[], goalTitle: string): string[] {
-    const steps: string[] = [];
+  private determineTheme(keywords: string[]): string {
+    const themeScores: Record<string, number> = {};
     
-    for (const theme of themes) {
-      if (PRACTICAL_GUIDANCE[theme]) {
-        steps.push(...PRACTICAL_GUIDANCE[theme].slice(0, 2));
+    for (const [theme, themeKeywords] of Object.entries(PRACTICAL_GUIDANCE)) {
+      themeScores[theme] = keywords.filter(keyword => 
+        themeKeywords.some(tk => tk.toLowerCase().includes(keyword))
+      ).length;
+    }
+
+    const topTheme = Object.entries(themeScores)
+      .sort(([,a], [,b]) => b - a)[0];
+    
+    return topTheme ? topTheme[0] : 'guidance';
+  }
+
+  private async getThematicVersesForGoal(theme: string, goal: string): Promise<GoalMatchResult[]> {
+    try {
+      const collection = await this.getThematicCollection(theme);
+      if (!collection || collection.verses.length === 0) {
+        return [];
       }
-    }
 
-    // Add goal-specific steps
-    if (goalTitle.toLowerCase().includes('prayer')) {
-      steps.push("Set a consistent prayer schedule", "Find a quiet prayer space");
-    } else if (goalTitle.toLowerCase().includes('quran')) {
-      steps.push("Read one page of Quran daily", "Learn the meaning of what you read");
-    } else if (goalTitle.toLowerCase().includes('health')) {
-      steps.push("Make dua for good health", "Follow Islamic dietary guidelines");
+      return collection.verses.slice(0, 2).map(verse => ({
+        verse,
+        relevanceScore: this.calculateRelevanceScore(goal, verse),
+        practicalSteps: this.generatePracticalSteps(theme, goal),
+        duaRecommendation: DUA_RECOMMENDATIONS[theme],
+        relatedHabits: this.getRelatedHabits(theme)
+      }));
+    } catch (error) {
+      console.error('Error getting thematic verses:', error);
+      return [];
     }
-
-    return this.removeDuplicates(steps).slice(0, 4);
   }
 
-  private getDuaRecommendation(themes: string[]): string | undefined {
-    for (const theme of themes) {
-      if (DUA_RECOMMENDATIONS[theme]) {
-        return DUA_RECOMMENDATIONS[theme];
-      }
-    }
-    return DUA_RECOMMENDATIONS.guidance; // Default
+  private calculateRelevanceScore(goal: string, verse: QuranVerse): number {
+    const goalWords = this.extractKeywords(goal);
+    const verseWords = this.extractKeywords(verse.text_en + ' ' + verse.reflection);
+    
+    const matches = goalWords.filter(word => 
+      verseWords.some(vw => vw.includes(word) || word.includes(vw))
+    );
+    
+    return Math.min(0.95, matches.length / Math.max(goalWords.length, 1));
   }
 
-  private getRelatedHabits(themes: string[]): string[] {
-    const habits: string[] = [];
+  private generatePracticalSteps(theme: string, goal: string): string[] {
+    const baseSteps = PRACTICAL_GUIDANCE[theme] || PRACTICAL_GUIDANCE.guidance;
+    const goalSpecific = [
+      `Set a specific timeline for: ${goal}`,
+      `Make daily du'a for success in: ${goal}`,
+      `Break down "${goal}" into smaller, manageable tasks`
+    ];
     
-    if (themes.includes('prayer')) {
-      habits.push('Daily 5 prayers', 'Morning dhikr', 'Evening dua');
-    }
-    if (themes.includes('patience')) {
-      habits.push('Daily istighfar', 'Meditation', 'Gratitude journaling');
-    }
-    if (themes.includes('family')) {
-      habits.push('Family time', 'Call parents', 'Help with chores');
-    }
-    
-    return habits;
+    return [...baseSteps.slice(0, 2), ...goalSpecific];
   }
 
-  private findVersesByKeywords(challenge: string): QuranVerse[] {
-    const theme = this.identifyTheme(challenge);
-    return this.getVersesByTheme(theme);
+  private getRelatedHabits(theme: string): string[] {
+    const habitMap: Record<string, string[]> = {
+      patience: ['Daily dhikr', 'Gratitude journaling', 'Regular prayer'],
+      prayer: ['5 daily prayers', 'Morning athkar', 'Evening dhikr'],
+      change: ['Goal setting', 'Daily reflection', 'Skill learning'],
+      family: ['Family time', 'Teaching children', 'Shared meals'],
+      anxiety: ['Stress management', 'Seeking support', 'Mindful breathing'],
+      success: ['Planning', 'Charity giving', 'Continuous learning']
+    };
+    
+    return habitMap[theme] || habitMap.prayer;
   }
 
-  private identifyTheme(text: string): string {
-    const lowerText = text.toLowerCase();
+  private getThemeSearchTerms(theme: string): string {
+    const searchTerms: Record<string, string> = {
+      patience: 'patience perseverance endurance',
+      prayer: 'prayer worship remembrance',
+      change: 'change transformation growth',
+      family: 'family children parents',
+      anxiety: 'peace comfort trust',
+      success: 'success achievement blessing'
+    };
     
-    for (const [theme, keywords] of Object.entries(THEME_KEYWORDS)) {
-      if (keywords.some(keyword => lowerText.includes(keyword))) {
-        return theme;
-      }
-    }
-    
-    return 'guidance'; // Default theme
-  }
-
-  private buildThematicCollections(): void {
-    const themes = Object.keys(THEME_KEYWORDS);
-    
-    for (const theme of themes) {
-      const themeVerses = this.getVersesByTheme(theme);
-      if (themeVerses.length > 0) {
-        this.thematicCollections.set(theme, {
-          theme,
-          description: this.getThemeDescription(theme),
-          verses: themeVerses,
-          practicalGuidance: PRACTICAL_GUIDANCE[theme] || [],
-          recommendedActions: this.getRecommendedActions(theme)
-        });
-      }
-    }
+    return searchTerms[theme] || 'guidance wisdom';
   }
 
   private getThemeDescription(theme: string): string {
@@ -359,52 +422,77 @@ export class QuranEngine {
 
   private getRecommendedActions(theme: string): string[] {
     const actions: Record<string, string[]> = {
-      patience: ["Practice daily dhikr", "Read stories of prophets", "Join Islamic study groups"],
-      prayer: ["Attend mosque regularly", "Learn prayer meanings", "Make personal duas"],
-      change: ["Set Islamic goals", "Find Muslim mentors", "Track spiritual progress"]
+      patience: ["Practice daily dhikr", "Read stories of the Prophets", "Make dua during challenges"],
+      prayer: ["Maintain 5 daily prayers", "Learn prayer meanings", "Join community prayers"],
+      change: ["Set Islamic goals", "Find mentorship", "Track spiritual progress"],
+      family: ["Schedule family time", "Teach Islamic values", "Practice forgiveness"],
+      anxiety: ["Recite protective verses", "Practice breathing exercises", "Seek community support"],
+      success: ["Align goals with values", "Give regular charity", "Seek beneficial knowledge"]
     };
-    return actions[theme] || ["Seek Islamic knowledge", "Practice daily", "Connect with community"];
+    
+    return actions[theme] || actions.prayer;
   }
 
-  private removeDuplicates<T>(array: T[]): T[] {
-    return Array.from(new Set(array));
+  private capitalizeTheme(theme: string): string {
+    return theme.charAt(0).toUpperCase() + theme.slice(1);
   }
-}
 
-// Factory function to create QuranEngine with enhanced data
-export function createQuranEngine(basicVerses: any[]): QuranEngine {
-  const enhancedVerses: QuranVerse[] = basicVerses.map(verse => ({
-    ...verse,
-    practical_guidance: generatePracticalGuidance(verse.theme),
-    life_application: generateLifeApplication(verse.theme, verse.text_en),
-    context: generateContext(verse.surah, verse.ayah)
-  }));
+  private isCacheValid(key: string): boolean {
+    const expiry = this.cacheExpiry.get(key);
+    return expiry ? Date.now() < expiry : false;
+  }
 
-  return new QuranEngine(enhancedVerses);
-}
-
-function generatePracticalGuidance(themes: string[]): string[] {
-  const guidance: string[] = [];
-  for (const theme of themes) {
-    if (PRACTICAL_GUIDANCE[theme]) {
-      guidance.push(...PRACTICAL_GUIDANCE[theme].slice(0, 2));
+  /**
+   * Smart verse recommendation based on user context
+   */
+  async getSmartRecommendation(userGoals: string[], completedHabits: string[]): Promise<QuranVerse | null> {
+    try {
+      // Analyze user's current focus areas
+      const currentFocus = this.analyzeUserFocus(userGoals, completedHabits);
+      
+      // Get a random verse that matches their focus
+      const randomResponse = await quranAPI.getRandomVerse();
+      
+      // Enhance the verse with personalized guidance
+      const verse = await this.convertAPIVerseToQuranVerse(randomResponse);
+      
+      if (verse && currentFocus) {
+        verse.practical_guidance = this.getPersonalizedGuidance(currentFocus, userGoals);
+        verse.life_application = `Based on your current goals (${userGoals.slice(0, 2).join(', ')}), ${verse.life_application}`;
+      }
+      
+      return verse;
+    } catch (error) {
+      console.error('Error getting smart recommendation:', error);
+      return this.getFallbackVerse();
     }
   }
-  return guidance;
-}
 
-function generateLifeApplication(themes: string[], verseText: string): string {
-  if (themes.includes('patience')) {
-    return "Apply this when facing delays, difficulties, or when learning new skills.";
-  } else if (themes.includes('prayer')) {
-    return "Incorporate this understanding into your daily worship routine.";
-  } else if (themes.includes('change')) {
-    return "Use this guidance when setting personal development goals.";
+  private analyzeUserFocus(goals: string[], habits: string[]): string {
+    // Simple analysis - in a real app, this could be more sophisticated
+    const allText = [...goals, ...habits].join(' ').toLowerCase();
+    
+    for (const [theme, keywords] of Object.entries(PRACTICAL_GUIDANCE)) {
+      if (keywords.some(keyword => allText.includes(keyword.toLowerCase()))) {
+        return theme;
+      }
+    }
+    
+    return 'guidance';
   }
-  return "Reflect on this verse during your daily activities and decision-making.";
+
+  private getPersonalizedGuidance(focus: string, goals: string[]): string[] {
+    const baseGuidance = PRACTICAL_GUIDANCE[focus] || PRACTICAL_GUIDANCE.guidance;
+    const personalizedTips = [
+      `Apply this wisdom to your goal: "${goals[0] || 'your current focus'}"`,
+      "Reflect on this verse during your daily prayer",
+      "Share this insight with someone who could benefit from it"
+    ];
+    
+    return [...baseGuidance.slice(0, 2), ...personalizedTips];
+  }
 }
 
-function generateContext(surah: string, ayah: number): string {
-  // This could be expanded with actual historical context data
-  return `This verse from ${surah} provides timeless guidance applicable to modern life challenges.`;
-} 
+// Export singleton instance
+export const quranEngine = new QuranEngine();
+export default quranEngine; 

@@ -5,6 +5,7 @@ import DashboardCard from '@/components/DashboardCard';
 import VerseCard from '@/components/VerseCard';
 import HabitTracker from '@/components/HabitTracker';
 import { storage, apiRateLimiter } from '@/lib/security';
+import { quranEngine } from '@/lib/quran-engine';
 
 interface Verse {
   id: number;
@@ -15,6 +16,8 @@ interface Verse {
   text_en: string;
   theme: string[];
   reflection: string;
+  practical_guidance?: string[];
+  context?: string;
 }
 
 interface Habit {
@@ -68,6 +71,8 @@ export default function Dashboard() {
 
   const loadDailyVerse = async () => {
     try {
+      setLoading(true);
+      
       // Rate limiting check
       if (!apiRateLimiter.isAllowed()) {
         console.warn('Rate limit exceeded for verse loading');
@@ -75,36 +80,63 @@ export default function Dashboard() {
         return;
       }
 
-      const response = await fetch('/data/quran.json');
+      // Use the new QuranEngine API
+      const verse = await quranEngine.getDailyVerse();
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (verse) {
+        // Convert QuranVerse to the expected Verse format
+        const formattedVerse: Verse = {
+          id: verse.id,
+          surah: verse.surah,
+          surah_number: verse.surah_number,
+          ayah: verse.ayah,
+          text_ar: verse.text_ar,
+          text_en: verse.text_en,
+          theme: verse.theme,
+          reflection: verse.reflection,
+          practical_guidance: verse.practical_guidance,
+          context: verse.context
+        };
+        
+        setDailyVerse(formattedVerse);
+      } else {
+        // Fallback verse if API fails
+        setDailyVerse({
+          id: 2255,
+          surah: "Al-Baqarah",
+          surah_number: 2,
+          ayah: 255,
+          text_ar: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ",
+          text_en: "Allah - there is no deity except Him, the Ever-Living, the Sustainer of existence.",
+          theme: ["faith", "strength"],
+          reflection: "This powerful verse reminds us that Allah is always present and in control.",
+          practical_guidance: [
+            "Recite Ayat al-Kursi for protection and peace",
+            "Remember Allah's constant presence during challenges",
+            "Trust in Allah's perfect timing and wisdom"
+          ],
+          context: "Ayat al-Kursi - The Throne Verse"
+        });
       }
-      
-      const data = await response.json();
-      
-      if (!data.verses || !Array.isArray(data.verses)) {
-        throw new Error('Invalid verse data structure');
-      }
-      
-      // Get today's date to select a consistent verse for the day
-      const today = new Date();
-      const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
-      const verseIndex = dayOfYear % data.verses.length;
-      
-      setDailyVerse(data.verses[verseIndex]);
     } catch (error) {
-      console.error('Failed to load daily verse:', error);
-      // Set a fallback verse in case of error
+      console.error('Error loading daily verse:', error);
+      
+      // Show fallback verse on error
       setDailyVerse({
-        id: 1,
-        surah: "Al-Fatiha",
-        surah_number: 1,
-        ayah: 1,
-        text_ar: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
-        text_en: "In the name of Allah, the Entirely Merciful, the Especially Merciful.",
-        theme: ["guidance"],
-        reflection: "Begin every endeavor with Allah's name and seek His guidance."
+        id: 2255,
+        surah: "Al-Baqarah", 
+        surah_number: 2,
+        ayah: 255,
+        text_ar: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ",
+        text_en: "Allah - there is no deity except Him, the Ever-Living, the Sustainer of existence.",
+        theme: ["faith", "strength"],
+        reflection: "This powerful verse provides strength and comfort in all situations.",
+        practical_guidance: [
+          "Recite this verse when feeling anxious or uncertain",
+          "Remember that Allah is always in control",
+          "Use this as a source of daily strength"
+        ],
+        context: "Ayat al-Kursi - Always available for guidance"
       });
     } finally {
       setLoading(false);
