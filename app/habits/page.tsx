@@ -290,7 +290,11 @@ export default function HabitsPage() {
   };
 
   const resetHabits = () => {
-    setHabits(prev => prev.map(habit => ({ ...habit, completed: false })));
+    setHabits(prev => prev.map(habit => ({ 
+      ...habit, 
+      completed: false,
+      lastCompleted: undefined 
+    })));
   };
 
   const addTemplateHabits = (template: typeof habitTemplates[0]) => {
