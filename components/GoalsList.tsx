@@ -12,6 +12,8 @@ interface Goal {
   category: string;
   dueDate?: string;
   priority: 'low' | 'medium' | 'high';
+  recurring?: 'none' | 'daily' | 'weekly' | 'monthly';
+  lastCompleted?: string; // Track when the recurring goal was last completed
 }
 
 interface GoalsListProps {
@@ -27,24 +29,28 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingGoal, setEditingGoal] = useState<string | null>(null);
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
+  const [newlyCreatedGoalId, setNewlyCreatedGoalId] = useState<string | null>(null);
   const [newGoal, setNewGoal] = useState({
     title: '',
     description: '',
     category: 'personal',
     priority: 'medium' as Goal['priority'],
-    dueDate: ''
+    dueDate: '',
+    recurring: 'none' as Goal['recurring']
   });
   const [editGoal, setEditGoal] = useState({
     title: '',
     description: '',
     category: 'personal',
     priority: 'medium' as Goal['priority'],
-    dueDate: ''
+    dueDate: '',
+    recurring: 'none' as Goal['recurring']
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (newGoal.title.trim()) {
+      const goalId = Date.now().toString();
       onAddGoal({
         ...newGoal,
         completed: false
@@ -54,9 +60,19 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
         description: '',
         category: 'personal',
         priority: 'medium',
-        dueDate: ''
+        dueDate: '',
+        recurring: 'none'
       });
       setShowAddForm(false);
+      
+      // Automatically show Islamic Guidance for the newly created goal
+      setNewlyCreatedGoalId(goalId);
+      setSelectedGoal(goalId);
+      
+      // Clear the newly created goal ID after a delay
+      setTimeout(() => {
+        setNewlyCreatedGoalId(null);
+      }, 5000);
     }
   };
 
@@ -67,7 +83,8 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
       description: goal.description || '',
       category: goal.category,
       priority: goal.priority,
-      dueDate: goal.dueDate || ''
+      dueDate: goal.dueDate || '',
+      recurring: goal.recurring || 'none'
     });
   };
 
@@ -84,7 +101,8 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
         description: '',
         category: 'personal',
         priority: 'medium',
-        dueDate: ''
+        dueDate: '',
+        recurring: 'none'
       });
     }
   };
@@ -96,7 +114,8 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
       description: '',
       category: 'personal',
       priority: 'medium',
-      dueDate: ''
+      dueDate: '',
+      recurring: 'none'
     });
   };
 
@@ -160,6 +179,21 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
             className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
             placeholder="Due date (optional)..."
           />
+          <select
+            value={newGoal.recurring}
+            onChange={(e) => setNewGoal({ ...newGoal, recurring: e.target.value as Goal['recurring'] })}
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          >
+            <option value="none">No Recurring</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+          {newGoal.recurring && newGoal.recurring !== 'none' && (
+            <p className="text-xs text-gray-600">
+              🔄 This goal will automatically reset every {newGoal.recurring.slice(0, -2)} so you can track your progress continuously.
+            </p>
+          )}
           <div className="flex gap-3">
             <select
               value={newGoal.category}
@@ -216,6 +250,10 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
               highlightedGoalId === goal.id 
                 ? 'ring-2 ring-green-400 ring-opacity-50 shadow-xl border-green-400 bg-green-50' 
                 : ''
+            } ${
+              newlyCreatedGoalId === goal.id 
+                ? 'ring-2 ring-blue-400 ring-opacity-50 shadow-xl border-blue-400 bg-blue-50' 
+                : ''
             }`}
           >
             {editingGoal === goal.id ? (
@@ -243,6 +281,16 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   placeholder="Due date (optional)..."
                 />
+                <select
+                  value={editGoal.recurring}
+                  onChange={(e) => setEditGoal({ ...editGoal, recurring: e.target.value as Goal['recurring'] })}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                >
+                  <option value="none">No Recurring</option>
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                </select>
                 <div className="flex gap-3">
                   <select
                     value={editGoal.category}
@@ -302,6 +350,11 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
                 <div className="flex-1">
                   <h4 className={`text-lg font-semibold ${goal.completed ? 'text-green-700 line-through' : 'text-gray-900'}`}>
                     {goal.title}
+                    {goal.recurring && goal.recurring !== 'none' && goal.completed && (
+                      <span className="ml-2 text-sm font-normal text-green-600">
+                        ✓ Completed for this {goal.recurring.slice(0, -2)}
+                      </span>
+                    )}
                   </h4>
                   {goal.description && (
                     <p className={`text-sm mt-2 leading-relaxed ${goal.completed ? 'text-green-600' : 'text-gray-700'}`}>
@@ -320,6 +373,11 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
                         📅 Due {new Date(goal.dueDate).toLocaleDateString()}
                       </span>
                     )}
+                    {goal.recurring && goal.recurring !== 'none' && (
+                      <span className="px-3 py-1.5 text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 rounded-full">
+                        🔄 {goal.recurring.charAt(0).toUpperCase() + goal.recurring.slice(1)}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -332,9 +390,15 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
                     }`}
                     title={selectedGoal === goal.id ? "Hide Islamic guidance" : "Show Islamic guidance"}
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
+                    {selectedGoal === goal.id ? (
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    ) : (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                    )}
                   </button>
                   <button
                     onClick={() => handleEditStart(goal)}
@@ -364,11 +428,20 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mt-4 border-t border-gray-200 pt-4"
+                className={`mt-4 border-t border-gray-200 pt-4 ${
+                  newlyCreatedGoalId === goal.id ? 'bg-blue-50 rounded-lg p-4 border border-blue-200' : ''
+                }`}
               >
                 <div className="mb-3 flex items-center gap-2">
                   <span className="text-lg">📖</span>
-                  <h5 className="font-semibold text-gray-800">Islamic Guidance for Your Goal</h5>
+                  <h5 className="font-semibold text-gray-800">
+                    Islamic Guidance for Your Goal
+                    {newlyCreatedGoalId === goal.id && (
+                      <span className="ml-2 text-sm font-normal text-blue-600">
+                        ✨ New goal guidance
+                      </span>
+                    )}
+                  </h5>
                 </div>
                 <SmartGuidance 
                   goalTitle={goal.title}

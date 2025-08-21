@@ -14,6 +14,8 @@ interface Goal {
   category: string;
   dueDate?: string;
   priority: 'low' | 'medium' | 'high';
+  recurring?: 'none' | 'daily' | 'weekly' | 'monthly';
+  lastCompleted?: string; // Track when the recurring goal was last completed
 }
 
 export default function GoalsPage() {
@@ -21,10 +23,19 @@ export default function GoalsPage() {
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [calendarSelectedGoal, setCalendarSelectedGoal] = useState<string | null>(null);
 
-  // Load data from localStorage on mount
+  // Load data from localStorage on mount and reset recurring goals if needed
   useEffect(() => {
     const savedGoals = storage.get('quranlife-goals', []);
-    setGoals(savedGoals);
+    
+    // Check and reset recurring goals that should be reset
+    const updatedGoals = savedGoals.map((goal: Goal) => {
+      if (shouldResetRecurringGoal(goal)) {
+        return { ...goal, completed: false, lastCompleted: undefined };
+      }
+      return goal;
+    });
+    
+    setGoals(updatedGoals);
   }, []);
 
   // Save goals to localStorage whenever goals change
@@ -32,13 +43,55 @@ export default function GoalsPage() {
     storage.set('quranlife-goals', goals);
   }, [goals]);
 
+  // Helper function to check if a recurring goal should be reset
+  const shouldResetRecurringGoal = (goal: Goal): boolean => {
+    if (!goal.recurring || goal.recurring === 'none' || !goal.lastCompleted) {
+      return false;
+    }
+
+    const now = new Date();
+    const lastCompleted = new Date(goal.lastCompleted);
+
+    switch (goal.recurring) {
+      case 'daily':
+        return lastCompleted.toDateString() !== now.toDateString();
+      case 'weekly':
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - now.getDay() + 1); // Monday
+        startOfWeek.setHours(0, 0, 0, 0);
+        return lastCompleted < startOfWeek;
+      case 'monthly':
+        return lastCompleted.getMonth() !== now.getMonth() || 
+               lastCompleted.getFullYear() !== now.getFullYear();
+      default:
+        return false;
+    }
+  };
+
   const toggleGoal = (goalId: string) => {
     setGoals(prev => 
-      prev.map(goal => 
-        goal.id === goalId 
-          ? { ...goal, completed: !goal.completed }
-          : goal
-      )
+      prev.map(goal => {
+        if (goal.id !== goalId) return goal;
+
+        const now = new Date();
+        const isCurrentlyCompleted = goal.completed;
+        
+        if (isCurrentlyCompleted) {
+          // Unmark as completed
+          return { 
+            ...goal, 
+            completed: false,
+            lastCompleted: undefined
+          };
+        } else {
+          // Mark as completed
+          return { 
+            ...goal, 
+            completed: true,
+            lastCompleted: now.toISOString()
+          };
+        }
+      })
     );
   };
 
