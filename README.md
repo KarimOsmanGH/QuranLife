@@ -132,15 +132,16 @@ quranlife/
 
 ### **AlQuran.cloud API Integration**
 
-QuranLife is powered by the [AlQuran.cloud API](https://alquran.cloud/) - a free, open-source RESTful API providing access to the complete Holy Quran with multiple translations and recitations.
+QuranLife is powered by the exceptional [AlQuran.cloud API](https://alquran.cloud/) - a free, open-source RESTful API providing comprehensive access to the Holy Quran.
 
-**Live API Features:**
-- **Complete Quran Access**: All 6,236 verses in real-time
-- **Uthmani Arabic Script**: Authentic Arabic text from established sources
-- **Muhammad Asad Translation**: High-quality English translation with scholarly commentary
-- **Intelligent Search**: Verse search capabilities across the entire Quran
-- **Multiple Editions**: Support for different Arabic scripts and translations
-- **Free & Open**: No authentication required, educational/religious use encouraged
+**What AlQuran.cloud Provides:**
+- **Complete Quran**: Access to all 6,236 verses with authentic Arabic text
+- **Multiple Translations**: Including Muhammad Asad's scholarly translation
+- **Multiple Arabic Scripts**: Uthmani, Simple, and other authentic scripts
+- **Audio Support**: Multiple recitations with high-quality audio files
+- **Free & Open**: Educational and religious use encouraged, no authentication required
+- **REST API**: Simple, reliable HTTP API with comprehensive documentation
+- **Community-Driven**: Actively maintained and continuously improved
 
 **API Service Structure (`lib/quran-api.ts`):**
 ```typescript
@@ -151,6 +152,7 @@ interface Verse {
   juz: number;
   page: number;
   translation?: string;
+  audio?: string;
 }
 
 interface RandomVerseResponse {
@@ -162,10 +164,11 @@ interface RandomVerseResponse {
 
 // Core API methods
 - getSurah(surahNumber): Get complete Surah with translations
-- getVerse(surahNumber, verseNumber): Get specific verse
+- getVerse(surahNumber, verseNumber): Get specific verse with audio
 - getRandomVerse(): Intelligent random verse selection
 - searchVerses(query): Search across all verses
 - getAllSurahs(): Get Surah metadata
+- getVerseAudio(surahNumber, verseNumber): Get audio recitation URLs
 ```
 
 **Enhanced QuranEngine (`lib/quran-engine.ts`):**
@@ -177,23 +180,60 @@ interface RandomVerseResponse {
 - getSmartRecommendation(userGoals, habits): Personalized guidance
 ```
 
+**Our Enhancement Layer:**
+
+QuranLife builds intelligent features on top of AlQuran.cloud's robust foundation:
+
+- **🎯 Smart Goal Matching**: AI-powered verse recommendations based on personal goals
+- **🧠 Intelligent Search**: Enhanced verse discovery beyond simple text matching
+- **📋 Practical Guidance**: Each verse enriched with actionable spiritual steps
+- **🤲 Dua Integration**: Connected prayers and supplications for deeper practice
+- **🎵 Audio Integration**: Seamless verse recitation with mobile-optimized playback
+- **⚡ Performance Optimization**: Smart caching and offline fallbacks
+- **🎨 Beautiful UI**: Clean, Islamic-themed interface for better user experience
+
 **Caching & Performance:**
 - Intelligent 5-minute cache for frequently accessed verses
 - Fallback verses for offline scenarios
 - Rate limiting and error handling
 - Optimized API calls to reduce latency
 
-### Habits Interface
+### **Translation & Audio Sources**
+
+**English Translation:** Muhammad Asad's "The Message of the Qur'an", known for its scholarly approach and comprehensive commentary, providing contextual understanding for modern readers.
+
+**Audio Recitations:** High-quality recitations from AlQuran.cloud's audio collection, featuring renowned Qari recitations with mobile-optimized playback.
+
+### **For Comprehensive Quranic Study**
+
+While QuranLife focuses on practical spiritual development, for complete Quranic study we recommend:
+- **[AlQuran.cloud](https://alquran.cloud/)** - The API that powers our app
+- **[Quran.com](https://quran.com/)** - Comprehensive online Quran platform
+- **[Tanzil.net](https://tanzil.net/)** - Various Quranic texts and translations
+- **Qualified Islamic Scholars** - For proper interpretation and guidance
+- **Local Islamic Centers** - For community learning and support
+
+### **Open Source Appreciation**
+
+We're grateful to the AlQuran.cloud team for providing this invaluable service to the global Muslim community. Their commitment to making Quranic content freely accessible enables projects like QuranLife to focus on innovative applications while building on solid, authentic foundations.
+
+### Data Interfaces
+
+#### Habits Interface
 ```typescript
 interface Habit {
   id: string;
   name: string;
   completed: boolean;
+  frequency: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  lastCompleted?: string;
+  streak: number;
+  completionHistory: Record<string, boolean>;
   icon?: string;
 }
 ```
 
-### Goals Interface
+#### Goals Interface
 ```typescript
 interface Goal {
   id: string;
@@ -202,6 +242,7 @@ interface Goal {
   completed: boolean;
   category: string;
   priority: 'low' | 'medium' | 'high';
+  dueDate?: string;
 }
 ```
 
@@ -270,10 +311,47 @@ QuranLife is powered by the exceptional [AlQuran.cloud API](https://alquran.clou
 - **Complete Quran**: Access to all 6,236 verses with authentic Arabic text
 - **Multiple Translations**: Including Muhammad Asad's scholarly translation
 - **Multiple Arabic Scripts**: Uthmani, Simple, and other authentic scripts
-- **Audio Support**: Multiple recitations (we don't currently use this feature)
-- **Free & Open**: Educational and religious use encouraged
-- **REST API**: Simple, reliable HTTP API with no authentication required
+- **Audio Support**: Multiple recitations with high-quality audio files
+- **Free & Open**: Educational and religious use encouraged, no authentication required
+- **REST API**: Simple, reliable HTTP API with comprehensive documentation
 - **Community-Driven**: Actively maintained and continuously improved
+
+**API Service Structure (`lib/quran-api.ts`):**
+```typescript
+interface Verse {
+  number: number;
+  text: string;
+  numberInSurah: number;
+  juz: number;
+  page: number;
+  translation?: string;
+  audio?: string;
+}
+
+interface RandomVerseResponse {
+  verse: Verse;
+  surah: Surah;
+  theme?: string;
+  context?: string;
+}
+
+// Core API methods
+- getSurah(surahNumber): Get complete Surah with translations
+- getVerse(surahNumber, verseNumber): Get specific verse with audio
+- getRandomVerse(): Intelligent random verse selection
+- searchVerses(query): Search across all verses
+- getAllSurahs(): Get Surah metadata
+- getVerseAudio(surahNumber, verseNumber): Get audio recitation URLs
+```
+
+**Enhanced QuranEngine (`lib/quran-engine.ts`):**
+```typescript
+// AI-powered features built on top of the API
+- getDailyVerse(): Smart daily verse recommendation
+- findVersesForGoal(goal): Match goals with relevant verses
+- getThematicCollection(theme): Curated verse collections
+- getSmartRecommendation(userGoals, habits): Personalized guidance
+```
 
 **Our Enhancement Layer:**
 
@@ -283,11 +361,21 @@ QuranLife builds intelligent features on top of AlQuran.cloud's robust foundatio
 - **🧠 Intelligent Search**: Enhanced verse discovery beyond simple text matching
 - **📋 Practical Guidance**: Each verse enriched with actionable spiritual steps
 - **🤲 Dua Integration**: Connected prayers and supplications for deeper practice
+- **🎵 Audio Integration**: Seamless verse recitation with mobile-optimized playback
 - **⚡ Performance Optimization**: Smart caching and offline fallbacks
 - **🎨 Beautiful UI**: Clean, Islamic-themed interface for better user experience
 
-**Translation Source:**
-English translations are from **Muhammad Asad's "The Message of the Qur'an"**, known for its scholarly approach and comprehensive commentary, providing contextual understanding for modern readers.
+**Caching & Performance:**
+- Intelligent 5-minute cache for frequently accessed verses
+- Fallback verses for offline scenarios
+- Rate limiting and error handling
+- Optimized API calls to reduce latency
+
+### **Translation & Audio Sources**
+
+**English Translation:** Muhammad Asad's "The Message of the Qur'an", known for its scholarly approach and comprehensive commentary, providing contextual understanding for modern readers.
+
+**Audio Recitations:** High-quality recitations from AlQuran.cloud's audio collection, featuring renowned Qari recitations with mobile-optimized playback.
 
 ### **For Comprehensive Quranic Study**
 
@@ -301,6 +389,35 @@ While QuranLife focuses on practical spiritual development, for complete Quranic
 ### **Open Source Appreciation**
 
 We're grateful to the AlQuran.cloud team for providing this invaluable service to the global Muslim community. Their commitment to making Quranic content freely accessible enables projects like QuranLife to focus on innovative applications while building on solid, authentic foundations.
+
+### Data Interfaces
+
+#### Habits Interface
+```typescript
+interface Habit {
+  id: string;
+  name: string;
+  completed: boolean;
+  frequency: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  lastCompleted?: string;
+  streak: number;
+  completionHistory: Record<string, boolean>;
+  icon?: string;
+}
+```
+
+#### Goals Interface
+```typescript
+interface Goal {
+  id: string;
+  title: string;
+  description?: string;
+  completed: boolean;
+  category: string;
+  priority: 'low' | 'medium' | 'high';
+  dueDate?: string;
+}
+```
 
 ## 🕌 Islamic Principles
 
@@ -338,16 +455,6 @@ This app is built with Islamic values in mind:
 **Created by:** [Karim Osman](https://kar.im)
 
 MIT License - feel free to use this project for personal or commercial purposes.
-
-## 📱 Screenshots & Demo
-
-Visit [https://quranlife.vercel.app](https://quranlife.vercel.app) to see QuranLife in action!
-
-**Key Features to Try:**
-1. 📊 **Dashboard**: See your habit progress and daily Quranic guidance
-2. 🎯 **Smart Goals**: Add a goal and click the 📖 icon for personalized Quranic guidance
-3. 🕌 **Habit Tracking**: Track your daily Islamic practices
-4. 📱 **Mobile PWA**: Install the app on your phone for offline access
 
 ## 🤲 Duas for Success
 

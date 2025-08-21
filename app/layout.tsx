@@ -164,66 +164,77 @@ export default function RootLayout({
         />
         
         <div className="min-h-screen flex flex-col">
-          {/* Header */}
-          <header className="bg-gradient-to-r from-green-50 to-blue-50 shadow-sm border-b border-green-100">
+          {/* Header - Desktop Only */}
+          <header className="hidden md:block bg-gradient-to-r from-green-50 to-blue-50 shadow-sm border-b border-green-100">
             <div className="max-w-4xl mx-auto px-4 py-4">
               <div className="flex items-center justify-between">
-                <Link href="/" className="flex items-center gap-2">
-                  <div className="w-8 h-8 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="w-8 h-8">
-                      <circle cx="16" cy="16" r="16" fill="#22c55e"/>
-                      <path d="M12 8 C12 8, 8 12, 8 16 C8 20, 12 24, 12 24 C10 22, 9 19, 9 16 C9 13, 10 10, 12 8 Z" fill="white"/>
-                      <polygon points="20,9 21,12 24,12 21.5,14 22.5,17 20,15 17.5,17 18.5,14 16,12 19,12" fill="white"/>
-                      <circle cx="13" cy="11" r="0.8" fill="white" opacity="0.7"/>
-                      <circle cx="14.5" cy="20" r="0.6" fill="white" opacity="0.5"/>
-                      <circle cx="23" cy="19" r="0.5" fill="white" opacity="0.6"/>
-                    </svg>
+                <Link href="/" className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
+                    <span className="text-white font-bold text-lg">Q</span>
                   </div>
-                  <div>
-                    <h1 className="text-xl font-bold text-gray-800">QuranLife</h1>
-                    <p className="text-xs text-gray-500">Personal growth with Quran</p>
-                  </div>
+                  <span className="text-xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                    QuranLife
+                  </span>
                 </Link>
                 
-                {/* Desktop Navigation */}
-                <nav className="hidden md:flex items-center gap-6">
-                  <Link href="/" className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-green-600 hover:bg-white/50 rounded-lg transition-colors">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                    <span className="text-sm font-medium">Dashboard</span>
+                <nav className="flex space-x-8">
+                  <Link href="/" className="text-gray-700 hover:text-green-600 transition-colors font-medium">
+                    Dashboard
                   </Link>
-                  <Link href="/goals" className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-green-600 hover:bg-white/50 rounded-lg transition-colors">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                    <span className="text-sm font-medium">Goals</span>
+                  <Link href="/goals" className="text-gray-700 hover:text-green-600 transition-colors font-medium">
+                    Goals
                   </Link>
-                  <Link href="/habits" className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-green-600 hover:bg-white/50 rounded-lg transition-colors">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span className="text-sm font-medium">Habits</span>
+                  <Link href="/habits" className="text-gray-700 hover:text-green-600 transition-colors font-medium">
+                    Habits
                   </Link>
-                  <Link href="/settings" className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-green-600 hover:bg-white/50 rounded-lg transition-colors">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span className="text-sm font-medium">Settings</span>
+                  <Link href="/settings" className="text-gray-700 hover:text-green-600 transition-colors font-medium">
+                    Settings
                   </Link>
                 </nav>
               </div>
             </div>
           </header>
 
+          {/* Mobile Top Navigation */}
+          <nav className="md:hidden bg-white border-b border-gray-200 px-4 py-3">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex justify-around">
+                <Link href="/" className="flex flex-col items-center py-2 px-3 text-gray-600 hover:text-green-600 transition-colors">
+                  <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  <span className="text-xs">Dashboard</span>
+                </Link>
+                <Link href="/goals" className="flex flex-col items-center py-2 px-3 text-gray-600 hover:text-green-600 transition-colors">
+                  <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                  <span className="text-xs">Goals</span>
+                </Link>
+                <Link href="/habits" className="flex flex-col items-center py-2 px-3 text-gray-600 hover:text-green-600 transition-colors">
+                  <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-xs">Habits</span>
+                </Link>
+                <Link href="/settings" className="flex flex-col items-center py-2 px-3 text-gray-600 hover:text-green-600 transition-colors">
+                  <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span className="text-xs">Settings</span>
+                </Link>
+              </div>
+            </div>
+          </nav>
+
           {/* Main Content */}
           <main className="flex-1">
             {children}
           </main>
 
-          {/* Desktop Footer */}
-          <footer className="hidden md:block bg-gradient-to-r from-green-50 to-blue-50 border-t border-green-100 mt-8">
+          {/* Footer */}
+          <footer className="hidden md:block bg-gradient-to-r from-green-50 to-blue-50 border-t border-green-100 mt-auto">
             <div className="max-w-4xl mx-auto px-4 py-8">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {/* Brand Section */}
@@ -303,39 +314,6 @@ export default function RootLayout({
               </div>
             </div>
           </footer>
-
-          {/* Bottom Navigation - Mobile Only */}
-          <nav className="md:hidden bg-white border-t border-gray-200 px-4 py-2">
-            <div className="max-w-4xl mx-auto">
-              <div className="flex justify-around">
-                <Link href="/" className="flex flex-col items-center py-2 px-3 text-gray-600 hover:text-green-600 transition-colors">
-                  <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                  <span className="text-xs">Dashboard</span>
-                </Link>
-                <Link href="/goals" className="flex flex-col items-center py-2 px-3 text-gray-600 hover:text-green-600 transition-colors">
-                  <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
-                  <span className="text-xs">Goals</span>
-                </Link>
-                <Link href="/habits" className="flex flex-col items-center py-2 px-3 text-gray-600 hover:text-green-600 transition-colors">
-                  <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span className="text-xs">Habits</span>
-                </Link>
-                <Link href="/settings" className="flex flex-col items-center py-2 px-3 text-gray-600 hover:text-green-600 transition-colors">
-                  <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  <span className="text-xs">Settings</span>
-                </Link>
-              </div>
-            </div>
-          </nav>
         </div>
       </body>
     </html>

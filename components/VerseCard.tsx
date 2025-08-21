@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 interface Verse {
   id: number;
@@ -22,7 +22,22 @@ interface VerseCardProps {
 export default function VerseCard({ verse }: VerseCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [audioError, setAudioError] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/.test(userAgent);
+      setIsMobile(isMobileDevice);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Generate audio URL - either from verse data or construct fallback
   const getAudioUrl = () => {
@@ -45,13 +60,64 @@ export default function VerseCard({ verse }: VerseCardProps) {
         setIsPlaying(false);
       } else {
         setIsLoading(true);
+        
+        // Mobile-specific: Ensure audio is loaded before playing
+        if (audioRef.current.readyState < 3) {
+          audioRef.current.load();
+          await new Promise((resolve, reject) => {
+            const handleCanPlay = () => {
+              audioRef.current?.removeEventListener('canplay', handleCanPlay);
+              audioRef.current?.removeEventListener('error', handleError);
+              resolve(undefined);
+            };
+            const handleError = () => {
+              audioRef.current?.removeEventListener('canplay', handleCanPlay);
+              audioRef.current?.removeEventListener('error', handleError);
+              reject(new Error('Failed to load audio'));
+            };
+            audioRef.current?.addEventListener('canplay', handleCanPlay);
+            audioRef.current?.addEventListener('error', handleError);
+          });
+        }
+
+        // Reset audio to beginning and play
+        audioRef.current.currentTime = 0;
         await audioRef.current.play();
         setIsPlaying(true);
         setIsLoading(false);
+        setAudioError(null); // Clear any previous errors
       }
     } catch (error) {
       console.error('Error playing audio:', error);
       setIsLoading(false);
+      setIsPlaying(false);
+      
+      // Mobile-friendly error handling
+      if (error instanceof Error) {
+        if (error.name === 'NotAllowedError') {
+          setAudioError(isMobile ? 
+            'Please enable audio permissions in your browser settings and try again.' : 
+            'Audio play was prevented - user interaction required'
+          );
+        } else if (error.name === 'NotSupportedError') {
+          setAudioError(isMobile ? 
+            'Audio format not supported on your device. Please try using a different browser.' : 
+            'Audio format not supported on this device'
+          );
+        } else if (error.name === 'AbortError') {
+          setAudioError('Audio playback was interrupted. Please try again.');
+        } else {
+          setAudioError(isMobile ? 
+            'Audio playback failed. Please check your internet connection and try again.' : 
+            'Audio playback failed. Please try again.'
+          );
+        }
+      } else {
+        setAudioError('An unexpected error occurred during audio playback.');
+      }
+      
+      // Clear error after 5 seconds
+      setTimeout(() => setAudioError(null), 5000);
     }
   };
 
@@ -63,6 +129,15 @@ export default function VerseCard({ verse }: VerseCardProps) {
     console.error('Audio failed to load');
     setIsLoading(false);
     setIsPlaying(false);
+    
+    if (isMobile) {
+      setAudioError('Audio may require Wi-Fi or mobile data. Please check your connection and try again.');
+    } else {
+      setAudioError('Audio failed to load. Please try again.');
+    }
+    
+    // Clear error after 5 seconds
+    setTimeout(() => setAudioError(null), 5000);
   };
 
   return (
@@ -78,7 +153,10 @@ export default function VerseCard({ verse }: VerseCardProps) {
         src={audioUrl}
         onEnded={handleAudioEnded}
         onError={handleAudioError}
-        preload="none"
+        preload="metadata"
+        playsInline
+        controls={false}
+        crossOrigin="anonymous"
       />
 
       {/* Decorative corner elements */}
@@ -93,12 +171,14 @@ export default function VerseCard({ verse }: VerseCardProps) {
         {/* Audio button - always show */}
         <button
           onClick={handleAudioToggle}
+          onTouchStart={() => {}} // Enable iOS touch events
           disabled={isLoading}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 touch-manipulation ${
             isPlaying
-              ? 'bg-green-500 text-white shadow-md hover:bg-green-600'
-              : 'bg-green-100 text-green-700 hover:bg-green-200'
+              ? 'bg-green-500 text-white shadow-md hover:bg-green-600 active:bg-green-700'
+              : 'bg-green-100 text-green-700 hover:bg-green-200 active:bg-green-300'
           } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+          style={{ minHeight: '44px', minWidth: '44px' }} // iOS minimum touch target
         >
           {isLoading ? (
             <>
@@ -106,26 +186,43 @@ export default function VerseCard({ verse }: VerseCardProps) {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Loading...
+              <span className="hidden sm:inline">Loading...</span>
             </>
           ) : isPlaying ? (
             <>
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M6 4h4v16H6zm8 0h4v16h-4z"/>
               </svg>
-              Pause
+              <span className="hidden sm:inline">Pause</span>
             </>
           ) : (
             <>
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M8 5v14l11-7z"/>
               </svg>
-              Listen
+              <span className="hidden sm:inline">Listen</span>
             </>
           )}
         </button>
       </div>
       
+      {/* Error Message */}
+      {audioError && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg"
+        >
+          <div className="flex items-center gap-2">
+            <svg className="w-4 h-4 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            </svg>
+            <p className="text-sm text-red-700">{audioError}</p>
+          </div>
+        </motion.div>
+      )}
+
       <div className="text-center mb-6 relative z-10">
         <p className="text-xl leading-relaxed text-gray-800 mb-4 font-arabic" dir="rtl">
           {verse.text_ar}
@@ -137,7 +234,6 @@ export default function VerseCard({ verse }: VerseCardProps) {
 
       <div className="border-t border-green-200 pt-4 relative z-10">
         <p className="text-sm text-gray-700 leading-relaxed">
-          <span className="font-medium text-green-700">Reflection: </span>
           {verse.reflection}
         </p>
       </div>

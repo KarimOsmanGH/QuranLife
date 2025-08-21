@@ -32,8 +32,81 @@ const defaultHabits: Habit[] = [
   { id: 'zakat', name: 'Pay Zakat', completed: false, icon: '💰', frequency: 'yearly' },
 ];
 
+// Habit Templates that users can quickly add
+const habitTemplates = [
+  {
+    id: 'five-prayers',
+    name: 'Five Daily Prayers',
+    description: 'Complete set of 5 daily prayers',
+    icon: '🕌',
+    habits: [
+      { name: 'Fajr Prayer', icon: '🌅', frequency: 'daily' as const },
+      { name: 'Dhuhr Prayer', icon: '☀️', frequency: 'daily' as const },
+      { name: 'Asr Prayer', icon: '🌤️', frequency: 'daily' as const },
+      { name: 'Maghrib Prayer', icon: '🌆', frequency: 'daily' as const },
+      { name: 'Isha Prayer', icon: '🌙', frequency: 'daily' as const },
+    ]
+  },
+  {
+    id: 'quran-study',
+    name: 'Quran Study',
+    description: 'Daily Quran reading and reflection',
+    icon: '📖',
+    habits: [
+      { name: 'Read Quran (1 page)', icon: '📖', frequency: 'daily' as const },
+      { name: 'Memorize new verse', icon: '🧠', frequency: 'daily' as const },
+      { name: 'Reflect on verses', icon: '💭', frequency: 'daily' as const },
+    ]
+  },
+  {
+    id: 'dhikr-routine',
+    name: 'Dhikr & Dua',
+    description: 'Morning and evening remembrance',
+    icon: '🤲',
+    habits: [
+      { name: 'Morning Dhikr', icon: '🌅', frequency: 'daily' as const },
+      { name: 'Evening Dhikr', icon: '🌆', frequency: 'daily' as const },
+      { name: 'Istighfar (100x)', icon: '🤲', frequency: 'daily' as const },
+    ]
+  },
+  {
+    id: 'charity-giving',
+    name: 'Charity & Giving',
+    description: 'Regular charity and acts of kindness',
+    icon: '💝',
+    habits: [
+      { name: 'Daily Sadaqah', icon: '💝', frequency: 'daily' as const },
+      { name: 'Help Someone', icon: '🤝', frequency: 'daily' as const },
+      { name: 'Volunteer Work', icon: '👥', frequency: 'weekly' as const },
+    ]
+  },
+  {
+    id: 'spiritual-growth',
+    name: 'Spiritual Growth',
+    description: 'Islamic learning and self-improvement',
+    icon: '🌱',
+    habits: [
+      { name: 'Islamic Study', icon: '📚', frequency: 'daily' as const },
+      { name: 'Listen to Islamic Lecture', icon: '🎧', frequency: 'daily' as const },
+      { name: 'Attend Friday Prayer', icon: '🕌', frequency: 'weekly' as const },
+    ]
+  },
+  {
+    id: 'health-wellness',
+    name: 'Health & Wellness',
+    description: 'Taking care of the body Allah gave you',
+    icon: '💪',
+    habits: [
+      { name: 'Morning Exercise', icon: '🏃', frequency: 'daily' as const },
+      { name: 'Healthy Eating', icon: '🥗', frequency: 'daily' as const },
+      { name: 'Early Sleep', icon: '😴', frequency: 'daily' as const },
+    ]
+  }
+];
+
 export default function HabitsPage() {
   const [habits, setHabits] = useState<Habit[]>(defaultHabits);
+  const [addedTemplate, setAddedTemplate] = useState<string | null>(null);
 
   // Helper function to check if a habit should be considered completed for its frequency
   const isHabitCompleted = (habit: Habit): boolean => {
@@ -220,6 +293,31 @@ export default function HabitsPage() {
     setHabits(prev => prev.map(habit => ({ ...habit, completed: false })));
   };
 
+  const addTemplateHabits = (template: typeof habitTemplates[0]) => {
+    const newHabits = template.habits.map(habitTemplate => ({
+      id: `${template.id}-${habitTemplate.name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`,
+      name: habitTemplate.name,
+      completed: false,
+      icon: habitTemplate.icon,
+      frequency: habitTemplate.frequency,
+      lastCompleted: undefined,
+      streak: 0,
+      completionHistory: []
+    }));
+
+    // Check for duplicates and only add habits that don't already exist
+    const existingHabitNames = habits.map(h => h.name.toLowerCase());
+    const uniqueNewHabits = newHabits.filter(newHabit => 
+      !existingHabitNames.includes(newHabit.name.toLowerCase())
+    );
+
+    if (uniqueNewHabits.length > 0) {
+      setHabits(prev => [...prev, ...uniqueNewHabits]);
+      setAddedTemplate(template.id);
+      setTimeout(() => setAddedTemplate(null), 3000); // Hide feedback after 3 seconds
+    }
+  };
+
   const completedCount = habits.filter(h => h.completed).length;
   const totalCount = habits.length;
 
@@ -231,6 +329,55 @@ export default function HabitsPage() {
         <p className="text-gray-600">
           Track your daily Islamic practices and personal development habits.
         </p>
+      </div>
+
+      {/* Habit Templates */}
+      <div className="mb-8">
+        <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+          <span>⚡</span>
+          Quick Start Templates
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {habitTemplates.map((template) => (
+            <div
+              key={template.id}
+              className={`bg-white rounded-xl p-4 border transition-all duration-200 cursor-pointer touch-manipulation ${
+                addedTemplate === template.id 
+                  ? 'border-green-500 bg-green-50 shadow-lg' 
+                  : 'border-gray-200 hover:border-green-300 hover:shadow-md active:border-green-400 active:shadow-lg'
+              }`}
+              onClick={() => addTemplateHabits(template)}
+              onTouchStart={() => {}} // Enable iOS touch events
+              style={{ minHeight: '120px' }} // Ensure adequate touch target
+            >
+              <div className="flex items-start gap-3">
+                <div className="text-2xl">{template.icon}</div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-800 mb-1">{template.name}</h3>
+                  <p className="text-sm text-gray-600 mb-3">{template.description}</p>
+                  <div className="flex flex-wrap gap-1">
+                    {template.habits.map((habit, index) => (
+                      <span
+                        key={index}
+                        className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full"
+                      >
+                        {habit.icon} {habit.name}
+                      </span>
+                    ))}
+                  </div>
+                  <button className={`mt-3 text-xs font-medium flex items-center gap-1 transition-colors ${
+                    addedTemplate === template.id 
+                      ? 'text-green-700' 
+                      : 'text-green-600 hover:text-green-700'
+                  }`}>
+                    <span>{addedTemplate === template.id ? '✓' : '+'}</span>
+                    {addedTemplate === template.id ? 'Added!' : `Add ${template.habits.length} habits`}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Mobile Stats Cards */}

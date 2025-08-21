@@ -30,13 +30,15 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
     title: '',
     description: '',
     category: 'personal',
-    priority: 'medium' as Goal['priority']
+    priority: 'medium' as Goal['priority'],
+    dueDate: ''
   });
   const [editGoal, setEditGoal] = useState({
     title: '',
     description: '',
     category: 'personal',
-    priority: 'medium' as Goal['priority']
+    priority: 'medium' as Goal['priority'],
+    dueDate: ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -50,7 +52,8 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
         title: '',
         description: '',
         category: 'personal',
-        priority: 'medium'
+        priority: 'medium',
+        dueDate: ''
       });
       setShowAddForm(false);
     }
@@ -62,7 +65,8 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
       title: goal.title,
       description: goal.description || '',
       category: goal.category,
-      priority: goal.priority
+      priority: goal.priority,
+      dueDate: goal.dueDate || ''
     });
   };
 
@@ -78,7 +82,8 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
         title: '',
         description: '',
         category: 'personal',
-        priority: 'medium'
+        priority: 'medium',
+        dueDate: ''
       });
     }
   };
@@ -89,7 +94,8 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
       title: '',
       description: '',
       category: 'personal',
-      priority: 'medium'
+      priority: 'medium',
+      dueDate: ''
     });
   };
 
@@ -102,7 +108,7 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high': return 'bg-green-100 text-green-700 border-green-200';
-      case 'medium': return 'bg-blue-100 text-blue-700 border-blue-200';
+      case 'medium': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
       case 'low': return 'bg-gray-100 text-gray-700 border-gray-200';
       default: return 'bg-gray-100 text-gray-700 border-gray-200';
     }
@@ -145,6 +151,13 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
             onChange={(e) => setNewGoal({ ...newGoal, description: e.target.value })}
             className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
             rows={2}
+          />
+          <input
+            type="date"
+            value={newGoal.dueDate}
+            onChange={(e) => setNewGoal({ ...newGoal, dueDate: e.target.value })}
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            placeholder="Due date (optional)..."
           />
           <div className="flex gap-3">
             <select
@@ -194,10 +207,10 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className={`p-4 rounded-lg border transition-colors ${
+            className={`p-6 rounded-xl border-2 transition-all duration-200 ${
               goal.completed 
-                ? 'bg-green-50 border-green-200' 
-                : 'bg-white border-gray-200 hover:border-gray-300'
+                ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-300 shadow-md' 
+                : 'bg-white border-gray-200 hover:border-green-300 hover:shadow-lg shadow-sm'
             }`}
           >
             {editingGoal === goal.id ? (
@@ -217,6 +230,13 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   placeholder="Description (optional)..."
                   rows={2}
+                />
+                <input
+                  type="date"
+                  value={editGoal.dueDate}
+                  onChange={(e) => setEditGoal({ ...editGoal, dueDate: e.target.value })}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  placeholder="Due date (optional)..."
                 />
                 <div className="flex gap-3">
                   <select
@@ -261,44 +281,51 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
               <div className="flex items-start gap-3">
                 <button
                   onClick={() => onToggleGoal(goal.id)}
-                  className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center mt-0.5 transition-colors ${
+                  className={`flex-shrink-0 w-6 h-6 rounded-lg border-2 flex items-center justify-center mt-1 transition-all duration-200 ${
                     goal.completed
-                      ? 'bg-green-500 border-green-500 text-white'
-                      : 'border-gray-300 hover:border-green-400'
+                      ? 'bg-green-500 border-green-500 text-white shadow-md'
+                      : 'border-gray-300 hover:border-green-400 hover:shadow-sm'
                   }`}
                 >
                   {goal.completed && (
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   )}
                 </button>
                 
                 <div className="flex-1">
-                  <h4 className={`font-medium ${goal.completed ? 'text-green-700 line-through' : 'text-gray-800'}`}>
+                  <h4 className={`text-lg font-semibold ${goal.completed ? 'text-green-700 line-through' : 'text-gray-900'}`}>
                     {goal.title}
                   </h4>
                   {goal.description && (
-                    <p className={`text-sm mt-1 ${goal.completed ? 'text-green-600' : 'text-gray-600'}`}>
+                    <p className={`text-sm mt-2 leading-relaxed ${goal.completed ? 'text-green-600' : 'text-gray-700'}`}>
                       {goal.description}
                     </p>
                   )}
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className={`px-2 py-1 text-xs rounded-full border ${getPriorityColor(goal.priority)}`}>
+                  <div className="flex items-center gap-2 mt-3">
+                    <span className={`px-3 py-1.5 text-xs font-medium rounded-full border ${getPriorityColor(goal.priority)}`}>
                       {capitalizeLabel(goal.priority)} Priority
                     </span>
-                    <span className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-full">
+                    <span className="px-3 py-1.5 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">
                       {capitalizeLabel(goal.category)}
                     </span>
+                    {goal.dueDate && (
+                      <span className="px-3 py-1.5 text-xs font-medium bg-green-50 text-green-700 border border-green-200 rounded-full">
+                        📅 Due {new Date(goal.dueDate).toLocaleDateString()}
+                      </span>
+                    )}
                   </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-2">
                   <button
                     onClick={() => setSelectedGoal(selectedGoal === goal.id ? null : goal.id)}
-                    className="p-1 text-gray-400 hover:text-green-600 transition-colors"
-                    title="Islamic guidance"
+                    className={`p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 ${
+                      selectedGoal === goal.id ? 'bg-green-50 text-green-600' : ''
+                    }`}
+                    title={selectedGoal === goal.id ? "Hide Islamic guidance" : "Show Islamic guidance"}
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -306,7 +333,7 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
                   </button>
                   <button
                     onClick={() => handleEditStart(goal)}
-                    className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                    className="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all duration-200"
                     title="Edit goal"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -315,7 +342,7 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
                   </button>
                   <button
                     onClick={() => handleRemove(goal.id)}
-                    className="p-1 text-gray-400 hover:text-green-600 transition-colors"
+                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
                     title="Delete goal"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
