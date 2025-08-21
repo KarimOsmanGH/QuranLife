@@ -39,14 +39,9 @@ export default function VerseCard({ verse }: VerseCardProps) {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Generate audio URL - either from verse data or construct fallback
+  // Generate audio URL - use from verse data or return undefined
   const getAudioUrl = () => {
-    if (verse.audio) {
-      return verse.audio;
-    }
-    // Fallback: construct AlQuran.cloud audio URL
-    const paddedVerse = verse.ayah.toString().padStart(3, '0');
-    return `https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/${verse.surah_number}${paddedVerse}`;
+    return verse.audio || undefined;
   };
 
   const audioUrl = getAudioUrl();
@@ -168,18 +163,19 @@ export default function VerseCard({ verse }: VerseCardProps) {
           {verse.surah} ({verse.surah_number}:{verse.ayah})
         </h4>
         
-        {/* Audio button - always show */}
-        <button
-          onClick={handleAudioToggle}
-          onTouchStart={() => {}} // Enable iOS touch events
-          disabled={isLoading}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 touch-manipulation ${
-            isPlaying
-              ? 'bg-green-500 text-white shadow-md hover:bg-green-600 active:bg-green-700'
-              : 'bg-green-100 text-green-700 hover:bg-green-200 active:bg-green-300'
-          } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-          style={{ minHeight: '44px', minWidth: '44px' }} // iOS minimum touch target
-        >
+        {/* Audio button - show only if audio URL is available */}
+        {audioUrl && (
+          <button
+            onClick={handleAudioToggle}
+            onTouchStart={() => {}} // Enable iOS touch events
+            disabled={isLoading}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 touch-manipulation ${
+              isPlaying
+                ? 'bg-green-500 text-white shadow-md hover:bg-green-600 active:bg-green-700'
+                : 'bg-green-100 text-green-700 hover:bg-green-200 active:bg-green-300'
+            } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+            style={{ minHeight: '44px', minWidth: '44px' }} // iOS minimum touch target
+          >
           {isLoading ? (
             <>
               <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -204,6 +200,7 @@ export default function VerseCard({ verse }: VerseCardProps) {
             </>
           )}
         </button>
+      )}
       </div>
       
       {/* Error Message */}

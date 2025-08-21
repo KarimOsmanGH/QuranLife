@@ -74,7 +74,7 @@ export default function Dashboard() {
       "Seek knowledge and wisdom in your spiritual journey"
     ],
     context: "Al-Fatiha - Always available for guidance",
-    audio: "https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/6"
+    audio: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6.mp3"
   });
   const [loading, setLoading] = useState(false); // Start with false
 
@@ -237,7 +237,7 @@ export default function Dashboard() {
           "Seek knowledge and wisdom in your spiritual journey"
         ],
         context: "Al-Fatiha - Always available for guidance",
-        audio: "https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/6"
+        audio: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6.mp3"
       });
     } catch (error) {
       console.error('Error loading daily verse:', error);
@@ -258,7 +258,7 @@ export default function Dashboard() {
           "Seek knowledge and wisdom in your spiritual journey"
         ],
         context: "Al-Fatiha - Always available for guidance",
-        audio: "https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/6"
+        audio: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6.mp3"
       });
     } finally {
       setLoading(false);

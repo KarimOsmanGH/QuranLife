@@ -88,35 +88,23 @@ class QuranAPI {
    */
   async getVerseAudio(surahNumber: number, verseNumber: number): Promise<string | null> {
     try {
-      // AlQuran.cloud provides audio URLs in a specific format
-      // Try fetching with audio edition first
       const response = await fetch(
         `${this.baseURL}/ayah/${surahNumber}:${verseNumber}/${this.audioEdition}`
       );
       
       if (!response.ok) {
         console.warn(`Audio not available for ${surahNumber}:${verseNumber}`);
-        // Generate direct audio URL based on AlQuran.cloud CDN pattern
-        return `https://cdn.alquran.cloud/media/audio/ayah/${this.audioEdition}/${surahNumber}${verseNumber.toString().padStart(3, '0')}`;
+        return null;
       }
-
+      
       const data = await response.json();
       
-      // Check if audio URL exists in response
-      if (data.data?.audio) {
-        return data.data.audio;
-      }
-      
-      // Fallback: construct audio URL manually
-      // AlQuran.cloud audio URLs follow a pattern
-      const paddedVerse = verseNumber.toString().padStart(3, '0');
-      return `https://cdn.alquran.cloud/media/audio/ayah/${this.audioEdition}/${surahNumber}${paddedVerse}`;
+      // Return the audio URL from the API response
+      return data.data?.audio || null;
       
     } catch (error) {
       console.error('Error fetching verse audio:', error);
-      // Even on error, provide a fallback audio URL
-      const paddedVerse = verseNumber.toString().padStart(3, '0');
-      return `https://cdn.alquran.cloud/media/audio/ayah/${this.audioEdition}/${surahNumber}${paddedVerse}`;
+      return null;
     }
   }
 
