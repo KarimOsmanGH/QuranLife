@@ -40,10 +40,10 @@ export default function GoalsCalendar({ goals }: GoalsCalendarProps) {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-500';
-      case 'medium': return 'bg-yellow-500';
-      case 'low': return 'bg-green-500';
-      default: return 'bg-gray-500';
+      case 'high': return 'bg-green-500';
+      case 'medium': return 'bg-emerald-500';
+      case 'low': return 'bg-gray-400';
+      default: return 'bg-gray-400';
     }
   };
 
@@ -174,15 +174,15 @@ export default function GoalsCalendar({ goals }: GoalsCalendarProps) {
       <div className="mt-4 pt-4 border-t border-gray-100">
         <div className="flex items-center gap-4 text-xs text-gray-600">
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
             <span>High Priority</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
             <span>Medium Priority</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
             <span>Low Priority</span>
           </div>
         </div>
