@@ -60,21 +60,21 @@ export default function Dashboard() {
   const [goals, setGoals] = useState<Goal[]>([]);
   // Initialize with verse data directly
   const [dailyVerse, setDailyVerse] = useState<Verse>({
-    id: 262,
-    surah: "Al-Baqarah",
-    surah_number: 2,
-    ayah: 255,
-    text_ar: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ",
-    text_en: "Allah - there is no deity except Him, the Ever-Living, the Sustainer of existence.",
-    theme: ["faith", "strength"],
-    reflection: "This powerful verse reminds us that Allah is always present and in control.",
+    id: 6,
+    surah: "Al-Fatiha",
+    surah_number: 1,
+    ayah: 6,
+    text_ar: "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ",
+    text_en: "Guide us to the straight path.",
+    theme: ["guidance", "direction"],
+    reflection: "A daily prayer for guidance and staying on the right path in life.",
     practical_guidance: [
-      "Recite Ayat al-Kursi for protection and peace",
-      "Remember Allah's constant presence during challenges",
-      "Trust in Allah's perfect timing and wisdom"
+      "Ask Allah for guidance in your daily decisions",
+      "Reflect on whether your actions align with the straight path",
+      "Seek knowledge and wisdom in your spiritual journey"
     ],
-    context: "Ayat al-Kursi - The Throne Verse",
-    audio: "https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/262"
+    context: "Al-Fatiha - Always available for guidance",
+    audio: "https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/6"
   });
   const [loading, setLoading] = useState(false); // Start with false
 
@@ -220,45 +220,45 @@ export default function Dashboard() {
       await new Promise(resolve => setTimeout(resolve, 100));
       
       // Show fallback verse immediately with correct audio URL
-      console.log('Loading fallback verse (Ayat al-Kursi)...');
+      console.log('Loading fallback verse (Al-Fatiha)...');
       
       setDailyVerse({
-        id: 262, // Correct verse number for Ayat al-Kursi
-        surah: "Al-Baqarah",
-        surah_number: 2,
-        ayah: 255,
-        text_ar: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ",
-        text_en: "Allah - there is no deity except Him, the Ever-Living, the Sustainer of existence.",
-        theme: ["faith", "strength"],
-        reflection: "This powerful verse reminds us that Allah is always present and in control.",
+        id: 6,
+        surah: "Al-Fatiha",
+        surah_number: 1,
+        ayah: 6,
+        text_ar: "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ",
+        text_en: "Guide us to the straight path.",
+        theme: ["guidance", "direction"],
+        reflection: "A daily prayer for guidance and staying on the right path in life.",
         practical_guidance: [
-          "Recite Ayat al-Kursi for protection and peace",
-          "Remember Allah's constant presence during challenges",
-          "Trust in Allah's perfect timing and wisdom"
+          "Ask Allah for guidance in your daily decisions",
+          "Reflect on whether your actions align with the straight path",
+          "Seek knowledge and wisdom in your spiritual journey"
         ],
-        context: "Ayat al-Kursi - Always available for guidance",
-        audio: "https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/262" // Correct verse number
+        context: "Al-Fatiha - Always available for guidance",
+        audio: "https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/6"
       });
     } catch (error) {
       console.error('Error loading daily verse:', error);
       
       // Show fallback verse on error
       setDailyVerse({
-        id: 262,
-        surah: "Al-Baqarah", 
-        surah_number: 2,
-        ayah: 255,
-        text_ar: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ",
-        text_en: "Allah - there is no deity except Him, the Ever-Living, the Sustainer of existence.",
-        theme: ["faith", "strength"],
-        reflection: "This powerful verse reminds us that Allah is always present and in control.",
+        id: 6,
+        surah: "Al-Fatiha",
+        surah_number: 1,
+        ayah: 6,
+        text_ar: "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ",
+        text_en: "Guide us to the straight path.",
+        theme: ["guidance", "direction"],
+        reflection: "A daily prayer for guidance and staying on the right path in life.",
         practical_guidance: [
-          "Recite Ayat al-Kursi for protection and peace",
-          "Remember Allah's constant presence during challenges", 
-          "Trust in Allah's perfect timing and wisdom"
+          "Ask Allah for guidance in your daily decisions",
+          "Reflect on whether your actions align with the straight path",
+          "Seek knowledge and wisdom in your spiritual journey"
         ],
-        context: "Ayat al-Kursi - Always available for guidance",
-        audio: "https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/262" // Correct verse number
+        context: "Al-Fatiha - Always available for guidance",
+        audio: "https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/6"
       });
     } finally {
       setLoading(false);
