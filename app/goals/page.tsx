@@ -76,11 +76,9 @@ export default function GoalsPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 pb-20">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">Personal Goals</h1>
-        <p className="text-gray-600">
-          Set and track your personal development goals with Islamic guidance.
-        </p>
+      <div className="text-center mb-8">
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">Goals</h1>
+        <p className="text-gray-600">Set and achieve your life goals with Islamic guidance</p>
       </div>
 
       {/* Mobile Stats Cards */}

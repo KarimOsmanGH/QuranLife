@@ -1,20 +1,18 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Personal Goals - QuranLife',
-  description: 'Set and track your personal development goals with Islamic guidance. Manage spiritual, health, career, and family goals with Quranic wisdom.',
+  title: 'Goals - QuranLife',
+  description: 'Set and track your spiritual and life goals with Islamic guidance.',
   openGraph: {
-    title: 'Personal Goals - QuranLife',
-    description: 'Set and track your personal development goals with Islamic guidance. Manage spiritual, health, career, and family goals with Quranic wisdom.',
+    title: 'Goals - QuranLife',
+    description: 'Set and track your spiritual and life goals with Islamic guidance.',
     url: 'https://quranlife.vercel.app/goals',
-    images: ['/og-image.png'],
   },
   twitter: {
-    title: 'Personal Goals - QuranLife',
-    description: 'Set and track your personal development goals with Islamic guidance. Manage spiritual, health, career, and family goals with Quranic wisdom.',
-    images: ['/og-image.png'],
-  }
-};
+    title: 'Goals - QuranLife',
+    description: 'Set and track your spiritual and life goals with Islamic guidance.',
+  },
+}
 
 export default function GoalsLayout({
   children,
