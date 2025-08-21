@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useState, useRef } from 'react';
 
 interface Verse {
   id: number;
@@ -11,6 +12,7 @@ interface Verse {
   text_en: string;
   theme: string[];
   reflection: string;
+  audio?: string; // Audio URL for the verse
 }
 
 interface VerseCardProps {
@@ -18,6 +20,51 @@ interface VerseCardProps {
 }
 
 export default function VerseCard({ verse }: VerseCardProps) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  // Generate audio URL - either from verse data or construct fallback
+  const getAudioUrl = () => {
+    if (verse.audio) {
+      return verse.audio;
+    }
+    // Fallback: construct AlQuran.cloud audio URL
+    const paddedVerse = verse.ayah.toString().padStart(3, '0');
+    return `https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/${verse.surah_number}${paddedVerse}`;
+  };
+
+  const audioUrl = getAudioUrl();
+
+  const handleAudioToggle = async () => {
+    if (!audioRef.current) return;
+
+    try {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        setIsLoading(true);
+        await audioRef.current.play();
+        setIsPlaying(true);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error('Error playing audio:', error);
+      setIsLoading(false);
+    }
+  };
+
+  const handleAudioEnded = () => {
+    setIsPlaying(false);
+  };
+
+  const handleAudioError = () => {
+    console.error('Audio failed to load');
+    setIsLoading(false);
+    setIsPlaying(false);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -25,14 +72,58 @@ export default function VerseCard({ verse }: VerseCardProps) {
       transition={{ duration: 0.5, ease: "easeOut" }}
       className="bg-gradient-to-br from-green-50 via-white to-blue-50 rounded-xl p-6 border border-green-100/50 shadow-lg hover:shadow-xl transition-shadow duration-300 relative overflow-hidden"
     >
+      {/* Audio element */}
+      <audio
+        ref={audioRef}
+        src={audioUrl}
+        onEnded={handleAudioEnded}
+        onError={handleAudioError}
+        preload="none"
+      />
+
       {/* Decorative corner elements */}
       <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-green-100/30 to-transparent rounded-full -translate-y-10 translate-x-10"></div>
       <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-blue-100/30 to-transparent rounded-full translate-y-8 -translate-x-8"></div>
       
-      <div className="text-center mb-4 relative z-10">
-        <h4 className="text-sm font-medium text-green-700 mb-2">
+      <div className="flex justify-between items-center mb-4 relative z-10">
+        <h4 className="text-sm font-medium text-green-700">
           {verse.surah} ({verse.surah_number}:{verse.ayah})
         </h4>
+        
+        {/* Audio button - always show */}
+        <button
+          onClick={handleAudioToggle}
+          disabled={isLoading}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
+            isPlaying
+              ? 'bg-green-500 text-white shadow-md hover:bg-green-600'
+              : 'bg-green-100 text-green-700 hover:bg-green-200'
+          } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+        >
+          {isLoading ? (
+            <>
+              <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Loading...
+            </>
+          ) : isPlaying ? (
+            <>
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M6 4h4v16H6zm8 0h4v16h-4z"/>
+              </svg>
+              Pause
+            </>
+          ) : (
+            <>
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+              Listen
+            </>
+          )}
+        </button>
       </div>
       
       <div className="text-center mb-6 relative z-10">
@@ -50,8 +141,6 @@ export default function VerseCard({ verse }: VerseCardProps) {
           {verse.reflection}
         </p>
       </div>
-
-
     </motion.div>
   );
 } 

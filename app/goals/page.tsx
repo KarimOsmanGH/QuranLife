@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import DashboardCard from '@/components/DashboardCard';
 import GoalsList from '@/components/GoalsList';
+import GoalsCalendar from '@/components/GoalsCalendar';
 import { storage } from '@/lib/security';
 
 interface Goal {
@@ -106,7 +107,7 @@ export default function GoalsPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 pb-20">
       {/* Header */}
-      <div className="text-center mb-8">
+      <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-800 mb-2">Goals</h1>
         <p className="text-gray-600">Set and achieve your life goals with Islamic guidance</p>
       </div>
@@ -240,6 +241,13 @@ export default function GoalsPage() {
           </DashboardCard>
         </div>
       </div>
+
+      {/* Goals Calendar - Full Width */}
+      {goals.length > 0 && (
+        <div className="mt-8">
+          <GoalsCalendar goals={goals} />
+        </div>
+      )}
 
       {/* Mobile Single Column Layout */}
       <div className="md:hidden">

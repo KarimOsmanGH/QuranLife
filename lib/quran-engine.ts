@@ -20,6 +20,7 @@ export interface QuranVerse {
   related_hadith?: string;
   context?: string;
   life_application?: string;
+  audio?: string; // Audio URL for the verse
 }
 
 export interface GoalMatchResult {
@@ -229,7 +230,8 @@ class QuranEngine {
         reflection: this.generateReflection(verse.translation || '', theme || 'guidance'),
         practical_guidance: PRACTICAL_GUIDANCE[theme || 'guidance']?.slice(0, 3),
         context: context || `From ${surah.englishName}`,
-        life_application: this.generateLifeApplication(verse.translation || '', theme || 'guidance')
+        life_application: this.generateLifeApplication(verse.translation || '', theme || 'guidance'),
+        audio: verse.audio || apiResponse.audio // Include audio from API
       };
     } catch (error) {
       console.error('Error converting API verse:', error);

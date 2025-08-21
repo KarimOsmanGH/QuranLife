@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import DashboardCard from '@/components/DashboardCard';
 import HabitTracker from '@/components/HabitTracker';
+import HabitsCalendar from '@/components/HabitsCalendar';
 import { storage } from '@/lib/security';
 
 interface Habit {
@@ -10,26 +11,146 @@ interface Habit {
   name: string;
   completed: boolean;
   icon?: string;
+  frequency: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  lastCompleted?: string;
+  streak?: number;
+  completionHistory?: string[];
 }
 
 const defaultHabits: Habit[] = [
-  { id: 'fajr', name: 'Fajr Prayer', completed: false, icon: '🌅' },
-  { id: 'dhuhr', name: 'Dhuhr Prayer', completed: false, icon: '☀️' },
-  { id: 'asr', name: 'Asr Prayer', completed: false, icon: '🌤️' },
-  { id: 'maghrib', name: 'Maghrib Prayer', completed: false, icon: '🌅' },
-  { id: 'isha', name: 'Isha Prayer', completed: false, icon: '🌙' },
-  { id: 'quran', name: 'Quran Reading', completed: false, icon: '📖' },
-  { id: 'dhikr', name: 'Morning Dhikr', completed: false, icon: '🤲' },
-  { id: 'dua', name: 'Evening Dua', completed: false, icon: '🤲' },
+  { id: 'fajr', name: 'Fajr Prayer', completed: false, icon: '🌅', frequency: 'daily' },
+  { id: 'dhuhr', name: 'Dhuhr Prayer', completed: false, icon: '☀️', frequency: 'daily' },
+  { id: 'asr', name: 'Asr Prayer', completed: false, icon: '🌤️', frequency: 'daily' },
+  { id: 'maghrib', name: 'Maghrib Prayer', completed: false, icon: '🌅', frequency: 'daily' },
+  { id: 'isha', name: 'Isha Prayer', completed: false, icon: '🌙', frequency: 'daily' },
+  { id: 'quran', name: 'Quran Reading', completed: false, icon: '📖', frequency: 'daily' },
+  { id: 'dhikr', name: 'Morning Dhikr', completed: false, icon: '🤲', frequency: 'daily' },
+  { id: 'dua', name: 'Evening Dua', completed: false, icon: '🤲', frequency: 'daily' },
+  { id: 'charity', name: 'Give Charity', completed: false, icon: '💝', frequency: 'weekly' },
+  { id: 'fast', name: 'Voluntary Fasting', completed: false, icon: '🌙', frequency: 'weekly' },
+  { id: 'family', name: 'Visit Family', completed: false, icon: '👨‍👩‍👧‍👦', frequency: 'monthly' },
+  { id: 'zakat', name: 'Pay Zakat', completed: false, icon: '💰', frequency: 'yearly' },
 ];
 
 export default function HabitsPage() {
   const [habits, setHabits] = useState<Habit[]>(defaultHabits);
 
+  // Helper function to check if a habit should be considered completed for its frequency
+  const isHabitCompleted = (habit: Habit): boolean => {
+    if (!habit.lastCompleted) return false;
+    
+    const now = new Date();
+    const lastCompleted = new Date(habit.lastCompleted);
+    
+    switch (habit.frequency) {
+      case 'daily':
+        return lastCompleted.toDateString() === now.toDateString();
+      case 'weekly':
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - now.getDay() + 1); // Monday
+        startOfWeek.setHours(0, 0, 0, 0);
+        return lastCompleted >= startOfWeek;
+      case 'monthly':
+        return lastCompleted.getMonth() === now.getMonth() && 
+               lastCompleted.getFullYear() === now.getFullYear();
+      case 'yearly':
+        return lastCompleted.getFullYear() === now.getFullYear();
+      default:
+        return false;
+    }
+  };
+
+  // Helper function to calculate streak
+  const calculateStreak = (habit: Habit): number => {
+    if (!habit.completionHistory || habit.completionHistory.length === 0) return 0;
+    
+    const now = new Date();
+    let streak = 0;
+    
+    switch (habit.frequency) {
+      case 'daily':
+        for (let i = 0; i < 365; i++) {
+          const checkDate = new Date(now);
+          checkDate.setDate(now.getDate() - i);
+          const dateString = checkDate.toISOString().split('T')[0];
+          
+          if (habit.completionHistory.includes(dateString)) {
+            streak++;
+          } else {
+            break;
+          }
+        }
+        break;
+      case 'weekly':
+        for (let i = 0; i < 52; i++) {
+          const checkDate = new Date(now);
+          checkDate.setDate(now.getDate() - (i * 7));
+          const weekStart = new Date(checkDate);
+          weekStart.setDate(checkDate.getDate() - checkDate.getDay() + 1);
+          
+          const hasCompletionThisWeek = habit.completionHistory.some(dateStr => {
+            const completionDate = new Date(dateStr);
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekStart.getDate() + 6);
+            return completionDate >= weekStart && completionDate <= weekEnd;
+          });
+          
+          if (hasCompletionThisWeek) {
+            streak++;
+          } else {
+            break;
+          }
+        }
+        break;
+      case 'monthly':
+        for (let i = 0; i < 12; i++) {
+          const checkDate = new Date(now);
+          checkDate.setMonth(now.getMonth() - i);
+          
+          const hasCompletionThisMonth = habit.completionHistory.some(dateStr => {
+            const completionDate = new Date(dateStr);
+            return completionDate.getMonth() === checkDate.getMonth() &&
+                   completionDate.getFullYear() === checkDate.getFullYear();
+          });
+          
+          if (hasCompletionThisMonth) {
+            streak++;
+          } else {
+            break;
+          }
+        }
+        break;
+      case 'yearly':
+        for (let i = 0; i < 10; i++) {
+          const checkYear = now.getFullYear() - i;
+          
+          const hasCompletionThisYear = habit.completionHistory.some(dateStr => {
+            const completionDate = new Date(dateStr);
+            return completionDate.getFullYear() === checkYear;
+          });
+          
+          if (hasCompletionThisYear) {
+            streak++;
+          } else {
+            break;
+          }
+        }
+        break;
+    }
+    
+    return streak;
+  };
+
   // Load data from localStorage on mount
   useEffect(() => {
-    const savedHabits = storage.get<Habit[]>('quranlife-habits', defaultHabits);
-    setHabits(savedHabits);
+    const savedHabits = storage.get('quranlife-habits', defaultHabits);
+    // Update completion status based on frequency
+    const updatedHabits = savedHabits.map(habit => ({
+      ...habit,
+      completed: isHabitCompleted(habit),
+      streak: calculateStreak(habit)
+    }));
+    setHabits(updatedHabits);
   }, []);
 
   // Save habits to localStorage whenever habits change
@@ -39,11 +160,59 @@ export default function HabitsPage() {
 
   const toggleHabit = (habitId: string) => {
     setHabits(prev => 
-      prev.map(habit => 
-        habit.id === habitId 
-          ? { ...habit, completed: !habit.completed }
-          : habit
-      )
+      prev.map(habit => {
+        if (habit.id !== habitId) return habit;
+        
+        const now = new Date();
+        const todayString = now.toISOString().split('T')[0];
+        const isCurrentlyCompleted = isHabitCompleted(habit);
+        
+        if (isCurrentlyCompleted) {
+          // Unmark as completed - remove from history
+          const updatedHistory = (habit.completionHistory || []).filter(date => {
+            const completionDate = new Date(date);
+            switch (habit.frequency) {
+              case 'daily':
+                return completionDate.toISOString().split('T')[0] !== todayString;
+              case 'weekly':
+                const startOfWeek = new Date(now);
+                startOfWeek.setDate(now.getDate() - now.getDay() + 1);
+                startOfWeek.setHours(0, 0, 0, 0);
+                const endOfWeek = new Date(startOfWeek);
+                endOfWeek.setDate(startOfWeek.getDate() + 6);
+                endOfWeek.setHours(23, 59, 59, 999);
+                return !(completionDate >= startOfWeek && completionDate <= endOfWeek);
+              case 'monthly':
+                return !(completionDate.getMonth() === now.getMonth() && 
+                        completionDate.getFullYear() === now.getFullYear());
+              case 'yearly':
+                return completionDate.getFullYear() !== now.getFullYear();
+              default:
+                return true;
+            }
+          });
+          
+          return {
+            ...habit,
+            completed: false,
+            lastCompleted: undefined,
+            completionHistory: updatedHistory,
+            streak: calculateStreak({ ...habit, completionHistory: updatedHistory })
+          };
+        } else {
+          // Mark as completed - add to history
+          const updatedHistory = [...(habit.completionHistory || []), todayString];
+          const updatedHabit = {
+            ...habit,
+            completed: true,
+            lastCompleted: now.toISOString(),
+            completionHistory: updatedHistory,
+            streak: calculateStreak({ ...habit, completionHistory: updatedHistory })
+          };
+          
+          return updatedHabit;
+        }
+      })
     );
   };
 
@@ -71,7 +240,7 @@ export default function HabitsPage() {
           <div className="text-sm text-gray-600">Completed Today</div>
         </div>
         <div className="bg-white rounded-xl p-4 border border-gray-100">
-          <div className="text-2xl font-bold text-blue-600">{Math.round((completedCount / totalCount) * 100)}%</div>
+          <div className="text-2xl font-bold text-green-600">{Math.round((completedCount / totalCount) * 100)}%</div>
           <div className="text-sm text-gray-600">Daily Progress</div>
         </div>
       </div>
@@ -87,7 +256,7 @@ export default function HabitsPage() {
               <div className="text-sm text-gray-600">Completed Today</div>
             </div>
             <div className="bg-white rounded-xl p-4 border border-gray-100">
-              <div className="text-2xl font-bold text-blue-600">{Math.round((completedCount / totalCount) * 100)}%</div>
+              <div className="text-2xl font-bold text-green-600">{Math.round((completedCount / totalCount) * 100)}%</div>
               <div className="text-sm text-gray-600">Daily Progress</div>
             </div>
             <div className="bg-white rounded-xl p-4 border border-gray-100">
@@ -97,7 +266,7 @@ export default function HabitsPage() {
           </div>
 
           {/* Habit Tips - Desktop Sidebar */}
-          <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-4 border border-green-100">
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100">
             <h3 className="text-md font-semibold text-gray-800 mb-3">💡 Habit Tips</h3>
             <ul className="space-y-2 text-xs text-gray-700">
               <li>• Start small and be consistent</li>
@@ -157,7 +326,7 @@ export default function HabitsPage() {
         </DashboardCard>
 
         {/* Mobile Tips Section */}
-        <div className="mt-8 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 border border-green-100">
+        <div className="mt-8 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-100">
           <h3 className="text-lg font-semibold text-gray-800 mb-3">💡 Habit Tips</h3>
           <ul className="space-y-2 text-sm text-gray-700">
             <li>• Start small and be consistent - it's better to pray one prayer daily than to miss all five occasionally.</li>
@@ -168,6 +337,13 @@ export default function HabitsPage() {
           </ul>
         </div>
       </div>
+
+      {/* Habits Calendar - Full Width for Both Desktop and Mobile */}
+      {habits.some(h => h.completionHistory && h.completionHistory.length > 0) && (
+        <div className="mt-8">
+          <HabitsCalendar habits={habits} />
+        </div>
+      )}
     </div>
   );
 } 

@@ -10,6 +10,7 @@ export interface Verse {
   juz: number;
   page: number;
   translation?: string;
+  audio?: string; // Audio URL for the verse
 }
 
 export interface Surah {
@@ -27,12 +28,14 @@ export interface RandomVerseResponse {
   surah: Surah;
   theme?: string;
   context?: string;
+  audio?: string; // Audio URL for the verse
 }
 
 class QuranAPI {
   private readonly baseURL = 'https://api.alquran.cloud/v1';
   private readonly arabicEdition = 'quran-uthmani';
   private readonly englishEdition = 'en.asad'; // Muhammad Asad translation
+  private readonly audioEdition = 'ar.alafasy'; // Mishary Rashid Alafasy recitation
 
   /**
    * Get a specific Surah with both Arabic text and English translation
@@ -81,7 +84,44 @@ class QuranAPI {
   }
 
   /**
-   * Get a specific verse with translation
+   * Get audio URL for a specific verse
+   */
+  async getVerseAudio(surahNumber: number, verseNumber: number): Promise<string | null> {
+    try {
+      // AlQuran.cloud provides audio URLs in a specific format
+      // Try fetching with audio edition first
+      const response = await fetch(
+        `${this.baseURL}/ayah/${surahNumber}:${verseNumber}/${this.audioEdition}`
+      );
+      
+      if (!response.ok) {
+        console.warn(`Audio not available for ${surahNumber}:${verseNumber}`);
+        // Generate direct audio URL based on AlQuran.cloud CDN pattern
+        return `https://cdn.alquran.cloud/media/audio/ayah/${this.audioEdition}/${surahNumber}${verseNumber.toString().padStart(3, '0')}`;
+      }
+
+      const data = await response.json();
+      
+      // Check if audio URL exists in response
+      if (data.data?.audio) {
+        return data.data.audio;
+      }
+      
+      // Fallback: construct audio URL manually
+      // AlQuran.cloud audio URLs follow a pattern
+      const paddedVerse = verseNumber.toString().padStart(3, '0');
+      return `https://cdn.alquran.cloud/media/audio/ayah/${this.audioEdition}/${surahNumber}${paddedVerse}`;
+      
+    } catch (error) {
+      console.error('Error fetching verse audio:', error);
+      // Even on error, provide a fallback audio URL
+      const paddedVerse = verseNumber.toString().padStart(3, '0');
+      return `https://cdn.alquran.cloud/media/audio/ayah/${this.audioEdition}/${surahNumber}${paddedVerse}`;
+    }
+  }
+
+  /**
+   * Get a specific verse with both Arabic text and English translation
    */
   async getVerse(surahNumber: number, verseNumber: number): Promise<Verse> {
     try {
@@ -94,20 +134,24 @@ class QuranAPI {
       }
 
       const data = await response.json();
-      
-      if (data.code !== 200 || !data.data || data.data.length !== 2) {
-        throw new Error('Invalid API response format');
+      const arabicVerse = data.data.find((v: any) => v.edition.identifier === this.arabicEdition);
+      const englishVerse = data.data.find((v: any) => v.edition.identifier === this.englishEdition);
+
+      if (!arabicVerse || !englishVerse) {
+        throw new Error('Missing Arabic or English text for verse');
       }
 
-      const [arabicVerse, englishVerse] = data.data;
-      
+      // Get audio URL for this verse
+      const audioUrl = await this.getVerseAudio(surahNumber, verseNumber);
+
       return {
         number: arabicVerse.number,
         text: arabicVerse.text,
         numberInSurah: arabicVerse.numberInSurah,
         juz: arabicVerse.juz,
         page: arabicVerse.page,
-        translation: englishVerse.text
+        translation: englishVerse.text,
+        audio: audioUrl || undefined
       };
     } catch (error) {
       console.error('Error fetching verse:', error);

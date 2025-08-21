@@ -8,6 +8,10 @@ interface Habit {
   name: string;
   completed: boolean;
   icon?: string;
+  frequency: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  lastCompleted?: string;
+  streak?: number;
+  completionHistory?: string[];
 }
 
 interface HabitTrackerProps {
@@ -16,8 +20,113 @@ interface HabitTrackerProps {
 }
 
 export default function HabitTracker({ habits, onToggleHabit }: HabitTrackerProps) {
-  const completedCount = habits.filter(habit => habit.completed).length;
-  const progress = (completedCount / habits.length) * 100;
+  // Group habits by frequency for better organization
+  const habitsByFrequency = {
+    daily: habits.filter(h => h.frequency === 'daily'),
+    weekly: habits.filter(h => h.frequency === 'weekly'),
+    monthly: habits.filter(h => h.frequency === 'monthly'),
+    yearly: habits.filter(h => h.frequency === 'yearly'),
+  };
+
+  const totalCompleted = habits.filter(habit => habit.completed).length;
+  const totalHabits = habits.length;
+  const progress = totalHabits > 0 ? (totalCompleted / totalHabits) * 100 : 0;
+
+  const getFrequencyLabel = (frequency: string) => {
+    const labels = {
+      daily: 'Daily',
+      weekly: 'Weekly', 
+      monthly: 'Monthly',
+      yearly: 'Yearly'
+    };
+    return labels[frequency as keyof typeof labels] || frequency;
+  };
+
+  const getFrequencyEmoji = (frequency: string) => {
+    const emojis = {
+      daily: '📅',
+      weekly: '📆',
+      monthly: '🗓️',
+      yearly: '🎯'
+    };
+    return emojis[frequency as keyof typeof emojis] || '📋';
+  };
+
+  const renderHabitGroup = (groupHabits: Habit[], frequency: string) => {
+    if (groupHabits.length === 0) return null;
+
+    return (
+      <div key={frequency} className="mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-lg">{getFrequencyEmoji(frequency)}</span>
+          <h4 className="text-sm font-medium text-gray-700">{getFrequencyLabel(frequency)} Habits</h4>
+          <span className="text-xs text-gray-500">
+            ({groupHabits.filter(h => h.completed).length}/{groupHabits.length})
+          </span>
+        </div>
+        
+        <div className="grid gap-3">
+          {groupHabits.map((habit, index) => (
+            <motion.div
+              key={habit.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
+              className={`flex items-center justify-between p-3 rounded-lg border transition-all duration-200 ${
+                habit.completed
+                  ? 'bg-green-50 border-green-200 shadow-sm'
+                  : 'bg-white border-gray-200 hover:border-green-200 hover:shadow-sm'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => onToggleHabit(habit.id)}
+                  className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+                    habit.completed
+                      ? 'bg-green-500 border-green-500 text-white shadow-sm'
+                      : 'border-gray-300 hover:border-green-400 hover:bg-green-50'
+                  }`}
+                >
+                  {habit.completed && (
+                    <motion.svg
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </motion.svg>
+                  )}
+                </button>
+                
+                <div className="flex items-center gap-2">
+                  {habit.icon && (
+                    <span className="text-lg">{habit.icon}</span>
+                  )}
+                  <span className={`font-medium transition-colors ${
+                    habit.completed ? 'text-green-700' : 'text-gray-700'
+                  }`}>
+                    {habit.name}
+                  </span>
+                </div>
+              </div>
+
+              {/* Streak indicator */}
+              {habit.streak && habit.streak > 0 && (
+                <div className="flex items-center gap-1 text-xs">
+                  <span className="text-orange-500">🔥</span>
+                  <span className="font-medium text-orange-600">{habit.streak}</span>
+                  <span className="text-gray-500">streak</span>
+                </div>
+              )}
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-4">
@@ -25,61 +134,29 @@ export default function HabitTracker({ habits, onToggleHabit }: HabitTrackerProp
       <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm font-medium text-gray-700">
-            Daily Progress
+            Overall Progress
           </span>
           <span className="text-sm text-gray-500">
-            {completedCount}/{habits.length}
+            {totalCompleted}/{totalHabits} completed
           </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.5 }}
-            className="bg-green-500 h-2 rounded-full"
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="h-3 bg-gradient-to-r from-green-400 to-green-600 rounded-full"
           />
+        </div>
+        <div className="text-xs text-gray-500 mt-1 text-center">
+          {Math.round(progress)}% complete
         </div>
       </div>
 
-      {/* Habits List */}
-      <div className="space-y-3">
-        {habits.map((habit, index) => (
-          <motion.div
-            key={habit.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
-              habit.completed 
-                ? 'bg-green-50 border-green-200' 
-                : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
-            }`}
-          >
-            <button
-              onClick={() => onToggleHabit(habit.id)}
-              className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
-                habit.completed
-                  ? 'bg-green-500 border-green-500 text-white'
-                  : 'border-gray-300 hover:border-green-400'
-              }`}
-            >
-              {habit.completed && (
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              )}
-            </button>
-            
-            <span className={`flex-1 ${habit.completed ? 'text-green-700 line-through' : 'text-gray-700'}`}>
-              {habit.name}
-            </span>
-            
-            {habit.icon && (
-              <span className="text-lg">{habit.icon}</span>
-            )}
-          </motion.div>
-        ))}
-      </div>
+      {/* Habits grouped by frequency */}
+      {Object.entries(habitsByFrequency).map(([frequency, groupHabits]) => 
+        renderHabitGroup(groupHabits, frequency)
+      )}
     </div>
   );
 } 

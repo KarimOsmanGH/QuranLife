@@ -18,6 +18,7 @@ interface Verse {
   reflection: string;
   practical_guidance?: string[];
   context?: string;
+  audio?: string; // Audio URL for the verse
 }
 
 interface Habit {
@@ -25,6 +26,10 @@ interface Habit {
   name: string;
   completed: boolean;
   icon?: string;
+  frequency: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  lastCompleted?: string; // ISO date string
+  streak?: number;
+  completionHistory?: string[]; // Array of ISO date strings
 }
 
 interface Goal {
@@ -38,30 +43,168 @@ interface Goal {
 }
 
 const defaultHabits: Habit[] = [
-  { id: 'fajr', name: 'Fajr Prayer', completed: false, icon: '🌅' },
-  { id: 'dhuhr', name: 'Dhuhr Prayer', completed: false, icon: '☀️' },
-  { id: 'asr', name: 'Asr Prayer', completed: false, icon: '🌤️' },
-  { id: 'maghrib', name: 'Maghrib Prayer', completed: false, icon: '🌅' },
-  { id: 'isha', name: 'Isha Prayer', completed: false, icon: '🌙' },
-  { id: 'quran', name: 'Quran Reading', completed: false, icon: '📖' },
+  { id: 'fajr', name: 'Fajr Prayer', completed: false, icon: '🌅', frequency: 'daily' },
+  { id: 'dhuhr', name: 'Dhuhr Prayer', completed: false, icon: '☀️', frequency: 'daily' },
+  { id: 'asr', name: 'Asr Prayer', completed: false, icon: '🌤️', frequency: 'daily' },
+  { id: 'maghrib', name: 'Maghrib Prayer', completed: false, icon: '🌅', frequency: 'daily' },
+  { id: 'isha', name: 'Isha Prayer', completed: false, icon: '🌙', frequency: 'daily' },
+  { id: 'quran', name: 'Quran Reading', completed: false, icon: '📖', frequency: 'daily' },
+  { id: 'charity', name: 'Give Charity', completed: false, icon: '💝', frequency: 'weekly' },
+  { id: 'fast', name: 'Voluntary Fasting', completed: false, icon: '🌙', frequency: 'weekly' },
+  { id: 'zakat', name: 'Pay Zakat', completed: false, icon: '💰', frequency: 'yearly' },
+  { id: 'hajj', name: 'Plan for Hajj', completed: false, icon: '🕋', frequency: 'yearly' },
 ];
 
 export default function Dashboard() {
   const [habits, setHabits] = useState<Habit[]>(defaultHabits);
   const [goals, setGoals] = useState<Goal[]>([]);
-  const [dailyVerse, setDailyVerse] = useState<Verse | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Initialize with verse data directly
+  const [dailyVerse, setDailyVerse] = useState<Verse>({
+    id: 262,
+    surah: "Al-Baqarah",
+    surah_number: 2,
+    ayah: 255,
+    text_ar: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ",
+    text_en: "Allah - there is no deity except Him, the Ever-Living, the Sustainer of existence.",
+    theme: ["faith", "strength"],
+    reflection: "This powerful verse reminds us that Allah is always present and in control.",
+    practical_guidance: [
+      "Recite Ayat al-Kursi for protection and peace",
+      "Remember Allah's constant presence during challenges",
+      "Trust in Allah's perfect timing and wisdom"
+    ],
+    context: "Ayat al-Kursi - The Throne Verse",
+    audio: "https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/262"
+  });
+  const [loading, setLoading] = useState(false); // Start with false
+
+  // Helper function to check if a habit should be considered completed for its frequency
+  const isHabitCompleted = (habit: Habit): boolean => {
+    if (!habit.lastCompleted) return false;
+    
+    const now = new Date();
+    const lastCompleted = new Date(habit.lastCompleted);
+    
+    switch (habit.frequency) {
+      case 'daily':
+        // Completed today
+        return lastCompleted.toDateString() === now.toDateString();
+      case 'weekly':
+        // Completed this week (Monday to Sunday)
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - now.getDay() + 1); // Monday
+        startOfWeek.setHours(0, 0, 0, 0);
+        return lastCompleted >= startOfWeek;
+      case 'monthly':
+        // Completed this month
+        return lastCompleted.getMonth() === now.getMonth() && 
+               lastCompleted.getFullYear() === now.getFullYear();
+      case 'yearly':
+        // Completed this year
+        return lastCompleted.getFullYear() === now.getFullYear();
+      default:
+        return false;
+    }
+  };
+
+  // Helper function to calculate streak
+  const calculateStreak = (habit: Habit): number => {
+    if (!habit.completionHistory || habit.completionHistory.length === 0) return 0;
+    
+    const now = new Date();
+    let streak = 0;
+    
+    switch (habit.frequency) {
+      case 'daily':
+        // Check consecutive days
+        for (let i = 0; i < 365; i++) {
+          const checkDate = new Date(now);
+          checkDate.setDate(now.getDate() - i);
+          const dateString = checkDate.toISOString().split('T')[0];
+          
+          if (habit.completionHistory.includes(dateString)) {
+            streak++;
+          } else {
+            break;
+          }
+        }
+        break;
+      case 'weekly':
+        // Check consecutive weeks
+        for (let i = 0; i < 52; i++) {
+          const checkDate = new Date(now);
+          checkDate.setDate(now.getDate() - (i * 7));
+          const weekStart = new Date(checkDate);
+          weekStart.setDate(checkDate.getDate() - checkDate.getDay() + 1);
+          
+          const hasCompletionThisWeek = habit.completionHistory.some(dateStr => {
+            const completionDate = new Date(dateStr);
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekStart.getDate() + 6);
+            return completionDate >= weekStart && completionDate <= weekEnd;
+          });
+          
+          if (hasCompletionThisWeek) {
+            streak++;
+          } else {
+            break;
+          }
+        }
+        break;
+      case 'monthly':
+        // Check consecutive months
+        for (let i = 0; i < 12; i++) {
+          const checkDate = new Date(now);
+          checkDate.setMonth(now.getMonth() - i);
+          
+          const hasCompletionThisMonth = habit.completionHistory.some(dateStr => {
+            const completionDate = new Date(dateStr);
+            return completionDate.getMonth() === checkDate.getMonth() &&
+                   completionDate.getFullYear() === checkDate.getFullYear();
+          });
+          
+          if (hasCompletionThisMonth) {
+            streak++;
+          } else {
+            break;
+          }
+        }
+        break;
+      case 'yearly':
+        // Check consecutive years
+        for (let i = 0; i < 10; i++) {
+          const checkYear = now.getFullYear() - i;
+          
+          const hasCompletionThisYear = habit.completionHistory.some(dateStr => {
+            const completionDate = new Date(dateStr);
+            return completionDate.getFullYear() === checkYear;
+          });
+          
+          if (hasCompletionThisYear) {
+            streak++;
+          } else {
+            break;
+          }
+        }
+        break;
+    }
+    
+    return streak;
+  };
 
   // Load data from secure storage on mount
   useEffect(() => {
     const savedHabits = storage.get('quranlife-habits', defaultHabits);
-    setHabits(savedHabits);
+    // Update completion status based on frequency
+    const updatedHabits = savedHabits.map(habit => ({
+      ...habit,
+      completed: isHabitCompleted(habit),
+      streak: calculateStreak(habit)
+    }));
+    setHabits(updatedHabits);
 
     const savedGoals = storage.get('quranlife-goals', []);
     setGoals(savedGoals);
-
-    // Load daily verse
-    loadDailyVerse();
   }, []);
 
   // Save habits to secure storage whenever habits change
@@ -73,70 +216,49 @@ export default function Dashboard() {
     try {
       setLoading(true);
       
-      // Rate limiting check
-      if (!apiRateLimiter.isAllowed()) {
-        console.warn('Rate limit exceeded for verse loading');
-        setLoading(false);
-        return;
-      }
-
-      // Use the new QuranEngine API
-      const verse = await quranEngine.getDailyVerse();
+      // Small delay to ensure UI updates
+      await new Promise(resolve => setTimeout(resolve, 100));
       
-      if (verse) {
-        // Convert QuranVerse to the expected Verse format
-        const formattedVerse: Verse = {
-          id: verse.id,
-          surah: verse.surah,
-          surah_number: verse.surah_number,
-          ayah: verse.ayah,
-          text_ar: verse.text_ar,
-          text_en: verse.text_en,
-          theme: verse.theme,
-          reflection: verse.reflection,
-          practical_guidance: verse.practical_guidance,
-          context: verse.context
-        };
-        
-        setDailyVerse(formattedVerse);
-      } else {
-        // Fallback verse if API fails
-        setDailyVerse({
-          id: 2255,
-          surah: "Al-Baqarah",
-          surah_number: 2,
-          ayah: 255,
-          text_ar: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ",
-          text_en: "Allah - there is no deity except Him, the Ever-Living, the Sustainer of existence.",
-          theme: ["faith", "strength"],
-          reflection: "This powerful verse reminds us that Allah is always present and in control.",
-          practical_guidance: [
-            "Recite Ayat al-Kursi for protection and peace",
-            "Remember Allah's constant presence during challenges",
-            "Trust in Allah's perfect timing and wisdom"
-          ],
-          context: "Ayat al-Kursi - The Throne Verse"
-        });
-      }
+      // Show fallback verse immediately with correct audio URL
+      console.log('Loading fallback verse (Ayat al-Kursi)...');
+      
+      setDailyVerse({
+        id: 262, // Correct verse number for Ayat al-Kursi
+        surah: "Al-Baqarah",
+        surah_number: 2,
+        ayah: 255,
+        text_ar: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ",
+        text_en: "Allah - there is no deity except Him, the Ever-Living, the Sustainer of existence.",
+        theme: ["faith", "strength"],
+        reflection: "This powerful verse reminds us that Allah is always present and in control.",
+        practical_guidance: [
+          "Recite Ayat al-Kursi for protection and peace",
+          "Remember Allah's constant presence during challenges",
+          "Trust in Allah's perfect timing and wisdom"
+        ],
+        context: "Ayat al-Kursi - Always available for guidance",
+        audio: "https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/262" // Correct verse number
+      });
     } catch (error) {
       console.error('Error loading daily verse:', error);
       
       // Show fallback verse on error
       setDailyVerse({
-        id: 2255,
+        id: 262,
         surah: "Al-Baqarah", 
         surah_number: 2,
         ayah: 255,
         text_ar: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ",
         text_en: "Allah - there is no deity except Him, the Ever-Living, the Sustainer of existence.",
         theme: ["faith", "strength"],
-        reflection: "This powerful verse provides strength and comfort in all situations.",
+        reflection: "This powerful verse reminds us that Allah is always present and in control.",
         practical_guidance: [
-          "Recite this verse when feeling anxious or uncertain",
-          "Remember that Allah is always in control",
-          "Use this as a source of daily strength"
+          "Recite Ayat al-Kursi for protection and peace",
+          "Remember Allah's constant presence during challenges", 
+          "Trust in Allah's perfect timing and wisdom"
         ],
-        context: "Ayat al-Kursi - Always available for guidance"
+        context: "Ayat al-Kursi - Always available for guidance",
+        audio: "https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/262" // Correct verse number
       });
     } finally {
       setLoading(false);
@@ -145,11 +267,59 @@ export default function Dashboard() {
 
   const toggleHabit = (habitId: string) => {
     setHabits(prev => 
-      prev.map(habit => 
-        habit.id === habitId 
-          ? { ...habit, completed: !habit.completed }
-          : habit
-      )
+      prev.map(habit => {
+        if (habit.id !== habitId) return habit;
+        
+        const now = new Date();
+        const todayString = now.toISOString().split('T')[0];
+        const isCurrentlyCompleted = isHabitCompleted(habit);
+        
+        if (isCurrentlyCompleted) {
+          // Unmark as completed - remove from history
+          const updatedHistory = (habit.completionHistory || []).filter(date => {
+            const completionDate = new Date(date);
+            switch (habit.frequency) {
+              case 'daily':
+                return completionDate.toISOString().split('T')[0] !== todayString;
+              case 'weekly':
+                const startOfWeek = new Date(now);
+                startOfWeek.setDate(now.getDate() - now.getDay() + 1);
+                startOfWeek.setHours(0, 0, 0, 0);
+                const endOfWeek = new Date(startOfWeek);
+                endOfWeek.setDate(startOfWeek.getDate() + 6);
+                endOfWeek.setHours(23, 59, 59, 999);
+                return !(completionDate >= startOfWeek && completionDate <= endOfWeek);
+              case 'monthly':
+                return !(completionDate.getMonth() === now.getMonth() && 
+                        completionDate.getFullYear() === now.getFullYear());
+              case 'yearly':
+                return completionDate.getFullYear() !== now.getFullYear();
+              default:
+                return true;
+            }
+          });
+          
+          return {
+            ...habit,
+            completed: false,
+            lastCompleted: undefined,
+            completionHistory: updatedHistory,
+            streak: calculateStreak({ ...habit, completionHistory: updatedHistory })
+          };
+        } else {
+          // Mark as completed - add to history
+          const updatedHistory = [...(habit.completionHistory || []), todayString];
+          const updatedHabit = {
+            ...habit,
+            completed: true,
+            lastCompleted: now.toISOString(),
+            completionHistory: updatedHistory,
+            streak: calculateStreak({ ...habit, completionHistory: updatedHistory })
+          };
+          
+          return updatedHabit;
+        }
+      })
     );
   };
 
@@ -234,7 +404,7 @@ export default function Dashboard() {
 
           {/* Quick Add Goals - shown when no goals exist */}
           {totalGoals === 0 && (
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100">
               <div className="text-center mb-3">
                 <span className="text-2xl mb-2 block">🎯</span>
                 <h4 className="font-semibold text-gray-800 mb-1">Set Your First Goal</h4>
@@ -246,7 +416,7 @@ export default function Dashboard() {
               <div className="space-y-2">
                 <a 
                   href="/goals" 
-                  className="block w-full py-2 px-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors text-center"
+                  className="block w-full py-2 px-3 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors text-center"
                 >
                   + Add Your First Goal
                 </a>
@@ -284,25 +454,6 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Habits Tracker */}
-          <DashboardCard 
-            title="🕌 Daily Habits" 
-            icon={
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            }
-          >
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-600">Track your Islamic practices and personal development.</p>
-                <a href="/habits" className="text-xs text-green-600 hover:text-green-700 transition-colors">
-                  View all habits →
-                </a>
-              </div>
-              <HabitTracker habits={habits} onToggleHabit={toggleHabit} />
-            </div>
-          </DashboardCard>
         </div>
       </div>
 
@@ -337,7 +488,7 @@ export default function Dashboard() {
 
         {/* Mobile Quick Add Goals - when no goals exist */}
         {totalGoals === 0 && (
-          <div className="mb-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+          <div className="mb-8 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100">
             <div className="text-center mb-3">
               <span className="text-3xl mb-2 block">🎯</span>
               <h4 className="font-semibold text-gray-800 mb-1">Set Your First Goal</h4>
@@ -349,7 +500,7 @@ export default function Dashboard() {
             <div className="space-y-3">
               <a 
                 href="/goals" 
-                className="block w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors text-center"
+                className="block w-full py-3 px-4 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors text-center"
               >
                 + Add Your First Goal
               </a>
@@ -383,25 +534,6 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Mobile Habits Tracker */}
-        <DashboardCard 
-          title="🕌 Daily Habits" 
-          icon={
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          }
-        >
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-600">Track your Islamic practices and personal development.</p>
-              <a href="/habits" className="text-xs text-green-600 hover:text-green-700 transition-colors">
-                View all →
-              </a>
-            </div>
-            <HabitTracker habits={habits} onToggleHabit={toggleHabit} />
-          </div>
-        </DashboardCard>
       </div>
     </div>
   );
