@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import DashboardCard from '@/components/DashboardCard';
 import VerseCard from '@/components/VerseCard';
-import HabitTracker from '@/components/HabitTracker';
+import GoalsList from '@/components/GoalsList';
 import { storage, apiRateLimiter } from '@/lib/security';
 import { quranEngine } from '@/lib/quran-engine';
+import Link from 'next/link';
 
 interface Verse {
   id: number;
@@ -391,7 +393,62 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Quick Add Goals - shown when no goals exist */}
+          {/* Quick Start Habits */}
+          {habits.length < 5 && (
+            <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl p-4 border border-emerald-200">
+              <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                ✨ <span>Quick Start Habits</span>
+              </h4>
+              <div className="space-y-2">
+                <button
+                  onClick={() => {
+                    const newHabits = [
+                      { id: Date.now() + '-fajr', name: 'Fajr Prayer', completed: false, icon: '🌅', frequency: 'daily' as const, streak: 0, completionHistory: [] },
+                      { id: Date.now() + '-maghrib', name: 'Maghrib Prayer', completed: false, icon: '🌆', frequency: 'daily' as const, streak: 0, completionHistory: [] }
+                    ];
+                    const updatedHabits = [...habits, ...newHabits.filter(h => !habits.some(ph => ph.name === h.name))];
+                    setHabits(updatedHabits);
+                    storage.set('quranlife-habits', updatedHabits);
+                  }}
+                  className="w-full p-2 bg-white rounded-lg border border-emerald-300 hover:bg-emerald-50 transition-colors text-left flex items-center gap-2"
+                >
+                  <span className="text-lg">🕌</span>
+                  <div>
+                    <div className="text-sm font-medium text-emerald-700">Essential Prayers</div>
+                    <div className="text-xs text-emerald-600">Start with Fajr & Maghrib</div>
+                  </div>
+                </button>
+                <button
+                  onClick={() => {
+                    const newHabits = [
+                      { id: Date.now() + '-morning', name: 'Morning Dhikr', completed: false, icon: '🌅', frequency: 'daily' as const, streak: 0, completionHistory: [] },
+                      { id: Date.now() + '-evening', name: 'Evening Dhikr', completed: false, icon: '🌙', frequency: 'daily' as const, streak: 0, completionHistory: [] }
+                    ];
+                    const updatedHabits = [...habits, ...newHabits.filter(h => !habits.some(ph => ph.name === h.name))];
+                    setHabits(updatedHabits);
+                    storage.set('quranlife-habits', updatedHabits);
+                  }}
+                  className="w-full p-2 bg-white rounded-lg border border-emerald-300 hover:bg-emerald-50 transition-colors text-left flex items-center gap-2"
+                >
+                  <span className="text-lg">💫</span>
+                  <div>
+                    <div className="text-sm font-medium text-emerald-700">Daily Dhikr</div>
+                    <div className="text-xs text-emerald-600">Morning & evening remembrance</div>
+                  </div>
+                </button>
+              </div>
+              <div className="mt-3 pt-2 border-t border-emerald-200">
+                <Link 
+                  href="/habits" 
+                  className="text-xs text-emerald-600 hover:text-emerald-700 transition-colors"
+                >
+                  View all habits →
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* Smart Guidance */}
           {totalGoals === 0 && (
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100">
               <div className="text-center mb-3">
