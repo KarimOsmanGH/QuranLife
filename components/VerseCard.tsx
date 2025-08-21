@@ -169,8 +169,8 @@ export default function VerseCard({ verse }: VerseCardProps) {
           {verse.surah} ({verse.surah_number}:{verse.ayah})
         </h4>
         
-        {/* Audio button - show only if audio URL is available */}
-        {audioUrl && (
+        {/* Audio button - show only if audio URL is available and not blocked by CORS */}
+        {audioUrl && !audioUrl.includes('cdn.islamic.network') ? (
           <button
             onClick={handleAudioToggle}
             onTouchStart={() => {}} // Enable iOS touch events
@@ -206,7 +206,11 @@ export default function VerseCard({ verse }: VerseCardProps) {
             </>
           )}
         </button>
-      )}
+        ) : audioUrl && audioUrl.includes('cdn.islamic.network') ? (
+          <div className="text-xs text-gray-500 bg-gray-100 px-3 py-2 rounded-full">
+            Audio not available due to browser restrictions
+          </div>
+        ) : null}
       </div>
       
       {/* Error Message */}
