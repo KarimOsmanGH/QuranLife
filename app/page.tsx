@@ -228,7 +228,7 @@ export default function Dashboard() {
           "Seek knowledge and wisdom in your spiritual journey"
         ],
         context: "Al-Fatiha - Always available for guidance",
-        audio: undefined // Audio not available due to CORS restrictions
+        audio: `/api/audio?surah=1&ayah=6&edition=ar.alafasy` // Use our audio API
       });
     } catch (error) {
       console.error('Error loading daily verse:', error);
@@ -249,7 +249,7 @@ export default function Dashboard() {
           "Seek knowledge and wisdom in your spiritual journey"
         ],
         context: "Al-Fatiha - Always available for guidance",
-        audio: undefined // Audio not available due to CORS restrictions
+        audio: `/api/audio?surah=1&ayah=6&edition=ar.alafasy` // Use our audio API
       });
     } finally {
       setLoading(false);

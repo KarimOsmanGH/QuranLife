@@ -345,7 +345,8 @@ class QuranEngine {
         "Trust in Allah's perfect timing and wisdom"
       ],
       context: "Ayat al-Kursi - The Throne Verse",
-      life_application: "Use this verse as a source of strength and comfort throughout your day, especially during moments of uncertainty or stress."
+      life_application: "Use this verse as a source of strength and comfort throughout your day, especially during moments of uncertainty or stress.",
+      audio: `/api/audio?surah=2&ayah=255&edition=ar.alafasy`
     };
   }
 
