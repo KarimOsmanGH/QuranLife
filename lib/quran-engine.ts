@@ -70,7 +70,7 @@ const THEME_KEYWORDS = {
 };
 
 // Practical guidance templates for different themes
-const PRACTICAL_GUIDANCE = {
+const PRACTICAL_GUIDANCE: Record<string, string[]> = {
   patience: [
     "Make dua during difficult times: 'Rabbana afrigh 'alayna sabran' (Our Lord, pour upon us patience)",
     "Practice the 3-breath technique when feeling impatient",
@@ -116,7 +116,7 @@ const PRACTICAL_GUIDANCE = {
 };
 
 // Dua recommendations for different situations
-const DUA_RECOMMENDATIONS = {
+const DUA_RECOMMENDATIONS: Record<string, string> = {
   patience: "Rabbana afrigh 'alayna sabran wa thabbit aqdamana (Our Lord, pour upon us patience and plant firmly our feet)",
   guidance: "Rabbana la tuzigh qulubana ba'd idh hadaytana (Our Lord, let not our hearts deviate after You have guided us)",
   success: "Rabbi a'inni wa la tu'in 'alayya (My Lord, help me and do not help against me)",
@@ -346,7 +346,7 @@ export class QuranEngine {
   }
 
   private getThemeDescription(theme: string): string {
-    const descriptions = {
+    const descriptions: Record<string, string> = {
       patience: "Building resilience and endurance through Islamic teachings",
       prayer: "Strengthening your connection with Allah through worship",
       change: "Personal transformation guided by Quranic wisdom",
@@ -358,7 +358,7 @@ export class QuranEngine {
   }
 
   private getRecommendedActions(theme: string): string[] {
-    const actions = {
+    const actions: Record<string, string[]> = {
       patience: ["Practice daily dhikr", "Read stories of prophets", "Join Islamic study groups"],
       prayer: ["Attend mosque regularly", "Learn prayer meanings", "Make personal duas"],
       change: ["Set Islamic goals", "Find Muslim mentors", "Track spiritual progress"]
@@ -367,7 +367,7 @@ export class QuranEngine {
   }
 
   private removeDuplicates<T>(array: T[]): T[] {
-    return [...new Set(array)];
+    return Array.from(new Set(array));
   }
 }
 
