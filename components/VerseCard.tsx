@@ -122,13 +122,17 @@ export default function VerseCard({ verse }: VerseCardProps) {
 
   const handleAudioError = () => {
     console.error('Audio failed to load');
+    console.error('Audio URL:', audioUrl);
+    console.error('Audio readyState:', audioRef.current?.readyState);
+    console.error('Audio error:', audioRef.current?.error);
+    
     setIsLoading(false);
     setIsPlaying(false);
     
     if (isMobile) {
       setAudioError('Audio may require Wi-Fi or mobile data. Please check your connection and try again.');
     } else {
-      setAudioError('Audio failed to load. Please try again.');
+      setAudioError(`Audio failed to load. URL: ${audioUrl?.slice(-20) || 'undefined'}`);
     }
     
     // Clear error after 5 seconds

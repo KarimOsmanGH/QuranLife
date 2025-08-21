@@ -35,7 +35,38 @@ class QuranAPI {
   private readonly baseURL = 'https://api.alquran.cloud/v1';
   private readonly arabicEdition = 'quran-uthmani';
   private readonly englishEdition = 'en.asad'; // Muhammad Asad translation
-  private readonly audioEdition = 'ar.alafasy'; // Mishary Rashid Alafasy recitation
+  private audioEdition = 'ar.alafasy'; // Default: Mishary Rashid Alafasy recitation
+
+  /**
+   * Set the audio edition for recitations
+   */
+  setAudioEdition(edition: string) {
+    this.audioEdition = edition;
+  }
+
+  /**
+   * Get current audio edition
+   */
+  getAudioEdition(): string {
+    return this.audioEdition;
+  }
+
+  /**
+   * Get available audio editions
+   */
+  async getAudioEditions(): Promise<any[]> {
+    try {
+      const response = await fetch(`${this.baseURL}/edition?format=audio&language=ar&type=versebyverse`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data.data || [];
+    } catch (error) {
+      console.error('Error fetching audio editions:', error);
+      return [];
+    }
+  }
 
   /**
    * Get a specific Surah with both Arabic text and English translation
