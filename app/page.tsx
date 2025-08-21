@@ -59,24 +59,13 @@ export default function Dashboard() {
   const [habits, setHabits] = useState<Habit[]>(defaultHabits);
   const [goals, setGoals] = useState<Goal[]>([]);
   // Initialize with verse data directly
-  const [dailyVerse, setDailyVerse] = useState<Verse>({
-    id: 6,
-    surah: "Al-Fatiha",
-    surah_number: 1,
-    ayah: 6,
-    text_ar: "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ",
-    text_en: "Guide us to the straight path.",
-    theme: ["guidance", "direction"],
-    reflection: "A daily prayer for guidance and staying on the right path in life.",
-    practical_guidance: [
-      "Ask Allah for guidance in your daily decisions",
-      "Reflect on whether your actions align with the straight path",
-      "Seek knowledge and wisdom in your spiritual journey"
-    ],
-    context: "Al-Fatiha - Always available for guidance",
-    audio: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6.mp3"
-  });
-  const [loading, setLoading] = useState(false); // Start with false
+  const [dailyVerse, setDailyVerse] = useState<Verse | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Load daily verse on component mount
+  useEffect(() => {
+    loadDailyVerse();
+  }, []);
 
   // Helper function to check if a habit should be considered completed for its frequency
   const isHabitCompleted = (habit: Habit): boolean => {
@@ -439,20 +428,26 @@ export default function Dashboard() {
         {/* Right Content - Daily Verse & Habits */}
         <div className="md:col-span-2 space-y-6">
           {/* Daily Verse */}
-          {dailyVerse && (
-            <div className="bg-gradient-to-r from-green-50/50 to-blue-50/50 rounded-2xl p-6 border border-green-100/30 shadow-sm">
-              <div className="text-center mb-6">
-                              <div className="inline-flex items-center gap-3 bg-white/60 backdrop-blur-sm rounded-full px-6 py-3 shadow-sm border border-green-100/50">
-                <span className="text-2xl">📖</span>
-                <h3 className="text-lg font-bold text-gray-800">
-                  Today's Guidance
-                </h3>
-                <span className="text-2xl">✨</span>
+          <DashboardCard
+            title="Today's Guidance"
+            icon={
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+            }
+          >
+            {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
               </div>
-              </div>
+            ) : dailyVerse ? (
               <VerseCard verse={dailyVerse} />
-            </div>
-          )}
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                Unable to load daily verse. Please check your connection.
+              </div>
+            )}
+          </DashboardCard>
 
         </div>
       </div>
@@ -519,20 +514,26 @@ export default function Dashboard() {
         )}
 
         {/* Mobile Daily Verse */}
-        {dailyVerse && (
-          <div className="mb-8 bg-gradient-to-r from-green-50/50 to-blue-50/50 rounded-2xl p-6 border border-green-100/30 shadow-sm">
-            <div className="text-center mb-6">
-                              <div className="inline-flex items-center gap-3 bg-white/60 backdrop-blur-sm rounded-full px-6 py-3 shadow-sm border border-green-100/50">
-                  <span className="text-2xl">📖</span>
-                  <h3 className="text-lg font-bold text-gray-800">
-                    Today's Guidance
-                  </h3>
-                  <span className="text-2xl">✨</span>
-                </div>
+        <DashboardCard
+          title="Today's Guidance"
+          icon={
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          }
+        >
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
             </div>
+          ) : dailyVerse ? (
             <VerseCard verse={dailyVerse} />
-          </div>
-        )}
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              Unable to load daily verse. Please check your connection.
+            </div>
+          )}
+        </DashboardCard>
 
       </div>
     </div>

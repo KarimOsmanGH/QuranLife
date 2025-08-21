@@ -41,6 +41,8 @@ export default function VerseCard({ verse }: VerseCardProps) {
 
   // Generate audio URL - use from verse data or return undefined
   const getAudioUrl = () => {
+    console.log('VerseCard verse object:', verse);
+    console.log('VerseCard verse.audio:', verse.audio);
     return verse.audio || undefined;
   };
 
@@ -132,7 +134,7 @@ export default function VerseCard({ verse }: VerseCardProps) {
     if (isMobile) {
       setAudioError('Audio may require Wi-Fi or mobile data. Please check your connection and try again.');
     } else {
-      setAudioError(`Audio failed to load. URL: ${audioUrl?.slice(-20) || 'undefined'}`);
+      setAudioError(`Audio failed to load. URL: ${audioUrl ? audioUrl.slice(-30) : 'No URL provided'}`);
     }
     
     // Clear error after 5 seconds
