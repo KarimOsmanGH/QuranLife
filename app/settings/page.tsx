@@ -90,58 +90,72 @@ export default function SettingsPage() {
       <DashboardCard title="📚 Data Sources & Attribution">
         <div className="space-y-4">
           <div>
-            <h4 className="font-semibold text-gray-800 mb-2">Quranic Universal Library (QUL)</h4>
+            <h4 className="font-semibold text-gray-800 mb-2">AlQuran.cloud API</h4>
             <p className="text-sm text-gray-700 mb-3">
-              We acknowledge and appreciate the comprehensive{' '}
+              QuranLife is powered by the{' '}
               <a 
-                href="https://github.com/TarteelAI/quranic-universal-library" 
+                href="https://alquran.cloud/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-green-600 hover:text-green-700 underline"
               >
-                Quranic Universal Library (QUL)
+                AlQuran.cloud API
               </a>{' '}
-              by TarteelAI, an exceptional resource for Islamic data management.
+              - a free, open-source RESTful API providing access to the complete Holy Quran with multiple translations and recitations.
             </p>
             <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-3">
-              <h5 className="font-medium text-green-800 mb-2">QUL Features:</h5>
+              <h5 className="font-medium text-green-800 mb-2">API Features We Use:</h5>
               <ul className="text-xs text-green-700 space-y-1 list-disc pl-4">
-                <li>Comprehensive translations and tafsirs</li>
-                <li>Audio management with multiple recitations</li>
-                <li>Arabic scripts in various styles</li>
-                <li>Quranic grammar and morphology</li>
-                <li>Community-driven content (MIT License)</li>
+                <li>Complete Quran text (all 6,236 verses) in Uthmani Arabic script</li>
+                <li>Muhammad Asad's English translation</li>
+                <li>Intelligent verse search capabilities</li>
+                <li>Real-time access to authentic Quranic content</li>
+                <li>Free and open for educational/religious purposes</li>
               </ul>
             </div>
           </div>
+          
           <div>
-            <h4 className="font-semibold text-gray-800 mb-2">Our Implementation</h4>
+            <h4 className="font-semibold text-gray-800 mb-2">Our Enhancement</h4>
             <ul className="text-sm text-gray-700 space-y-1 list-disc pl-5">
-              <li>Carefully curated verses for practical spiritual guidance</li>
-              <li>Arabic text following standard Uthmani script</li>
-              <li>English translations from established scholarly works</li>
-              <li>Thematic organization aligned with personal development goals</li>
+              <li>Intelligent verse recommendations based on personal goals</li>
+              <li>Thematic organization for practical spiritual guidance</li>
+              <li>Enhanced practical guidance and dua recommendations</li>
+              <li>Smart caching for improved performance and reliability</li>
+              <li>Seamless integration with habit tracking and goal setting</li>
             </ul>
           </div>
+          
           <div>
-            <h4 className="font-semibold text-gray-800 mb-2">Future Enhancements</h4>
+            <h4 className="font-semibold text-gray-800 mb-2">Translation Source</h4>
             <p className="text-sm text-gray-700">
-              We're exploring integration with QUL's comprehensive database to enhance QuranLife's 
-              capabilities while maintaining our focus on practical spiritual development.
+              English translations are from <strong>Muhammad Asad's "The Message of the Qur'an"</strong>, 
+              known for its scholarly approach and comprehensive commentary, providing contextual understanding 
+              for modern readers.
             </p>
           </div>
+          
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
             <p className="text-xs text-blue-800">
-              <strong>For Complete Quranic Study:</strong> Visit{' '}
+              <strong>For Comprehensive Quranic Study:</strong> Visit{' '}
               <a 
-                href="https://qul.tarteel.ai/" 
+                href="https://quran.com/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:text-blue-700 underline"
               >
-                QUL's official site
+                Quran.com
               </a>
-              , consult qualified Islamic scholars, or use established platforms like Quran.com.
+              {' '}or{' '}
+              <a 
+                href="https://alquran.cloud/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-700 underline"
+              >
+                AlQuran.cloud
+              </a>
+              , consult qualified Islamic scholars, or use established Islamic learning platforms.
             </p>
           </div>
         </div>

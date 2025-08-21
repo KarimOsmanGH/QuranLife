@@ -8,18 +8,19 @@ QuranLife is a Progressive Web App (PWA) built with Next.js 14, TypeScript, and 
 
 ### 🚀 **Core Features**
 - **📊 Daily Habit Tracking**: Track 5 daily prayers, Quran reading, and custom habits
-- **📖 Smart Quranic Guidance**: Daily verses with Arabic text, English translation, reflections, and practical guidance
-- **🎯 Intelligent Goal Management**: Set and manage life goals with AI-powered Quranic verse matching
+- **📖 Smart Quranic Guidance**: Live API access to complete Quran with Arabic text, English translation, reflections, and practical guidance
+- **🎯 Intelligent Goal Management**: Set and manage life goals with AI-powered verse matching from all 6,236 Quranic verses
 - **📈 Progress Dashboard**: Visual progress tracking with responsive two-column layout
-- **💾 Secure Local Storage**: All data stored safely in your browser with encryption
+- **💾 Secure Local Storage**: All personal data stored safely in your browser with encryption
 - **📱 PWA Support**: Install as an app on your device with offline functionality
 
 ### 🧠 **Smart Features**
-- **🤖 SmartGuidance AI**: Click 📖 next to any goal for personalized Quranic guidance
-- **🎯 Intelligent Verse Matching**: Goals automatically matched with relevant Quranic wisdom
+- **🤖 SmartGuidance AI**: Click 📖 next to any goal for personalized Quranic guidance from live API
+- **🎯 Intelligent Verse Search**: Real-time verse matching from the complete Quran using AlQuran.cloud API
 - **📋 Practical Action Steps**: Each verse includes actionable spiritual and practical guidance
 - **🤲 Dua Recommendations**: Suggested prayers (duas) for achieving your goals
 - **🔄 Related Habit Suggestions**: Discover relevant Islamic practices for your goals
+- **⚡ Smart Caching**: Intelligent caching system for improved performance and offline support
 
 ### 🎨 **Design & UX**
 - **🌈 Consistent Green-Blue Theme**: Islamic colors throughout the app
@@ -40,6 +41,7 @@ QuranLife is a Progressive Web App (PWA) built with Next.js 14, TypeScript, and 
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS with custom green-blue theme
 - **UI Components**: ShadCN UI with Framer Motion animations
+- **API Integration**: AlQuran.cloud REST API for live Quranic data
 - **PWA**: Progressive Web App with service worker
 - **Security**: CSP headers, input validation, secure storage utilities
 - **SEO**: Complete meta tags, Open Graph, JSON-LD structured data
@@ -105,12 +107,14 @@ quranlife/
 │   ├── VerseCard.tsx            # Quranic verse display with clean design
 │   ├── GoalsList.tsx            # Goals CRUD with edit/delete functionality
 │   └── SmartGuidance.tsx        # AI-powered Quranic guidance component
-├── lib/                         # Utilities and security
+├── lib/                         # Utilities and API integration
 │   ├── utils.ts                 # Tailwind class utilities
-│   └── security.ts              # Secure storage and validation utilities
+│   ├── security.ts              # Secure storage and validation utilities
+│   ├── quran-api.ts             # AlQuran.cloud API service integration
+│   └── quran-engine.ts          # AI-powered verse matching and guidance engine
 ├── public/
 │   ├── data/
-│   │   └── enhanced-quran.json  # 20+ verses with practical guidance
+│   │   └── enhanced-quran.json  # Legacy data (now using live API)
 │   ├── icons/                   # PWA icons (192x192, 512x512)
 │   ├── favicon.svg              # Islamic-themed SVG favicon
 │   ├── manifest.json            # PWA manifest with proper config
@@ -124,47 +128,60 @@ quranlife/
     └── package.json             # Dependencies and scripts
 ```
 
-## 📊 Data Structure
+## 📊 API Integration & Data Sources
 
-### Enhanced Quranic Verses (`public/data/enhanced-quran.json`)
+### **AlQuran.cloud API Integration**
 
-**Data Sources & Attribution:**
-- Quranic verses from widely accepted translations
-- English translations based on established scholarly works
-- Arabic text following standard Uthmani script
-- Enhanced with practical guidance, life applications, and dua connections
-- Thematic organization for intelligent goal matching
+QuranLife is powered by the [AlQuran.cloud API](https://alquran.cloud/) - a free, open-source RESTful API providing access to the complete Holy Quran with multiple translations and recitations.
 
-### Structure
-```json
-{
-  "verses": [
-    {
-      "id": 1,
-      "surah": "Al-Baqarah",
-      "surah_number": 2,
-      "ayah": 286,
-      "text_ar": "Arabic text",
-      "text_en": "English translation",
-      "theme": ["Patience", "Strength"],
-      "reflection": "Personal reflection text",
-      "practical_guidance": [
-        "Take small, consistent steps toward your goals",
-        "Set realistic deadlines and expectations"
-      ],
-      "life_application": "Real-world scenarios and examples",
-      "dua_connection": "Related prayers and supplications"
-    }
-  ],
-  "themes": {
-    "Patience": {
-      "description": "Building patience through faith",
-      "practical_steps": ["Practice gratitude", "Focus on process"],
-      "related_habits": ["Morning dhikr", "Evening reflection"]
-    }
-  }
+**Live API Features:**
+- **Complete Quran Access**: All 6,236 verses in real-time
+- **Uthmani Arabic Script**: Authentic Arabic text from established sources
+- **Muhammad Asad Translation**: High-quality English translation with scholarly commentary
+- **Intelligent Search**: Verse search capabilities across the entire Quran
+- **Multiple Editions**: Support for different Arabic scripts and translations
+- **Free & Open**: No authentication required, educational/religious use encouraged
+
+**API Service Structure (`lib/quran-api.ts`):**
+```typescript
+interface Verse {
+  number: number;
+  text: string;
+  numberInSurah: number;
+  juz: number;
+  page: number;
+  translation?: string;
 }
+
+interface RandomVerseResponse {
+  verse: Verse;
+  surah: Surah;
+  theme?: string;
+  context?: string;
+}
+
+// Core API methods
+- getSurah(surahNumber): Get complete Surah with translations
+- getVerse(surahNumber, verseNumber): Get specific verse
+- getRandomVerse(): Intelligent random verse selection
+- searchVerses(query): Search across all verses
+- getAllSurahs(): Get Surah metadata
 ```
+
+**Enhanced QuranEngine (`lib/quran-engine.ts`):**
+```typescript
+// AI-powered features built on top of the API
+- getDailyVerse(): Smart daily verse recommendation
+- findVersesForGoal(goal): Match goals with relevant verses
+- getThematicCollection(theme): Curated verse collections
+- getSmartRecommendation(userGoals, habits): Personalized guidance
+```
+
+**Caching & Performance:**
+- Intelligent 5-minute cache for frequently accessed verses
+- Fallback verses for offline scenarios
+- Rate limiting and error handling
+- Optimized API calls to reduce latency
 
 ### Habits Interface
 ```typescript
@@ -245,37 +262,45 @@ QuranLife is built with security and privacy as top priorities:
 
 ## 📚 Data Sources & Acknowledgments
 
-**Quranic Universal Library (QUL)**
+### **AlQuran.cloud API**
 
-We acknowledge and appreciate the comprehensive [Quranic Universal Library (QUL)](https://github.com/TarteelAI/quranic-universal-library) by TarteelAI, which is an exceptional resource for Quranic data management. QUL provides:
+QuranLife is powered by the exceptional [AlQuran.cloud API](https://alquran.cloud/) - a free, open-source RESTful API providing comprehensive access to the Holy Quran.
 
-- Comprehensive Quranic translations and tafsirs
-- Audio management with multiple recitations
-- Arabic scripts in various styles
-- Mushaf layouts and typography
-- Quranic grammar and morphology data
-- Multi-language support
-- Community-driven content management
+**What AlQuran.cloud Provides:**
+- **Complete Quran**: Access to all 6,236 verses with authentic Arabic text
+- **Multiple Translations**: Including Muhammad Asad's scholarly translation
+- **Multiple Arabic Scripts**: Uthmani, Simple, and other authentic scripts
+- **Audio Support**: Multiple recitations (we don't currently use this feature)
+- **Free & Open**: Educational and religious use encouraged
+- **REST API**: Simple, reliable HTTP API with no authentication required
+- **Community-Driven**: Actively maintained and continuously improved
 
-*License: MIT License - Available at [qul.tarteel.ai](https://qul.tarteel.ai/)*
+**Our Enhancement Layer:**
 
-**Our Implementation**
+QuranLife builds intelligent features on top of AlQuran.cloud's robust foundation:
 
-QuranLife uses carefully curated Quranic content that focuses on practical spiritual guidance and personal development. Our enhanced data includes:
+- **🎯 Smart Goal Matching**: AI-powered verse recommendations based on personal goals
+- **🧠 Intelligent Search**: Enhanced verse discovery beyond simple text matching
+- **📋 Practical Guidance**: Each verse enriched with actionable spiritual steps
+- **🤲 Dua Integration**: Connected prayers and supplications for deeper practice
+- **⚡ Performance Optimization**: Smart caching and offline fallbacks
+- **🎨 Beautiful UI**: Clean, Islamic-themed interface for better user experience
 
-- 20+ selected verses with English translations from established scholarly works
-- Arabic text following standard Uthmani script
-- **Practical guidance** with actionable steps for personal growth
-- **Life applications** with real-world scenarios and examples
-- **Dua connections** linking verses to relevant prayers
-- **Thematic organization** for intelligent goal-verse matching
-- **SmartGuidance AI** for personalized spiritual guidance
+**Translation Source:**
+English translations are from **Muhammad Asad's "The Message of the Qur'an"**, known for its scholarly approach and comprehensive commentary, providing contextual understanding for modern readers.
 
-For comprehensive Quranic study, we recommend:
-- Visiting [QUL's official site](https://qul.tarteel.ai/) for complete resources
-- Consulting qualified Islamic scholars
-- Using established platforms like Quran.com, Tanzil.net
-- Connecting with local Islamic centers and mosques
+### **For Comprehensive Quranic Study**
+
+While QuranLife focuses on practical spiritual development, for complete Quranic study we recommend:
+- **[AlQuran.cloud](https://alquran.cloud/)** - The API that powers our app
+- **[Quran.com](https://quran.com/)** - Comprehensive online Quran platform
+- **[Tanzil.net](https://tanzil.net/)** - Various Quranic texts and translations
+- **Qualified Islamic Scholars** - For proper interpretation and guidance
+- **Local Islamic Centers** - For community learning and support
+
+### **Open Source Appreciation**
+
+We're grateful to the AlQuran.cloud team for providing this invaluable service to the global Muslim community. Their commitment to making Quranic content freely accessible enables projects like QuranLife to focus on innovative applications while building on solid, authentic foundations.
 
 ## 🕌 Islamic Principles
 

@@ -1,23 +1,27 @@
 {
   "_metadata": {
-    "description": "Enhanced Quranic data for QuranLife - Personal growth with Quran",
+    "description": "Legacy enhanced Quranic data for QuranLife - Now using AlQuran.cloud API",
     "version": "1.0.0",
+    "status": "DEPRECATED - App now uses live AlQuran.cloud API for all Quranic data",
     "sources": {
-      "translations": "Curated from established scholarly works",
-      "arabic_text": "Standard Uthmani script",
-      "practical_guidance": "Original content for spiritual development"
+      "current_data_source": "AlQuran.cloud REST API",
+      "api_url": "https://api.alquran.cloud/v1",
+      "translations": "Muhammad Asad translation via AlQuran.cloud",
+      "arabic_text": "Uthmani script via AlQuran.cloud",
+      "practical_guidance": "Enhanced by QuranLife AI engine"
     },
     "acknowledgments": {
-      "qul": {
-        "name": "Quranic Universal Library (QUL)",
-        "provider": "TarteelAI",
-        "url": "https://github.com/TarteelAI/quranic-universal-library",
-        "license": "MIT",
-        "description": "Comprehensive Islamic resource for Quranic data management"
+      "alquran_cloud": {
+        "name": "AlQuran.cloud API",
+        "provider": "AlQuran.cloud Team",
+        "url": "https://alquran.cloud/",
+        "api_docs": "https://alquran.cloud/api",
+        "license": "Free for educational and religious use",
+        "description": "Complete Quran access with authentic Arabic text and translations"
       }
     },
-    "license": "Content curated for QuranLife under fair use for educational and spiritual purposes",
-    "future_enhancements": "Considering integration with QUL's comprehensive database"
+    "license": "Content now sourced from AlQuran.cloud API under their terms of use",
+    "migration_note": "This file is kept for legacy compatibility but is no longer used as primary data source"
   },
   "verses": [
     {
