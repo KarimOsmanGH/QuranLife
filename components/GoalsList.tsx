@@ -20,9 +20,10 @@ interface GoalsListProps {
   onAddGoal: (goal: Omit<Goal, 'id'>) => void;
   onEditGoal: (goalId: string, updatedGoal: Omit<Goal, 'id'>) => void;
   onRemoveGoal: (goalId: string) => void;
+  highlightedGoalId?: string | null;
 }
 
-export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, onRemoveGoal }: GoalsListProps) {
+export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, onRemoveGoal, highlightedGoalId }: GoalsListProps) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingGoal, setEditingGoal] = useState<string | null>(null);
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
@@ -211,6 +212,10 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
               goal.completed 
                 ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-300 shadow-md' 
                 : 'bg-white border-gray-200 hover:border-green-300 hover:shadow-lg shadow-sm'
+            } ${
+              highlightedGoalId === goal.id 
+                ? 'ring-2 ring-green-400 ring-opacity-50 shadow-xl border-green-400 bg-green-50' 
+                : ''
             }`}
           >
             {editingGoal === goal.id ? (

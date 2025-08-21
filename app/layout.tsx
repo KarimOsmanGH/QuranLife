@@ -170,11 +170,14 @@ export default function RootLayout({
               <div className="flex items-center justify-between">
                 <Link href="/" className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">Q</span>
+                    <span className="text-white font-bold text-lg">QL</span>
                   </div>
-                  <span className="text-xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                    QuranLife
-                  </span>
+                  <div>
+                    <span className="text-xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                      QuranLife
+                    </span>
+                    <p className="text-xs text-gray-600">Personal growth with Quran</p>
+                  </div>
                 </Link>
                 
                 <nav className="flex space-x-8">
@@ -198,6 +201,22 @@ export default function RootLayout({
           {/* Mobile Top Navigation */}
           <nav className="md:hidden bg-white border-b border-gray-200 px-4 py-3">
             <div className="max-w-4xl mx-auto">
+              {/* Mobile Logo */}
+              <div className="flex items-center justify-center mb-3">
+                <Link href="/" className="flex items-center space-x-2">
+                  <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">QL</span>
+                  </div>
+                  <div className="text-center">
+                    <span className="text-lg font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                      QuranLife
+                    </span>
+                    <p className="text-xs text-gray-600">Personal growth with Quran</p>
+                  </div>
+                </Link>
+              </div>
+              
+              {/* Mobile Navigation */}
               <div className="flex justify-around">
                 <Link href="/" className="flex flex-col items-center py-2 px-3 text-gray-600 hover:text-green-600 transition-colors">
                   <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -240,15 +259,8 @@ export default function RootLayout({
                 {/* Brand Section */}
                 <div className="flex flex-col items-start">
                   <div className="flex items-center gap-2 mb-4">
-                    <div className="w-8 h-8 flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="w-8 h-8">
-                        <circle cx="16" cy="16" r="16" fill="#22c55e"/>
-                        <path d="M12 8 C12 8, 8 12, 8 16 C8 20, 12 24, 12 24 C10 22, 9 19, 9 16 C9 13, 10 10, 12 8 Z" fill="white"/>
-                        <polygon points="20,9 21,12 24,12 21.5,14 22.5,17 20,15 17.5,17 18.5,14 16,12 19,12" fill="white"/>
-                        <circle cx="13" cy="11" r="0.8" fill="white" opacity="0.7"/>
-                        <circle cx="14.5" cy="20" r="0.6" fill="white" opacity="0.5"/>
-                        <circle cx="23" cy="19" r="0.5" fill="white" opacity="0.6"/>
-                      </svg>
+                    <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
+                      <span className="text-white font-bold text-lg">QL</span>
                     </div>
                     <div>
                       <h3 className="text-lg font-bold text-gray-800">QuranLife</h3>

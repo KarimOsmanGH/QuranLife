@@ -18,11 +18,12 @@ interface Goal {
 
 export default function GoalsPage() {
   const [goals, setGoals] = useState<Goal[]>([]);
-  const [activeFilter, setActiveFilter] = useState<string>('all'); // New filter state
+  const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [calendarSelectedGoal, setCalendarSelectedGoal] = useState<string | null>(null);
 
   // Load data from localStorage on mount
   useEffect(() => {
-    const savedGoals = storage.get<Goal[]>('quranlife-goals', []);
+    const savedGoals = storage.get('quranlife-goals', []);
     setGoals(savedGoals);
   }, []);
 
@@ -50,13 +51,27 @@ export default function GoalsPage() {
   };
 
   const editGoal = (goalId: string, updatedGoal: Omit<Goal, 'id'>) => {
-    setGoals(prev => 
-      prev.map(goal => 
-        goal.id === goalId 
-          ? { ...goal, ...updatedGoal }
-          : goal
-      )
+    const updatedGoals = goals.map(goal => 
+      goal.id === goalId ? { ...goal, ...updatedGoal } : goal
     );
+    setGoals(updatedGoals);
+    storage.set('quranlife-goals', updatedGoals);
+  };
+
+  const handleGoalClick = (goal: Goal) => {
+    // Set the goal as selected from calendar
+    setCalendarSelectedGoal(goal.id);
+    
+    // Scroll to the goals list
+    const goalsSection = document.querySelector('[data-goals-list]');
+    if (goalsSection) {
+      goalsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    // Clear the selection after a delay to allow for visual feedback
+    setTimeout(() => {
+      setCalendarSelectedGoal(null);
+    }, 3000);
   };
 
   const removeGoal = (goalId: string) => {
@@ -231,13 +246,16 @@ export default function GoalsPage() {
               </svg>
             }
           >
-            <GoalsList 
-              goals={filteredGoals} 
-              onToggleGoal={toggleGoal} 
-              onAddGoal={addGoal}
-              onEditGoal={editGoal}
-              onRemoveGoal={removeGoal}
-            />
+            <div data-goals-list>
+              <GoalsList 
+                goals={filteredGoals} 
+                onToggleGoal={toggleGoal} 
+                onAddGoal={addGoal}
+                onEditGoal={editGoal}
+                onRemoveGoal={removeGoal}
+                highlightedGoalId={calendarSelectedGoal}
+              />
+            </div>
           </DashboardCard>
         </div>
       </div>
@@ -245,7 +263,7 @@ export default function GoalsPage() {
       {/* Goals Calendar - Full Width */}
       {goals.length > 0 && (
         <div className="mt-8">
-          <GoalsCalendar goals={goals} />
+          <GoalsCalendar goals={goals} onGoalClick={handleGoalClick} />
         </div>
       )}
 
@@ -337,6 +355,7 @@ export default function GoalsPage() {
             onAddGoal={addGoal}
             onEditGoal={editGoal}
             onRemoveGoal={removeGoal}
+            highlightedGoalId={calendarSelectedGoal}
           />
         </DashboardCard>
 

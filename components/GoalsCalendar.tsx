@@ -15,9 +15,10 @@ interface Goal {
 
 interface GoalsCalendarProps {
   goals: Goal[];
+  onGoalClick?: (goal: Goal) => void;
 }
 
-export default function GoalsCalendar({ goals }: GoalsCalendarProps) {
+export default function GoalsCalendar({ goals, onGoalClick }: GoalsCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const monthNames = [
@@ -95,20 +96,22 @@ export default function GoalsCalendar({ goals }: GoalsCalendarProps) {
         
         {dayGoals.length > 0 && (
           <div className="absolute inset-x-1 bottom-1 space-y-1">
-            {dayGoals.slice(0, 2).map((goal, index) => (
-              <div
+            {dayGoals.slice(0, 2).map((goal) => (
+              <button
                 key={goal.id}
-                className={`text-xs px-1 py-0.5 rounded flex items-center gap-1 ${
+                onClick={() => onGoalClick?.(goal)}
+                className={`text-xs px-1 py-0.5 rounded flex items-center gap-1 w-full text-left transition-all duration-200 hover:shadow-sm touch-manipulation ${
                   goal.completed 
-                    ? 'bg-green-100 text-green-700 line-through' 
-                    : 'bg-gray-100 text-gray-700'
-                }`}
-                title={goal.title}
+                    ? 'bg-green-100 text-green-700 line-through hover:bg-green-200' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md'
+                } ${onGoalClick ? 'cursor-pointer' : 'cursor-default'}`}
+                title={`${goal.title} - Click to ${goal.completed ? 'view' : 'edit'}`}
+                disabled={!onGoalClick}
               >
                 <span className="text-xs">{getCategoryEmoji(goal.category)}</span>
                 <div className={`w-2 h-2 rounded-full ${getPriorityColor(goal.priority)}`}></div>
                 <span className="truncate">{goal.title.slice(0, 8)}...</span>
-              </div>
+              </button>
             ))}
             {dayGoals.length > 2 && (
               <div className="text-xs text-gray-500 text-center">
