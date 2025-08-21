@@ -232,6 +232,37 @@ export default function Dashboard() {
             </div>
           )}
 
+          {/* Quick Add Goals - shown when no goals exist */}
+          {totalGoals === 0 && (
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+              <div className="text-center mb-3">
+                <span className="text-2xl mb-2 block">🎯</span>
+                <h4 className="font-semibold text-gray-800 mb-1">Set Your First Goal</h4>
+                <p className="text-xs text-gray-600 mb-3">
+                  Start your spiritual journey with meaningful goals
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <a 
+                  href="/goals" 
+                  className="block w-full py-2 px-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors text-center"
+                >
+                  + Add Your First Goal
+                </a>
+                
+                <div className="text-xs text-gray-500 text-center">
+                  <p className="mb-1">💡 <strong>Popular spiritual goals:</strong></p>
+                  <div className="flex flex-wrap gap-1 justify-center">
+                    <span className="bg-white/60 px-2 py-1 rounded text-xs">Daily Quran</span>
+                    <span className="bg-white/60 px-2 py-1 rounded text-xs">Learn Arabic</span>
+                    <span className="bg-white/60 px-2 py-1 rounded text-xs">Memorize Surahs</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
 
         </div>
 
@@ -303,6 +334,38 @@ export default function Dashboard() {
             </div>
           )}
         </div>
+
+        {/* Mobile Quick Add Goals - when no goals exist */}
+        {totalGoals === 0 && (
+          <div className="mb-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+            <div className="text-center mb-3">
+              <span className="text-3xl mb-2 block">🎯</span>
+              <h4 className="font-semibold text-gray-800 mb-1">Set Your First Goal</h4>
+              <p className="text-sm text-gray-600 mb-4">
+                Start your spiritual journey with meaningful goals guided by Quranic wisdom
+              </p>
+            </div>
+            
+            <div className="space-y-3">
+              <a 
+                href="/goals" 
+                className="block w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors text-center"
+              >
+                + Add Your First Goal
+              </a>
+              
+              <div className="text-xs text-gray-500 text-center">
+                <p className="mb-2">💡 <strong>Popular spiritual goals:</strong></p>
+                <div className="grid grid-cols-2 gap-1">
+                  <span className="bg-white/60 px-2 py-1 rounded text-xs">Read Quran daily</span>
+                  <span className="bg-white/60 px-2 py-1 rounded text-xs">Learn Arabic</span>
+                  <span className="bg-white/60 px-2 py-1 rounded text-xs">Memorize Surahs</span>
+                  <span className="bg-white/60 px-2 py-1 rounded text-xs">Study Tafsir</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Mobile Daily Verse */}
         {dailyVerse && (
