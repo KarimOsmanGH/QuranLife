@@ -120,56 +120,11 @@ class QuranAPI {
    */
   async getVerseAudio(surahNumber: number, verseNumber: number): Promise<string | null> {
     try {
-      // First try to get audio from the API
-      const response = await fetch(
-        `${this.baseURL}/ayah/${surahNumber}:${verseNumber}/${this.audioEdition}`
-      );
-      
-      if (!response.ok) {
-        console.warn(`Audio not available for ${surahNumber}:${verseNumber}`);
-        return null;
-      }
-      
-      const data = await response.json();
-      let audioUrl = data.data?.audio || null;
-      
-      // If we get a URL from Islamic Network CDN, try to use a CORS-friendly alternative
-      if (audioUrl && audioUrl.includes('cdn.islamic.network')) {
-        // Try to use a different audio source or implement a proxy
-        audioUrl = this.getAlternativeAudioUrl(surahNumber, verseNumber);
-      }
-      
-      return audioUrl;
-      
+      // Always return our proxy URL; upstream CORS is handled server-side
+      const proxied = `/api/audio?surah=${encodeURIComponent(String(surahNumber))}&ayah=${encodeURIComponent(String(verseNumber))}&edition=${encodeURIComponent(this.audioEdition)}`;
+      return proxied;
     } catch (error) {
-      console.error('Error fetching verse audio:', error);
-      // Return alternative audio URL as fallback
-      return this.getAlternativeAudioUrl(surahNumber, verseNumber);
-    }
-  }
-
-  /**
-   * Get alternative audio URL that doesn't have CORS issues
-   */
-  private getAlternativeAudioUrl(surahNumber: number, verseNumber: number): string | null {
-    try {
-      // Use a different audio source that's CORS-friendly
-      // For now, we'll use a pattern that works with some audio services
-      // This is a fallback - in production, you might want to use your own audio files
-      
-      // Option 1: Use a different audio service
-      // const audioUrl = `https://audio.example.com/quran/${surahNumber}/${verseNumber}.mp3`;
-      
-      // Option 2: Use a proxy service (you'd need to set this up)
-      // const audioUrl = `https://your-proxy.com/audio?url=${encodeURIComponent(originalUrl)}`;
-      
-      // Option 3: For now, return null to avoid CORS issues
-      // Users can still access the text and translation
-      console.log(`Audio for ${surahNumber}:${verseNumber} not available due to CORS restrictions`);
-      return null;
-      
-    } catch (error) {
-      console.error('Error generating alternative audio URL:', error);
+      console.error('Error building verse audio URL:', error);
       return null;
     }
   }
@@ -195,7 +150,7 @@ class QuranAPI {
         throw new Error('Missing Arabic or English text for verse');
       }
 
-      // Get audio URL for this verse (may return null due to CORS)
+      // Get audio URL via our proxy (works in browsers)
       const audioUrl = await this.getVerseAudio(surahNumber, verseNumber);
 
       return {

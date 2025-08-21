@@ -169,48 +169,48 @@ export default function VerseCard({ verse }: VerseCardProps) {
           {verse.surah} ({verse.surah_number}:{verse.ayah})
         </h4>
         
-        {/* Audio button - show only if audio URL is available and not blocked by CORS */}
-        {audioUrl && !audioUrl.includes('cdn.islamic.network') ? (
+        {/* Audio controls */}
+        {audioUrl ? (
           <button
             onClick={handleAudioToggle}
-            onTouchStart={() => {}} // Enable iOS touch events
+            onTouchStart={() => {}}
             disabled={isLoading}
             className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 touch-manipulation ${
               isPlaying
                 ? 'bg-green-500 text-white shadow-md hover:bg-green-600 active:bg-green-700'
                 : 'bg-green-100 text-green-700 hover:bg-green-200 active:bg-green-300'
             } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-            style={{ minHeight: '44px', minWidth: '44px' }} // iOS minimum touch target
+            style={{ minHeight: '44px', minWidth: '44px' }}
           >
-          {isLoading ? (
-            <>
-              <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              <span className="hidden sm:inline">Loading...</span>
-            </>
-          ) : isPlaying ? (
-            <>
-              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M6 4h4v16H6zm8 0h4v16h-4z"/>
-              </svg>
-              <span className="hidden sm:inline">Pause</span>
-            </>
-          ) : (
-            <>
-              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z"/>
-              </svg>
-              <span className="hidden sm:inline">Listen</span>
-            </>
-          )}
-        </button>
-        ) : audioUrl && audioUrl.includes('cdn.islamic.network') ? (
+            {isLoading ? (
+              <>
+                <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span className="hidden sm:inline">Loading...</span>
+              </>
+            ) : isPlaying ? (
+              <>
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M6 4h4v16H6zm8 0h4v16h-4z"/>
+                </svg>
+                <span className="hidden sm:inline">Pause</span>
+              </>
+            ) : (
+              <>
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+                <span className="hidden sm:inline">Listen</span>
+              </>
+            )}
+          </button>
+        ) : (
           <div className="text-xs text-gray-500 bg-gray-100 px-3 py-2 rounded-full">
-            Audio not available due to browser restrictions
+            Audio not available for this verse
           </div>
-        ) : null}
+        )}
       </div>
       
       {/* Error Message */}
