@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
 
 interface DashboardCardProps {
-  title: string;
+  title: string | ReactNode;
   children: ReactNode;
   className?: string;
   icon?: ReactNode;
