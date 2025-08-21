@@ -386,16 +386,16 @@ export default function Dashboard() {
               <h4 className="font-semibold text-gray-800 mb-3">🎯 Goals Progress</h4>
               <div className="space-y-3">
                 <div>
-                  <div className="text-2xl font-bold text-blue-600">{completedGoals}/{totalGoals}</div>
+                  <div className="text-2xl font-bold text-green-600">{completedGoals}/{totalGoals}</div>
                   <div className="text-sm text-gray-600">Goals Completed</div>
                   <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                     <div 
-                      className="bg-blue-500 h-2 rounded-full transition-all duration-500"
+                      className="bg-green-500 h-2 rounded-full transition-all duration-500"
                       style={{ width: `${goalsProgressPercentage}%` }}
                     ></div>
                   </div>
                 </div>
-                <a href="/goals" className="text-xs text-blue-600 hover:text-blue-700 block">
+                <a href="/goals" className="text-xs text-green-600 hover:text-green-700 block">
                   Manage your goals →
                 </a>
               </div>
@@ -474,11 +474,11 @@ export default function Dashboard() {
           
           {totalGoals > 0 && (
             <div className="bg-white rounded-xl p-4 border border-gray-100">
-              <div className="text-2xl font-bold text-blue-600">{completedGoals}/{totalGoals}</div>
+              <div className="text-2xl font-bold text-green-600">{completedGoals}/{totalGoals}</div>
               <div className="text-sm text-gray-600">Goals Completed</div>
               <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                 <div 
-                  className="bg-blue-500 h-2 rounded-full transition-all duration-500"
+                  className="bg-green-500 h-2 rounded-full transition-all duration-500"
                   style={{ width: `${goalsProgressPercentage}%` }}
                 ></div>
               </div>
