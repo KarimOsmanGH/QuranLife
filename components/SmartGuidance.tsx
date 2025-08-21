@@ -13,7 +13,7 @@ interface SmartGuidanceProps {
 export default function SmartGuidance({ goalTitle, goalDescription = '', goalCategory }: SmartGuidanceProps) {
   const [guidance, setGuidance] = useState<GoalMatchResult[]>([]);
   const [loading, setLoading] = useState(true);
-  const [expanded, setExpanded] = useState<number | null>(null);
+  const [expanded, setExpanded] = useState<number | null>(0); // Open first item by default
 
   useEffect(() => {
     loadGuidance();
@@ -72,11 +72,6 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
 
   return (
     <div className="space-y-4">
-      <h4 className="font-semibold text-gray-800 flex items-center gap-2">
-        <span>🕌</span>
-        Islamic Guidance for Your Goal
-      </h4>
-      
       {guidance.map((match, index) => (
         <motion.div
           key={index}
@@ -92,9 +87,6 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
                 {match.verse.surah} ({match.verse.surah_number}:{match.verse.ayah})
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                  {Math.round(match.relevanceScore * 100)}% match
-                </span>
                 <button
                   onClick={() => handleToggleExpand(index)}
                   className="text-green-600 hover:text-green-700"
@@ -137,10 +129,6 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
                 {/* Practical Steps */}
                 {match.practicalSteps.length > 0 && (
                   <div className="bg-white rounded-lg p-4">
-                    <h5 className="font-medium text-gray-800 mb-3 flex items-center gap-2">
-                      <span>✅</span>
-                      Practical Steps
-                    </h5>
                     <ul className="space-y-2">
                       {match.practicalSteps.map((step, stepIndex) => (
                         <li key={stepIndex} className="text-sm text-gray-700 flex items-start gap-2">
@@ -155,10 +143,6 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
                 {/* Dua Recommendation */}
                 {match.duaRecommendation && (
                   <div className="bg-white rounded-lg p-4">
-                    <h5 className="font-medium text-gray-800 mb-2 flex items-center gap-2">
-                      <span>🤲</span>
-                      Recommended Dua
-                    </h5>
                     <p className="text-sm text-gray-700 italic bg-gray-50 p-3 rounded">
                       {match.duaRecommendation}
                     </p>
@@ -168,10 +152,6 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
                 {/* Related Habits */}
                 {match.relatedHabits.length > 0 && (
                   <div className="bg-white rounded-lg p-4">
-                    <h5 className="font-medium text-gray-800 mb-3 flex items-center gap-2">
-                      <span>🔄</span>
-                      Related Habits
-                    </h5>
                     <div className="flex flex-wrap gap-2">
                       {match.relatedHabits.map((habit, habitIndex) => (
                         <span
@@ -188,10 +168,6 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
                 {/* Life Application */}
                 {match.verse.life_application && (
                   <div className="bg-white rounded-lg p-4">
-                    <h5 className="font-medium text-gray-800 mb-2 flex items-center gap-2">
-                      <span>🎯</span>
-                      Life Application
-                    </h5>
                     <p className="text-sm text-gray-700">
                       {match.verse.life_application}
                     </p>
