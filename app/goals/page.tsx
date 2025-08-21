@@ -96,10 +96,10 @@ export default function GoalsPage() {
   const getCategoryColor = (category: string, isActive: boolean) => {
     const colors: Record<string, string> = {
       spiritual: isActive ? 'bg-green-100 border-green-300 text-green-800' : 'bg-white hover:bg-green-50 border-gray-100 text-gray-800',
-      personal: isActive ? 'bg-blue-100 border-blue-300 text-blue-800' : 'bg-white hover:bg-blue-50 border-gray-100 text-gray-800',
-      health: isActive ? 'bg-red-100 border-red-300 text-red-800' : 'bg-white hover:bg-red-50 border-gray-100 text-gray-800',
-      career: isActive ? 'bg-purple-100 border-purple-300 text-purple-800' : 'bg-white hover:bg-purple-50 border-gray-100 text-gray-800',
-      family: isActive ? 'bg-orange-100 border-orange-300 text-orange-800' : 'bg-white hover:bg-orange-50 border-gray-100 text-gray-800'
+      personal: isActive ? 'bg-emerald-100 border-emerald-300 text-emerald-800' : 'bg-white hover:bg-emerald-50 border-gray-100 text-gray-800',
+      health: isActive ? 'bg-teal-100 border-teal-300 text-teal-800' : 'bg-white hover:bg-teal-50 border-gray-100 text-gray-800',
+      career: isActive ? 'bg-lime-100 border-lime-300 text-lime-800' : 'bg-white hover:bg-lime-50 border-gray-100 text-gray-800',
+      family: isActive ? 'bg-green-200 border-green-400 text-green-900' : 'bg-white hover:bg-green-50 border-gray-100 text-gray-800'
     };
     return colors[category] || (isActive ? 'bg-gray-100 border-gray-300 text-gray-800' : 'bg-white hover:bg-gray-50 border-gray-100 text-gray-800');
   };
@@ -119,7 +119,7 @@ export default function GoalsPage() {
           <div className="text-sm text-gray-600">Completed</div>
         </div>
         <div className="bg-white rounded-xl p-4 border border-gray-100">
-          <div className="text-2xl font-bold text-blue-600">{totalGoals - completedGoals}</div>
+          <div className="text-2xl font-bold text-green-600">{totalGoals - completedGoals}</div>
           <div className="text-sm text-gray-600">In Progress</div>
         </div>
         <div className="bg-white rounded-xl p-4 border border-gray-100">
@@ -140,7 +140,7 @@ export default function GoalsPage() {
               <div className="text-sm text-gray-600">Completed Goals</div>
             </div>
             <div className="bg-white rounded-xl p-4 border border-gray-100">
-              <div className="text-2xl font-bold text-blue-600">{totalGoals - completedGoals}</div>
+              <div className="text-2xl font-bold text-green-600">{totalGoals - completedGoals}</div>
               <div className="text-sm text-gray-600">In Progress</div>
             </div>
             <div className="bg-white rounded-xl p-4 border border-gray-100">
