@@ -12,7 +12,7 @@ interface Goal {
   category: string;
   dueDate?: string;
   priority: 'low' | 'medium' | 'high';
-  recurring?: 'none' | 'daily' | 'weekly' | 'monthly';
+  recurring?: 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly';
   lastCompleted?: string; // Track when the recurring goal was last completed
 }
 
