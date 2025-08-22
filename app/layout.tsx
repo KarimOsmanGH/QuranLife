@@ -169,11 +169,11 @@ export default function RootLayout({
                   <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
                     <span className="text-white font-bold text-lg">QL</span>
                   </div>
-                  <div>
+                  <div className="flex items-center gap-3">
                     <span className="text-xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
                       QuranLife
                     </span>
-                    <p className="text-xs text-gray-600">Personal growth with Quran</p>
+                    <span className="text-xs text-gray-600 hidden md:inline">Personal growth with Quran</span>
                   </div>
                 </Link>
                 
@@ -201,11 +201,11 @@ export default function RootLayout({
                   <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
                     <span className="text-white font-bold text-sm">QL</span>
                   </div>
-                  <div className="text-center">
+                  <div className="flex items-center gap-2">
                     <span className="text-lg font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
                       QuranLife
                     </span>
-                    <p className="text-xs text-gray-600">Personal growth with Quran</p>
+                    <span className="text-[10px] text-gray-600 hidden xs:inline">Personal growth with Quran</span>
                   </div>
                 </Link>
               </div>
@@ -250,9 +250,9 @@ export default function RootLayout({
                     <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
                       <span className="text-white font-bold text-lg">QL</span>
                     </div>
-                    <div>
+                    <div className="flex items-center gap-2">
                       <h3 className="text-lg font-bold text-gray-800">QuranLife</h3>
-                      <p className="text-xs text-gray-600">Personal growth with Quran</p>
+                      <span className="text-xs text-gray-600">Personal growth with Quran</span>
                     </div>
                   </div>
                   <p className="text-sm text-gray-600 leading-relaxed">
