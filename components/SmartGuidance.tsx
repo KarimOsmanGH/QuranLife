@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { quranEngine, GoalMatchResult } from '@/lib/quran-engine';
 
 interface SmartGuidanceProps {
@@ -15,6 +15,8 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [expanded, setExpanded] = useState<number | null>(0); // Open first item by default
+  const [audioStates, setAudioStates] = useState<{ [key: number]: { isPlaying: boolean; isLoading: boolean; error: string | null } }>({});
+  const audioRefs = useRef<{ [key: number]: HTMLAudioElement | null }>({});
 
   useEffect(() => {
     loadGuidance();
@@ -52,6 +54,81 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
     } finally {
       setLoadingMore(false);
     }
+  };
+
+  const handleAudioToggle = async (index: number) => {
+    const audioRef = audioRefs.current[index];
+    if (!audioRef) return;
+
+    try {
+      const currentState = audioStates[index];
+      if (currentState?.isPlaying) {
+        audioRef.pause();
+        setAudioStates(prev => ({
+          ...prev,
+          [index]: { ...prev[index], isPlaying: false }
+        }));
+      } else {
+        setAudioStates(prev => ({
+          ...prev,
+          [index]: { ...prev[index], isLoading: true, error: null }
+        }));
+        
+        // Reset audio to beginning and play
+        audioRef.currentTime = 0;
+        await audioRef.play();
+        setAudioStates(prev => ({
+          ...prev,
+          [index]: { ...prev[index], isPlaying: true, isLoading: false }
+        }));
+      }
+    } catch (error) {
+      console.error('Error playing audio:', error);
+      setAudioStates(prev => ({
+        ...prev,
+        [index]: { 
+          ...prev[index], 
+          isPlaying: false, 
+          isLoading: false, 
+          error: 'Audio playback failed. Please try again.' 
+        }
+      }));
+      
+      // Clear error after 5 seconds
+      setTimeout(() => {
+        setAudioStates(prev => ({
+          ...prev,
+          [index]: { ...prev[index], error: null }
+        }));
+      }, 5000);
+    }
+  };
+
+  const handleAudioEnded = (index: number) => {
+    setAudioStates(prev => ({
+      ...prev,
+      [index]: { ...prev[index], isPlaying: false }
+    }));
+  };
+
+  const handleAudioError = (index: number) => {
+    setAudioStates(prev => ({
+      ...prev,
+      [index]: { 
+        ...prev[index], 
+        isPlaying: false, 
+        isLoading: false, 
+        error: 'Audio failed to load. Please try again.' 
+      }
+    }));
+    
+    // Clear error after 5 seconds
+    setTimeout(() => {
+      setAudioStates(prev => ({
+        ...prev,
+        [index]: { ...prev[index], error: null }
+      }));
+    }, 5000);
   };
 
   if (loading) {
@@ -105,9 +182,23 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
-                      className="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl border border-green-100 overflow-hidden"
+          className="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl border border-green-100 overflow-hidden"
         >
           <div className="p-4">
+            {/* Audio element */}
+            {match.verse.audio && (
+              <audio
+                ref={(el) => { audioRefs.current[index] = el; }}
+                src={match.verse.audio}
+                onEnded={() => handleAudioEnded(index)}
+                onError={() => handleAudioError(index)}
+                preload="metadata"
+                playsInline
+                controls={false}
+                crossOrigin="anonymous"
+              />
+            )}
+
             {/* Verse Header */}
             <div className="flex items-center justify-between mb-3">
               <div className="text-sm font-medium text-green-700">
@@ -115,20 +206,33 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
               </div>
               <div className="flex items-center gap-2">
                 {/* Audio Button */}
-                {match.verse.audio && (
+                {match.verse.audio ? (
                   <button
-                    onClick={() => {
-                      const audio = new Audio(match.verse.audio);
-                      audio.play().catch(err => console.log('Audio play failed:', err));
-                    }}
-                    className="p-2 text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors"
-                    title="Play verse recitation"
+                    onClick={() => handleAudioToggle(index)}
+                    disabled={audioStates[index]?.isLoading}
+                    className={`p-2 rounded-lg transition-all duration-200 ${
+                      audioStates[index]?.isPlaying
+                        ? 'bg-green-500 text-white hover:bg-green-600'
+                        : 'text-green-600 hover:text-green-700 hover:bg-green-50'
+                    } ${audioStates[index]?.isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                    title={audioStates[index]?.isPlaying ? "Pause verse recitation" : "Play verse recitation"}
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                    </svg>
+                    {audioStates[index]?.isLoading ? (
+                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    ) : audioStates[index]?.isPlaying ? (
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M6 4h4v16H6zm8 0h4v16h-4z"/>
+                      </svg>
+                    ) : (
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    )}
                   </button>
-                )}
+                ) : null}
                 <button
                   onClick={() => handleToggleExpand(index)}
                   className="text-green-600 hover:text-green-700"
@@ -137,6 +241,22 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
                 </button>
               </div>
             </div>
+
+            {/* Error Message */}
+            {audioStates[index]?.error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-3 p-2 bg-red-50 border border-red-200 rounded-lg"
+              >
+                <div className="flex items-center gap-2">
+                  <svg className="w-3 h-3 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                  <p className="text-xs text-red-700">{audioStates[index]?.error}</p>
+                </div>
+              </motion.div>
+            )}
 
             {/* Arabic Text */}
             <div className="text-right mb-3">
@@ -170,20 +290,50 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
               >
 
 
+                {/* Practical Steps */}
+                {match.practicalSteps && match.practicalSteps.length > 0 && (
+                  <div className="bg-white rounded-lg p-4">
+                    <h4 className="text-sm font-semibold text-green-700 mb-3">Practical Steps:</h4>
+                    <ul className="space-y-2">
+                      {match.practicalSteps.map((step, stepIndex) => (
+                        <li key={stepIndex} className="text-sm text-gray-700 flex items-start gap-2">
+                          <span className="text-green-500 mt-1">•</span>
+                          <span>{step}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
                 {/* Dua Recommendation */}
                 {match.duaRecommendation && (
                   <div className="bg-white rounded-lg p-4">
+                    <h4 className="text-sm font-semibold text-green-700 mb-2">Recommended Dua:</h4>
                     <p className="text-sm text-gray-700 italic bg-gray-50 p-3 rounded">
                       {match.duaRecommendation}
                     </p>
                   </div>
                 )}
 
-
+                {/* Related Habits */}
+                {match.relatedHabits && match.relatedHabits.length > 0 && (
+                  <div className="bg-white rounded-lg p-4">
+                    <h4 className="text-sm font-semibold text-green-700 mb-3">Related Habits:</h4>
+                    <ul className="space-y-2">
+                      {match.relatedHabits.map((habit, habitIndex) => (
+                        <li key={habitIndex} className="text-sm text-gray-700 flex items-start gap-2">
+                          <span className="text-green-500 mt-1">•</span>
+                          <span>{habit}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
                 {/* Life Application */}
                 {match.verse.life_application && (
                   <div className="bg-white rounded-lg p-4">
+                    <h4 className="text-sm font-semibold text-green-700 mb-2">Life Application:</h4>
                     <p className="text-sm text-gray-700">
                       {match.verse.life_application}
                     </p>

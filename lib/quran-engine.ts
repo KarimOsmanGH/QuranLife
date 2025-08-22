@@ -228,8 +228,26 @@ class QuranEngine {
           console.log('Direct goal search failed:', error);
         }
         
-        // Final fallback to thematic verses
-        return await this.getThematicVersesForGoal(theme, goal);
+        // Final fallback to thematic verses with variety
+        console.log('Using thematic fallback for theme:', theme);
+        const fallbackResults = await this.getThematicVersesForGoal(theme, goal);
+        
+        // If we still don't have results, try a different theme
+        if (fallbackResults.length === 0) {
+          console.log('No results for primary theme, trying alternative themes');
+          const alternativeThemes = ['guidance', 'success', 'patience', 'prayer'];
+          for (const altTheme of alternativeThemes) {
+            if (altTheme !== theme) {
+              const altResults = await this.getThematicVersesForGoal(altTheme, goal);
+              if (altResults.length > 0) {
+                console.log('Found results with alternative theme:', altTheme);
+                return altResults;
+              }
+            }
+          }
+        }
+        
+        return fallbackResults;
       }
 
       // Convert API results to goal matches with better ranking
@@ -711,27 +729,48 @@ class QuranEngine {
     );
     
     if (keyWords.length > 0) {
-      // 3. Key words combined
+      // 3. Key words combined (different combinations for variety)
       queries.push(keyWords.slice(0, 4).join(' '));
+      queries.push(keyWords.slice(0, 3).join(' '));
+      queries.push(keyWords.slice(0, 2).join(' '));
       
       // 4. Key words with theme
       queries.push(`${keyWords.slice(0, 3).join(' ')} ${theme}`);
+      queries.push(`${keyWords.slice(0, 2).join(' ')} ${theme}`);
     }
     
-    // 5. Theme-specific search terms
+    // 5. Theme-specific search terms (multiple variations)
     const themeTerms = this.getThemeSearchTerms(theme);
     if (themeTerms && themeTerms !== 'guidance wisdom') {
       queries.push(themeTerms);
+      // Add individual theme terms for better matching
+      const individualTerms = themeTerms.split(' ').slice(0, 3);
+      queries.push(individualTerms.join(' '));
     }
     
     // 6. Goal-specific theme terms
     const goalSpecificTerms = this.getGoalSpecificTerms(goal, theme);
     if (goalSpecificTerms) {
       queries.push(goalSpecificTerms);
+      // Add individual terms from goal-specific terms
+      const individualGoalTerms = goalSpecificTerms.split(' ').slice(0, 3);
+      queries.push(individualGoalTerms.join(' '));
     }
     
-    // 7. Fallback: general guidance terms
-    queries.push('guidance wisdom help');
+    // 7. Add some variety with different guidance terms
+    const guidanceVariations = [
+      'guidance wisdom help',
+      'guidance success',
+      'guidance strength',
+      'guidance patience',
+      'guidance prayer',
+      'guidance family',
+      'guidance health'
+    ];
+    
+    // Pick a random guidance variation for variety
+    const randomGuidance = guidanceVariations[Math.floor(Math.random() * guidanceVariations.length)];
+    queries.push(randomGuidance);
     
     // Remove duplicates and empty queries
     const filteredQueries = queries.filter(q => q && q.trim().length > 0);
@@ -741,34 +780,49 @@ class QuranEngine {
   private getGoalSpecificTerms(goal: string, theme: string): string {
     const goalLower = goal.toLowerCase();
     
-    // Fitness-related goals
+    // Fitness-related goals - map to Quran terms
     if (theme === 'fitness' || goalLower.includes('fitness') || goalLower.includes('exercise') || goalLower.includes('workout')) {
-      return 'strength power ability body physical';
+      return 'strength power ability strive effort work';
     }
     
-    // Health-related goals
+    // Health-related goals - map to Quran terms
     if (theme === 'health' || goalLower.includes('health') || goalLower.includes('wellness')) {
-      return 'body care trust healing';
+      return 'healing care trust body blessing';
     }
     
-    // Prayer-related goals
+    // Prayer-related goals - already Quran terms
     if (theme === 'prayer' || goalLower.includes('pray') || goalLower.includes('worship')) {
-      return 'prayer worship remembrance establish';
+      return 'prayer worship remembrance establish salah';
     }
     
-    // Success-related goals
+    // Success-related goals - map to Quran terms
     if (theme === 'success' || goalLower.includes('success') || goalLower.includes('achieve')) {
-      return 'success achievement blessing victory';
+      return 'success blessing victory triumph reward';
     }
     
-    // Family-related goals
+    // Family-related goals - map to Quran terms
     if (theme === 'family' || goalLower.includes('family') || goalLower.includes('parent')) {
-      return 'family children parents relationship';
+      return 'family children parents spouse marriage';
     }
     
-    // Patience-related goals
+    // Patience-related goals - already Quran terms
     if (theme === 'patience' || goalLower.includes('patience') || goalLower.includes('wait')) {
-      return 'patience perseverance endurance';
+      return 'patience perseverance endurance steadfast';
+    }
+    
+    // Study/learning goals - map to Quran terms
+    if (goalLower.includes('study') || goalLower.includes('learn') || goalLower.includes('read')) {
+      return 'knowledge wisdom understanding learning';
+    }
+    
+    // Work/career goals - map to Quran terms
+    if (goalLower.includes('work') || goalLower.includes('career') || goalLower.includes('job')) {
+      return 'work effort strive provision blessing';
+    }
+    
+    // Relationship goals - map to Quran terms
+    if (goalLower.includes('relationship') || goalLower.includes('friend') || goalLower.includes('love')) {
+      return 'love mercy kindness relationship friendship';
     }
     
     return '';
@@ -823,67 +877,117 @@ class QuranEngine {
     try {
       const results: QuranVerse[] = [];
       
-      // Define curated verses for different themes
+      // Define curated verses for different themes with more variety
       const themeVerses: Record<string, Array<[number, number]>> = {
         prayer: [
           [2, 43],   // Establish prayer and give zakah
           [11, 114], // Establish prayer at the two ends of the day
           [29, 45],  // Recite what has been revealed... establish prayer
           [4, 103],  // Indeed, prayer has been decreed upon the believers
-          [17, 78]   // Establish prayer at the decline of the sun
+          [17, 78],  // Establish prayer at the decline of the sun
+          [20, 14],  // Indeed, I am Allah. There is no deity except Me
+          [2, 238],  // Maintain with care the prayers
+          [31, 17],  // O my son, establish prayer
+          [70, 23],  // Who are in their prayer persistent
+          [87, 15]   // And mentions the name of his Lord and prays
         ],
         patience: [
           [2, 153],  // Indeed, Allah is with the patient
           [2, 155],  // We will surely test you with something of fear and hunger
           [3, 200],  // O you who have believed, persevere and endure
           [8, 46],   // And be patient, indeed Allah is with the patient
-          [103, 3]   // Except for those who have believed and done righteous deeds
+          [103, 3],  // Except for those who have believed and done righteous deeds
+          [2, 177],  // Righteousness is not that you turn your faces
+          [3, 186],  // You will surely be tested in your possessions
+          [16, 127], // And be patient, [O Muhammad], and your patience is not but through Allah
+          [39, 10],  // Indeed, the patient will be given their reward
+          [47, 31]   // And We will surely test you until We make evident
         ],
         success: [
           [2, 201],  // Our Lord, grant us in this world [that which is] good
           [3, 200],  // O you who have believed, persevere and endure
           [65, 3],   // And whoever relies upon Allah - then He is sufficient for him
           [94, 5],   // For indeed, with hardship [will be] ease
-          [13, 11]   // Indeed, Allah will not change the condition of a people
+          [13, 11],  // Indeed, Allah will not change the condition of a people
+          [2, 286],  // Allah does not burden a soul beyond that it can bear
+          [3, 139],  // So do not weaken and do not grieve
+          [8, 45],   // And when you are among them and lead them in prayer
+          [9, 40],   // If you do not aid him - Allah has already aided him
+          [48, 29]   // Muhammad is the Messenger of Allah
         ],
         change: [
           [13, 11],  // Indeed, Allah will not change the condition of a people
           [2, 286],  // Allah does not burden a soul beyond that it can bear
           [65, 3],   // And whoever relies upon Allah - then He is sufficient for him
           [94, 5],   // For indeed, with hardship [will be] ease
-          [2, 216]   // But perhaps you hate a thing and it is good for you
+          [2, 216],  // But perhaps you hate a thing and it is good for you
+          [3, 159],  // So by mercy from Allah, [O Muhammad]
+          [4, 29],   // O you who have believed, do not consume one another's wealth
+          [7, 96],   // And if only the people of the cities had believed
+          [8, 53],   // That is because Allah would not change a favor
+          [35, 11]   // And Allah created you from dust
         ],
         family: [
           [4, 1],    // O mankind, fear your Lord, who created you from one soul
           [17, 23],  // And your Lord has decreed that you not worship except Him
           [25, 74],  // And those who say, "Our Lord, grant us from among our spouses
           [30, 21],  // And of His signs is that He created for you from yourselves
-          [66, 6]    // O you who have believed, protect yourselves and your families
+          [66, 6],   // O you who have believed, protect yourselves and your families
+          [2, 187],  // They are clothing for you and you are clothing for them
+          [4, 19],   // O you who have believed, it is not lawful for you
+          [4, 36],   // Worship Allah and associate nothing with Him
+          [6, 151],  // Say, "Come, I will recite what your Lord has prohibited
+          [17, 24]   // And lower to them the wing of humility out of mercy
         ],
         health: [
           [2, 195],  // And do good; indeed, Allah loves the doers of good
           [7, 31],   // O children of Adam, take your adornment at every masjid
           [16, 14],  // And it is He who subjected the sea for you to eat from it
           [17, 82],  // And We send down of the Quran that which is healing
-          [26, 80]   // And when I am ill, it is He who cures me
+          [26, 80],  // And when I am ill, it is He who cures me
+          [2, 168],  // O mankind, eat from whatever is on earth
+          [5, 88],   // And eat of what Allah has provided for you
+          [16, 69],  // Then eat from all the fruits
+          [39, 21],  // Have you not seen that Allah sends down rain
+          [80, 24]   // Then let mankind look at his food
+        ],
+        fitness: [
+          [2, 195],  // And do good; indeed, Allah loves the doers of good
+          [3, 139],  // So do not weaken and do not grieve
+          [8, 45],   // And when you are among them and lead them in prayer
+          [9, 40],   // If you do not aid him - Allah has already aided him
+          [22, 78],  // And strive for Allah with the striving due to Him
+          [29, 69],  // And those who strive for Us - We will surely guide them
+          [47, 31],  // And We will surely test you until We make evident
+          [61, 4],   // Indeed, Allah loves those who fight in His cause
+          [73, 20],  // Indeed, your Lord knows, [O Muhammad]
+          [110, 3]   // Then exalt [Him] with praise of your Lord
         ],
         anxiety: [
           [2, 286],  // Allah does not burden a soul beyond that it can bear
           [13, 28],  // Those who have believed and whose hearts are assured
           [65, 3],   // And whoever relies upon Allah - then He is sufficient for him
           [94, 5],   // For indeed, with hardship [will be] ease
-          [113, 1]   // Say, "I seek refuge in the Lord of daybreak"
+          [113, 1],  // Say, "I seek refuge in the Lord of daybreak"
+          [2, 255],  // Allah - there is no deity except Him
+          [3, 8],    // Our Lord, let not our hearts deviate
+          [7, 200],  // And if an evil suggestion comes to you from Satan
+          [16, 98],  // So when you recite the Quran
+          [41, 44]   // And if We had made it a non-Arabic Quran
         ]
       };
 
       // Get verses for the specific theme, or fall back to general guidance
-      const refs = themeVerses[theme] || themeVerses.success || [
+      let refs = themeVerses[theme] || themeVerses.success || [
         [2, 201],   // Our Lord, grant us in this world [that which is] good
         [65, 3],    // And whoever relies upon Allah - then He is sufficient for him
         [94, 5],    // For indeed, with hardship [will be] ease
         [2, 286],   // Allah does not burden a soul beyond that it can bear
         [13, 11]    // Indeed, Allah will not change the condition of a people
       ];
+
+      // Shuffle the verses to get variety
+      refs = refs.sort(() => Math.random() - 0.5);
 
       // Fetch verses (limit to 3 for performance)
       for (const [s, a] of refs.slice(0, 3)) {

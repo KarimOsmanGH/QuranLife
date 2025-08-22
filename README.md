@@ -12,6 +12,7 @@ QuranLife is a Progressive Web App (PWA) built with Next.js 14, TypeScript, and 
 - **🎯 Intelligent Goal Management**: Set and manage life goals with AI-powered verse matching from all 6,236 Quranic verses
 - **📈 Progress Dashboard**: Visual progress tracking with responsive two-column layout
 - **💾 Secure Local Storage**: All personal data stored safely in your browser with encryption
+- **📤 Data Export**: Export all your data as JSON for backup or transfer
 - **📱 PWA Support**: Install as an app on your device with offline functionality
 
 ### 🧠 **Smart Features**
@@ -20,6 +21,7 @@ QuranLife is a Progressive Web App (PWA) built with Next.js 14, TypeScript, and 
 - **📋 Practical Action Steps**: Each verse includes actionable spiritual and practical guidance
 - **🤲 Dua Recommendations**: Suggested prayers (duas) for achieving your goals
 - **🔄 Related Habit Suggestions**: Discover relevant Islamic practices for your goals
+- **📤 Data Export**: Simple one-click export of all your data for backup or transfer
 - **⚡ Smart Caching**: Intelligent caching system for improved performance and offline support
 
 ### 🎨 **Design & UX**

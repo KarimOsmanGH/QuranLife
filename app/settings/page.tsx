@@ -4,6 +4,42 @@ import DashboardCard from '@/components/DashboardCard';
 import { storage } from '@/lib/security';
 
 export default function SettingsPage() {
+  const exportData = () => {
+    try {
+      // Get all data from localStorage
+      const habits = storage.get('quranlife-habits', []);
+      const goals = storage.get('quranlife-goals', []);
+      
+      // Create export object with metadata
+      const exportData = {
+        exportDate: new Date().toISOString(),
+        appVersion: '1.0.0',
+        data: {
+          habits,
+          goals
+        }
+      };
+      
+      // Create and download file
+      const dataStr = JSON.stringify(exportData, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `quranlife-export-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      alert('Data exported successfully! Your file has been downloaded.');
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Export failed. Please try again.');
+    }
+  };
+
   const clearAllData = () => {
     if (confirm('Are you sure you want to clear all your data? This action cannot be undone.')) {
       storage.remove('quranlife-habits');
@@ -71,16 +107,30 @@ export default function SettingsPage() {
               </p>
             </div>
             
-            <div className="pt-4 border-t border-gray-200">
-              <button
-                onClick={clearAllData}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
-              >
-                Clear All Data
-              </button>
-              <p className="text-xs text-gray-500 mt-2">
-                This will remove all your habits, goals, and progress. This action cannot be undone.
-              </p>
+            <div className="pt-4 border-t border-gray-200 space-y-4">
+              <div>
+                <button
+                  onClick={exportData}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm mr-3"
+                >
+                  Export Data
+                </button>
+                <p className="text-xs text-gray-500 mt-2">
+                  Download all your habits, goals, and progress as a JSON file for backup or transfer.
+                </p>
+              </div>
+              
+              <div>
+                <button
+                  onClick={clearAllData}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+                >
+                  Clear All Data
+                </button>
+                <p className="text-xs text-gray-500 mt-2">
+                  This will remove all your habits, goals, and progress. This action cannot be undone.
+                </p>
+              </div>
             </div>
           </div>
         </DashboardCard>

@@ -119,11 +119,19 @@ export default function PrivacyPage() {
             <div className="prose prose-sm max-w-none text-gray-700">
               <p className="mb-4">You have complete control over your data:</p>
               <ul className="list-disc pl-6 space-y-2">
-                <li><strong>Export:</strong> You can access all your data through browser developer tools</li>
+                <li><strong>Export:</strong> Download all your data as a JSON file through the Settings page</li>
+                <li><strong>Access:</strong> All your data is stored locally in your browser and belongs to you</li>
                 <li><strong>Delete:</strong> Clear all data anytime through the Settings page</li>
-                <li><strong>Backup:</strong> Responsibility for backing up local data is yours</li>
-                <li><strong>Transfer:</strong> Data stays with your browser/device</li>
+                <li><strong>Backup:</strong> Your browser automatically saves your data locally</li>
+                <li><strong>Transfer:</strong> Data stays with your browser/device and moves with you</li>
               </ul>
+              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-green-800 text-sm">
+                  ✅ <strong>Export Feature:</strong> You can now export all your data (habits, goals, progress) 
+                  as a JSON file from the Settings page. This allows you to backup your data or transfer it 
+                  to another device.
+                </p>
+              </div>
             </div>
           </DashboardCard>
 

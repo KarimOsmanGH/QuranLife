@@ -137,20 +137,7 @@ export default function TermsPage() {
             </div>
           </DashboardCard>
 
-          <DashboardCard title="10. Islamic Blessing">
-            <div className="prose prose-sm max-w-none text-gray-700 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-4">
-              <p className="text-center font-medium text-gray-800 mb-2">
-                🤲 "And Allah is the best disposer of affairs"
-              </p>
-              <p className="text-center text-sm text-gray-600 italic">
-                — Quran 3:173
-              </p>
-              <p className="text-center text-sm text-gray-600 mt-3">
-                May Allah (SWT) accept your efforts in using this App to draw closer to Him and improve yourself. 
-                Barakallahu feek.
-              </p>
-            </div>
-          </DashboardCard>
+
         </div>
       </div>
     </div>

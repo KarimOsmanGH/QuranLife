@@ -129,19 +129,21 @@ export default function GoalsCalendar({ goals, onGoalClick }: GoalsCalendarProps
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: day * 0.01 }}
-        className={`relative min-h-[60px] p-1 border border-gray-100 ${
+        className={`relative min-h-[80px] p-1 border border-gray-100 ${
           isToday ? 'bg-green-50 border-green-200' : 'bg-white'
         } ${isPast ? 'opacity-75' : ''}`}
       >
-        <div className={`text-xs font-medium ${
+        {/* Day number - always visible at top */}
+        <div className={`text-xs font-medium mb-1 ${
           isToday ? 'text-green-700' : 'text-gray-700'
         }`}>
           {day}
         </div>
         
+        {/* Goals container - positioned below day number */}
         {dayGoals.length > 0 && (
-          <div className="absolute inset-x-1 bottom-1 space-y-1">
-            {dayGoals.slice(0, 2).map((goal) => (
+          <div className="space-y-1">
+            {dayGoals.slice(0, 3).map((goal) => (
               <button
                 key={goal.id}
                 onClick={() => onGoalClick?.(goal)}
@@ -158,9 +160,9 @@ export default function GoalsCalendar({ goals, onGoalClick }: GoalsCalendarProps
                 <span className="truncate">{goal.title.slice(0, 8)}...</span>
               </button>
             ))}
-            {dayGoals.length > 2 && (
-              <div className="text-xs text-gray-500 text-center">
-                +{dayGoals.length - 2} more
+            {dayGoals.length > 3 && (
+              <div className="text-xs text-gray-500 text-center bg-gray-50 px-1 py-0.5 rounded">
+                +{dayGoals.length - 3} more
               </div>
             )}
           </div>
