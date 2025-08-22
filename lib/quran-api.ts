@@ -215,11 +215,11 @@ class QuranAPI {
   /**
    * Search for verses containing specific keywords
    */
-  async searchVerses(query: string, language: 'ar' | 'en' = 'en'): Promise<Verse[]> {
+  async searchVerses(query: string, language: 'ar' | 'en' = 'en', surah: 'all' | number = 'all'): Promise<Verse[]> {
     try {
       const edition = language === 'ar' ? this.arabicEdition : this.englishEdition;
       const response = await fetch(
-        `${this.baseURL}/search/${encodeURIComponent(query)}/${edition}`
+        `${this.baseURL}/search/${encodeURIComponent(query)}/${surah}/${edition}`
       );
       
       if (!response.ok) {

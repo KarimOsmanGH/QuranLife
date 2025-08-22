@@ -175,15 +175,50 @@ class QuranEngine {
         if (aggregated.length >= 3) break; // enough for UI
       }
       
+      // If no search results, try direct goal search as fallback
       if (aggregated.length === 0) {
-        // If no direct matches, try thematic search (with curated fallback inside)
+        try {
+          console.log('No theme-based results, trying direct goal search:', goal);
+          const directResults = await quranAPI.searchVerses(goal, 'en');
+          if (directResults.length > 0) {
+            console.log('Direct goal search found results:', directResults.length);
+            const matches: GoalMatchResult[] = [];
+            
+            for (const apiVerse of directResults.slice(0, 1)) {
+              const quranVerse = await this.convertAPIVerseToQuranVerse({
+                verse: apiVerse,
+                surah: { number: Math.floor(apiVerse.number / 1000) + 1 } as any,
+                theme: 'guidance',
+                context: `Direct search for: ${goal}`
+              });
+
+              if (quranVerse) {
+                matches.push({
+                  verse: quranVerse,
+                  relevanceScore: this.calculateRelevanceScore(goal, quranVerse),
+                  practicalSteps: this.generatePracticalSteps('guidance', goal),
+                  duaRecommendation: DUA_RECOMMENDATIONS['guidance'],
+                  relatedHabits: this.getRelatedHabits('guidance')
+                });
+              }
+            }
+            
+            if (matches.length > 0) {
+              return matches;
+            }
+          }
+        } catch (error) {
+          console.log('Direct goal search failed:', error);
+        }
+        
+        // Final fallback to thematic verses
         return await this.getThematicVersesForGoal(theme, goal);
       }
 
       // Convert API results to goal matches
       const matches: GoalMatchResult[] = [];
       
-      for (const apiVerse of aggregated.slice(0, 3)) { // Limit to top 3 results
+      for (const apiVerse of aggregated.slice(0, 1)) { // Show only 1 verse initially
         const quranVerse = await this.convertAPIVerseToQuranVerse({
           verse: apiVerse,
           surah: { number: Math.floor(apiVerse.number / 1000) + 1 } as any, // Approximate surah from verse number
@@ -205,7 +240,73 @@ class QuranEngine {
       return matches;
     } catch (error) {
       console.error('Error finding verses for goal:', error);
-      return [];
+      // Return fallback verses if search fails
+      const fallbackTheme = this.determineTheme(this.extractKeywords(goal));
+      return await this.getThematicVersesForGoal(fallbackTheme, goal);
+    }
+  }
+
+  /**
+   * Get additional verses for a goal (for "Load More" functionality)
+   */
+  async getAdditionalVersesForGoal(goal: string, currentCount: number = 1): Promise<GoalMatchResult[]> {
+    try {
+      // Extract keywords from goal
+      const keywords = this.extractKeywords(goal);
+      const theme = this.determineTheme(keywords);
+      
+      // Build multiple search attempts
+      const distinctByNumber = (arr: any[]) => {
+        const seen = new Set<number>();
+        const out: any[] = [];
+        for (const v of arr) {
+          if (!seen.has(v.number)) { seen.add(v.number); out.push(v); }
+        }
+        return out;
+      };
+
+      const keywordQuery = keywords.slice(0, 6).join(' ');
+      const themeTerms = this.getThemeSearchTerms(theme);
+      const queries = [goal, keywordQuery, `${keywordQuery} ${theme}`.trim(), themeTerms].filter(q => q && q.length > 0);
+
+      let aggregated: any[] = [];
+      for (const q of queries) {
+        const res = await quranAPI.searchVerses(q, 'en');
+        aggregated = distinctByNumber([...aggregated, ...res]);
+        if (aggregated.length >= 5) break; // Get more results for additional verses
+      }
+      
+      if (aggregated.length === 0) {
+        return await this.getThematicVersesForGoal(theme, goal);
+      }
+
+      // Convert API results to goal matches, starting from where we left off
+      const matches: GoalMatchResult[] = [];
+      
+      for (const apiVerse of aggregated.slice(currentCount, currentCount + 2)) { // Get 2 more verses
+        const quranVerse = await this.convertAPIVerseToQuranVerse({
+          verse: apiVerse,
+          surah: { number: Math.floor(apiVerse.number / 1000) + 1 } as any,
+          theme,
+          context: `Additional guidance for: ${goal}`
+        });
+
+        if (quranVerse) {
+          matches.push({
+            verse: quranVerse,
+            relevanceScore: this.calculateRelevanceScore(goal, quranVerse),
+            practicalSteps: this.generatePracticalSteps(theme, goal),
+            duaRecommendation: DUA_RECOMMENDATIONS[theme],
+            relatedHabits: this.getRelatedHabits(theme)
+          });
+        }
+      }
+
+      return matches;
+    } catch (error) {
+      console.error('Error getting additional verses for goal:', error);
+      const fallbackTheme = this.determineTheme(this.extractKeywords(goal));
+      return await this.getThematicVersesForGoal(fallbackTheme, goal);
     }
   }
 
@@ -335,9 +436,7 @@ class QuranEngine {
         "Set small, achievable milestones to maintain motivation while exercising patience."
       ],
       prayer: [
-        "Incorporate this verse into your daily dhikr routine for spiritual strengthening.",
-        "Use prayer times as natural breaks to refocus on your priorities and values.",
-        "Share the wisdom of this verse with family during your daily conversations."
+        "Incorporate this verse into your daily dhikr routine for spiritual strengthening."
       ],
       change: [
         "Apply this verse's wisdom by taking one concrete step toward your goal today.",
@@ -385,15 +484,59 @@ class QuranEngine {
   private determineTheme(keywords: string[]): string {
     // Define keyword synonyms and related terms
     const keywordMapping: Record<string, string[]> = {
-      health: ['gym', 'exercise', 'workout', 'fitness', 'physical', 'body', 'training', 'sport', 'run', 'walk', 'strong'],
-      fitness: ['gym', 'exercise', 'workout', 'training', 'sport', 'muscle', 'cardio', 'strength'],
-      strength: ['strong', 'power', 'muscle', 'force', 'endurance', 'gym', 'training'],
-      prayer: ['pray', 'salah', 'worship', 'dua', 'dhikr', 'mosque', 'qibla'],
-      patience: ['patient', 'wait', 'endure', 'persevere', 'difficult', 'hardship', 'trial'],
-      family: ['family', 'parent', 'child', 'marriage', 'spouse', 'relationship', 'home'],
-      anxiety: ['anxious', 'worry', 'stress', 'fear', 'nervous', 'panic', 'overwhelmed'],
-      success: ['achieve', 'goal', 'accomplish', 'succeed', 'victory', 'win', 'progress'],
-      change: ['change', 'improve', 'transform', 'better', 'habit', 'different', 'new']
+      fitness: [
+        'fitness', 'gym', 'exercise', 'workout', 'training', 'sport', 'muscle', 'cardio', 'strength', 'physical', 'body',
+        'run', 'running', 'jog', 'jogging', 'walk', 'walking', 'swim', 'swimming', 'bike', 'cycling', 'lift', 'lifting',
+        'weight', 'weights', 'aerobics', 'yoga', 'pilates', 'dance', 'dancing', 'martial', 'arts', 'boxing', 'kickboxing',
+        'crossfit', 'hiit', 'treadmill', 'elliptical', 'stairmaster', 'rowing', 'rowing', 'squat', 'deadlift', 'bench',
+        'pushup', 'pullup', 'plank', 'burpee', 'jumping', 'jacks', 'mountain', 'climber', 'lunge', 'crunch', 'situp'
+      ],
+      health: [
+        'health', 'wellness', 'medical', 'care', 'healing', 'recovery', 'nutrition', 'diet', 'food', 'eating', 'meal',
+        'vitamin', 'supplement', 'medicine', 'doctor', 'hospital', 'clinic', 'therapy', 'treatment', 'surgery',
+        'mental', 'psychology', 'therapy', 'counseling', 'meditation', 'mindfulness', 'sleep', 'rest', 'relaxation',
+        'stress', 'management', 'hygiene', 'clean', 'sanitize', 'vaccine', 'immunization', 'prevention', 'screening'
+      ],
+      strength: [
+        'strong', 'power', 'force', 'endurance', 'mighty', 'powerful', 'robust', 'sturdy', 'tough', 'resilient',
+        'unyielding', 'steadfast', 'firm', 'solid', 'unbreakable', 'indomitable', 'invincible', 'unconquerable'
+      ],
+      prayer: [
+        'pray', 'prayer', 'salah', 'salat', 'worship', 'dua', 'dhikr', 'mosque', 'qibla', 'adhan', 'azan', 'iqama',
+        'rakah', 'rakat', 'sujud', 'ruku', 'qiyam', 'jalsa', 'tashahhud', 'tasleem', 'fatiha', 'ayat', 'verse',
+        'recitation', 'tilawah', 'quran', 'koran', 'surah', 'ayah', 'juz', 'hizb', 'masjid', 'musalla', 'mihrab',
+        'minbar', 'minaret', 'wudu', 'ablution', 'ghusl', 'tayammum', 'qibla', 'direction', 'kaaba', 'makkah'
+      ],
+      patience: [
+        'patient', 'patience', 'wait', 'waiting', 'endure', 'endurance', 'persevere', 'perseverance', 'difficult',
+        'hardship', 'trial', 'test', 'challenge', 'struggle', 'suffer', 'suffering', 'tolerate', 'tolerance',
+        'forbear', 'forbearance', 'steadfast', 'steadfastness', 'resilient', 'resilience', 'persistent', 'persistence',
+        'determined', 'determination', 'tenacious', 'tenacity', 'unwavering', 'unshakeable', 'unmovable'
+      ],
+      family: [
+        'family', 'parent', 'child', 'children', 'marriage', 'spouse', 'relationship', 'home', 'household',
+        'mother', 'father', 'son', 'daughter', 'brother', 'sister', 'grandparent', 'grandfather', 'grandmother',
+        'uncle', 'aunt', 'cousin', 'niece', 'nephew', 'husband', 'wife', 'partner', 'spouse', 'inlaw',
+        'domestic', 'household', 'home', 'house', 'residence', 'dwelling', 'abode', 'nest', 'hearth'
+      ],
+      anxiety: [
+        'anxious', 'anxiety', 'worry', 'worried', 'stress', 'stressed', 'fear', 'fearful', 'nervous', 'panic',
+        'overwhelmed', 'overwhelming', 'afraid', 'scared', 'terrified', 'frightened', 'alarmed', 'distressed',
+        'troubled', 'concerned', 'uneasy', 'uncomfortable', 'restless', 'agitated', 'jittery', 'tense',
+        'apprehensive', 'dread', 'dreadful', 'horror', 'horrified', 'shocked', 'shocking', 'startled'
+      ],
+      success: [
+        'achieve', 'achievement', 'goal', 'accomplish', 'accomplishment', 'succeed', 'success', 'victory',
+        'win', 'winning', 'progress', 'advance', 'advancement', 'improve', 'improvement', 'excel', 'excellence',
+        'outperform', 'outstanding', 'exceptional', 'remarkable', 'notable', 'distinguished', 'eminent',
+        'prominent', 'prestigious', 'honorable', 'respectable', 'admirable', 'commendable', 'praiseworthy'
+      ],
+      change: [
+        'change', 'changing', 'improve', 'improvement', 'transform', 'transformation', 'better', 'betterment',
+        'habit', 'habits', 'different', 'difference', 'new', 'renew', 'renewal', 'modify', 'modification',
+        'alter', 'alteration', 'adjust', 'adjustment', 'adapt', 'adaptation', 'evolve', 'evolution',
+        'develop', 'development', 'grow', 'growth', 'mature', 'maturity', 'progress', 'progression'
+      ]
     };
 
     const themeScores: Record<string, number> = {};
@@ -424,6 +567,9 @@ class QuranEngine {
       .filter(([, score]) => score > 0)
       .sort(([,a], [,b]) => b - a)[0];
     
+    console.log('Theme detection:', { keywords, themeScores, selectedTheme: topTheme ? topTheme[0] : 'guidance' });
+    
+    // If no theme matches, return 'guidance' to trigger fallback search
     return topTheme ? topTheme[0] : 'guidance';
   }
 
@@ -530,15 +676,72 @@ class QuranEngine {
   private async getCuratedThemeVerses(theme: string): Promise<QuranVerse[]> {
     try {
       const results: QuranVerse[] = [];
-      if (theme === 'prayer') {
-        const refs: Array<[number, number]> = [
+      
+      // Define curated verses for different themes
+      const themeVerses: Record<string, Array<[number, number]>> = {
+        prayer: [
           [2, 43],   // Establish prayer and give zakah
           [11, 114], // Establish prayer at the two ends of the day
           [29, 45],  // Recite what has been revealed... establish prayer
           [4, 103],  // Indeed, prayer has been decreed upon the believers
           [17, 78]   // Establish prayer at the decline of the sun
-        ];
-        for (const [s, a] of refs) {
+        ],
+        patience: [
+          [2, 153],  // Indeed, Allah is with the patient
+          [2, 155],  // We will surely test you with something of fear and hunger
+          [3, 200],  // O you who have believed, persevere and endure
+          [8, 46],   // And be patient, indeed Allah is with the patient
+          [103, 3]   // Except for those who have believed and done righteous deeds
+        ],
+        success: [
+          [2, 201],  // Our Lord, grant us in this world [that which is] good
+          [3, 200],  // O you who have believed, persevere and endure
+          [65, 3],   // And whoever relies upon Allah - then He is sufficient for him
+          [94, 5],   // For indeed, with hardship [will be] ease
+          [13, 11]   // Indeed, Allah will not change the condition of a people
+        ],
+        change: [
+          [13, 11],  // Indeed, Allah will not change the condition of a people
+          [2, 286],  // Allah does not burden a soul beyond that it can bear
+          [65, 3],   // And whoever relies upon Allah - then He is sufficient for him
+          [94, 5],   // For indeed, with hardship [will be] ease
+          [2, 216]   // But perhaps you hate a thing and it is good for you
+        ],
+        family: [
+          [4, 1],    // O mankind, fear your Lord, who created you from one soul
+          [17, 23],  // And your Lord has decreed that you not worship except Him
+          [25, 74],  // And those who say, "Our Lord, grant us from among our spouses
+          [30, 21],  // And of His signs is that He created for you from yourselves
+          [66, 6]    // O you who have believed, protect yourselves and your families
+        ],
+        health: [
+          [2, 195],  // And do good; indeed, Allah loves the doers of good
+          [7, 31],   // O children of Adam, take your adornment at every masjid
+          [16, 14],  // And it is He who subjected the sea for you to eat from it
+          [17, 82],  // And We send down of the Quran that which is healing
+          [26, 80]   // And when I am ill, it is He who cures me
+        ],
+        anxiety: [
+          [2, 286],  // Allah does not burden a soul beyond that it can bear
+          [13, 28],  // Those who have believed and whose hearts are assured
+          [65, 3],   // And whoever relies upon Allah - then He is sufficient for him
+          [94, 5],   // For indeed, with hardship [will be] ease
+          [113, 1]   // Say, "I seek refuge in the Lord of daybreak"
+        ]
+      };
+
+      // Get verses for the specific theme, or fall back to general guidance
+      const refs = themeVerses[theme] || themeVerses.success || [
+        [2, 201],   // Our Lord, grant us in this world [that which is] good
+        [65, 3],    // And whoever relies upon Allah - then He is sufficient for him
+        [94, 5],    // For indeed, with hardship [will be] ease
+        [2, 286],   // Allah does not burden a soul beyond that it can bear
+        [13, 11]    // Indeed, Allah will not change the condition of a people
+      ];
+
+      // Fetch verses (limit to 3 for performance)
+      for (const [s, a] of refs.slice(0, 3)) {
+        try {
           const [verse, surah] = await Promise.all([
             quranAPI.getVerse(s, a),
             quranAPI.getSurah(s)
@@ -546,12 +749,16 @@ class QuranEngine {
           const qv = await this.convertAPIVerseToQuranVerse({
             verse,
             surah,
-            theme: 'prayer',
-            context: 'Thematic guidance: prayer'
+            theme: theme,
+            context: `Thematic guidance: ${theme}`
           } as any);
           if (qv) results.push(qv);
+        } catch (error) {
+          console.log(`Failed to fetch verse ${s}:${a} for theme ${theme}:`, error);
+          continue;
         }
       }
+      
       return results;
     } catch (error) {
       console.error('Error building curated theme verses:', error);

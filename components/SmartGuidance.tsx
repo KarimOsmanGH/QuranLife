@@ -13,6 +13,7 @@ interface SmartGuidanceProps {
 export default function SmartGuidance({ goalTitle, goalDescription = '', goalCategory }: SmartGuidanceProps) {
   const [guidance, setGuidance] = useState<GoalMatchResult[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [expanded, setExpanded] = useState<number | null>(0); // Open first item by default
 
   useEffect(() => {
@@ -40,6 +41,19 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
     setExpanded(expanded === index ? null : index);
   };
 
+  const handleLoadMore = async () => {
+    try {
+      setLoadingMore(true);
+      const goalText = `${goalTitle} ${goalDescription} ${goalCategory}`.trim();
+      const additionalVerses = await quranEngine.getAdditionalVersesForGoal(goalText, guidance.length);
+      setGuidance(prev => [...prev, ...additionalVerses]);
+    } catch (error) {
+      console.error('Failed to load additional guidance:', error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-6 border border-green-100">
@@ -55,15 +69,29 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
     return (
       <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-6 border border-green-100">
         <p className="text-green-700 text-sm mb-4">
-          While we couldn't find specific verses for this goal, remember that every good intention and effort is rewarded by Allah.
+          While we're preparing personalized guidance for your goal, here are some universal Islamic principles to remember:
         </p>
-        <div className="space-y-2">
-          <p className="text-sm text-green-600">
-            <strong>Recommended:</strong> Start with "Bismillah" and make dua for success
-          </p>
-          <p className="text-sm text-green-600">
-            <strong>Remember:</strong> "And whoever relies upon Allah - then He is sufficient for him" (65:3)
-          </p>
+        <div className="space-y-3">
+          <div className="bg-white rounded-lg p-3 border-l-4 border-green-400">
+            <p className="text-sm text-green-600">
+              <strong>Start with Bismillah:</strong> Begin every endeavor in the name of Allah
+            </p>
+          </div>
+          <div className="bg-white rounded-lg p-3 border-l-4 border-green-400">
+            <p className="text-sm text-green-600">
+              <strong>Make sincere dua:</strong> Ask Allah for guidance and success in your goal
+            </p>
+          </div>
+          <div className="bg-white rounded-lg p-3 border-l-4 border-green-400">
+            <p className="text-sm text-green-600">
+              <strong>Trust in Allah:</strong> "And whoever relies upon Allah - then He is sufficient for him" (65:3)
+            </p>
+          </div>
+          <div className="bg-white rounded-lg p-3 border-l-4 border-green-400">
+            <p className="text-sm text-green-600">
+              <strong>Take action:</strong> Combine faith with effort - Allah helps those who help themselves
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -125,19 +153,7 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
                 exit={{ height: 0, opacity: 0 }}
                 className="space-y-4"
               >
-                {/* Practical Steps */}
-                {match.practicalSteps.length > 0 && (
-                  <div className="bg-white rounded-lg p-4">
-                    <ul className="space-y-2">
-                      {match.practicalSteps.map((step, stepIndex) => (
-                        <li key={stepIndex} className="text-sm text-gray-700 flex items-start gap-2">
-                          <span className="text-green-500 mt-0.5">•</span>
-                          {step}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+
 
                 {/* Dua Recommendation */}
                 {match.duaRecommendation && (
@@ -148,21 +164,7 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
                   </div>
                 )}
 
-                {/* Related Habits */}
-                {match.relatedHabits.length > 0 && (
-                  <div className="bg-white rounded-lg p-4">
-                    <div className="flex flex-wrap gap-2">
-                      {match.relatedHabits.map((habit, habitIndex) => (
-                        <span
-                          key={habitIndex}
-                          className="px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full"
-                        >
-                          {habit}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
+
 
                 {/* Life Application */}
                 {match.verse.life_application && (
@@ -175,28 +177,38 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
               </motion.div>
             )}
 
-            {/* Theme Tags */}
-            <div className="flex flex-wrap gap-2 mt-4">
-              {match.verse.theme?.map((theme: string, themeIndex: number) => (
-                <span
-                  key={themeIndex}
-                  className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full"
-                >
-                  {theme.replace('_', ' ')}
-                </span>
-              ))}
-            </div>
+
           </div>
         </motion.div>
       ))}
 
-      {/* Call to Action */}
-                    <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-4 border border-green-100">
-        <p className="text-sm text-gray-700 text-center">
-          <strong>💡 Pro Tip:</strong> Write down one practical step from above and implement it this week. 
-          Small consistent actions lead to big transformations, insha'Allah.
-        </p>
+      {/* Load More Button */}
+      <div className="text-center mt-6">
+        <button
+          onClick={handleLoadMore}
+          disabled={loadingMore}
+          className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          {loadingMore ? (
+            <span className="flex items-center gap-2">
+              <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Loading...
+            </span>
+          ) : (
+            <span className="flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              Load More Guidance
+            </span>
+          )}
+        </button>
       </div>
+
+
     </div>
   );
 } 

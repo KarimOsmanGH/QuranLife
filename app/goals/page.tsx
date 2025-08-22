@@ -21,6 +21,7 @@ interface Goal {
 export default function GoalsPage() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [activeTab, setActiveTab] = useState<'active' | 'completed'>('active');
   const [calendarSelectedGoal, setCalendarSelectedGoal] = useState<string | null>(null);
 
   // Load data from localStorage on mount and reset recurring goals if needed
@@ -131,20 +132,28 @@ export default function GoalsPage() {
     setGoals(prev => prev.filter(goal => goal.id !== goalId));
   };
 
-  const completedGoals = goals.filter(g => g.completed).length;
-  const totalGoals = goals.length;
+  const activeGoals = goals.filter(g => !g.completed);
+  const completedGoals = goals.filter(g => g.completed);
+  const totalActiveGoals = activeGoals.length;
+  const totalCompletedGoals = completedGoals.length;
 
-  // Filter goals based on active filter
-  const filteredGoals = activeFilter === 'all' 
-    ? goals 
-    : goals.filter(goal => goal.category === activeFilter);
+  // Filter goals based on active tab and filter
+  const getFilteredGoals = () => {
+    const tabGoals = activeTab === 'active' ? activeGoals : completedGoals;
+    return activeFilter === 'all' 
+      ? tabGoals 
+      : tabGoals.filter(goal => goal.category === activeFilter);
+  };
+
+  const filteredGoals = getFilteredGoals();
 
   const getGoalsByCategory = () => {
     const categories = ['spiritual', 'personal', 'health', 'career', 'family'];
+    const currentGoals = activeTab === 'active' ? activeGoals : completedGoals;
     return categories.map(category => ({
       category,
-      goals: goals.filter(g => g.category === category),
-      count: goals.filter(g => g.category === category).length
+      goals: currentGoals.filter(g => g.category === category),
+      count: currentGoals.filter(g => g.category === category).length
     }));
   };
 
@@ -180,18 +189,44 @@ export default function GoalsPage() {
         <p className="text-gray-600">Set and achieve your life goals with Islamic guidance</p>
       </div>
 
+      {/* Tabs */}
+      <div className="mb-6">
+        <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+          <button
+            onClick={() => setActiveTab('active')}
+            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+              activeTab === 'active'
+                ? 'bg-white text-green-700 shadow-sm'
+                : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            Active Goals ({totalActiveGoals})
+          </button>
+          <button
+            onClick={() => setActiveTab('completed')}
+            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+              activeTab === 'completed'
+                ? 'bg-white text-green-700 shadow-sm'
+                : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            Completed ({totalCompletedGoals})
+          </button>
+        </div>
+      </div>
+
       {/* Mobile Stats Cards */}
       <div className="grid grid-cols-3 gap-4 mb-8 md:hidden">
         <div className="bg-white rounded-xl p-4 border border-gray-100">
-          <div className="text-2xl font-bold text-green-600">{completedGoals}</div>
+          <div className="text-2xl font-bold text-green-600">{totalCompletedGoals}</div>
           <div className="text-sm text-gray-600">Completed</div>
         </div>
         <div className="bg-white rounded-xl p-4 border border-gray-100">
-          <div className="text-2xl font-bold text-green-600">{totalGoals - completedGoals}</div>
-          <div className="text-sm text-gray-600">In Progress</div>
+          <div className="text-2xl font-bold text-green-600">{totalActiveGoals}</div>
+          <div className="text-sm text-gray-600">Active</div>
         </div>
         <div className="bg-white rounded-xl p-4 border border-gray-100">
-          <div className="text-2xl font-bold text-green-600">{totalGoals}</div>
+          <div className="text-2xl font-bold text-green-600">{totalActiveGoals + totalCompletedGoals}</div>
           <div className="text-sm text-gray-600">Total Goals</div>
         </div>
       </div>
@@ -204,21 +239,21 @@ export default function GoalsPage() {
           <div className="space-y-4">
 
             <div className="bg-white rounded-xl p-4 border border-gray-100">
-              <div className="text-2xl font-bold text-green-600">{completedGoals}</div>
+              <div className="text-2xl font-bold text-green-600">{totalCompletedGoals}</div>
               <div className="text-sm text-gray-600">Completed Goals</div>
             </div>
             <div className="bg-white rounded-xl p-4 border border-gray-100">
-              <div className="text-2xl font-bold text-green-600">{totalGoals - completedGoals}</div>
-              <div className="text-sm text-gray-600">In Progress</div>
+              <div className="text-2xl font-bold text-green-600">{totalActiveGoals}</div>
+              <div className="text-sm text-gray-600">Active Goals</div>
             </div>
             <div className="bg-white rounded-xl p-4 border border-gray-100">
-              <div className="text-2xl font-bold text-green-600">{totalGoals}</div>
+              <div className="text-2xl font-bold text-green-600">{totalActiveGoals + totalCompletedGoals}</div>
               <div className="text-sm text-gray-600">Total Goals</div>
             </div>
           </div>
 
           {/* Goals by Category */}
-          {totalGoals > 0 && (
+          {(totalActiveGoals + totalCompletedGoals) > 0 && (
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-800">📋 Filter by Category</h3>
               
@@ -237,7 +272,7 @@ export default function GoalsPage() {
                       <span>📋</span>
                       All Goals
                     </div>
-                    <div className="text-sm text-gray-600">{totalGoals} total goals</div>
+                    <div className="text-sm text-gray-600">{activeTab === 'active' ? totalActiveGoals : totalCompletedGoals} {activeTab} goals</div>
                   </div>
                   {activeFilter === 'all' && (
                     <div className="text-gray-600">
@@ -314,11 +349,11 @@ export default function GoalsPage() {
       </div>
 
       {/* Goals Calendar - Full Width */}
-      {goals.length > 0 && (
+      {activeGoals.length > 0 && (
         <div className="mt-8">
           <div className="overflow-x-auto md:overflow-visible">
             <div className="inline-block min-w-full align-middle">
-              <GoalsCalendar goals={goals} onGoalClick={handleGoalClick} />
+              <GoalsCalendar goals={activeGoals} onGoalClick={handleGoalClick} />
             </div>
           </div>
         </div>
@@ -327,7 +362,7 @@ export default function GoalsPage() {
       {/* Mobile Single Column Layout */}
       <div className="md:hidden">
         {/* Mobile Goals by Category */}
-        {totalGoals > 0 && (
+        {(totalActiveGoals + totalCompletedGoals) > 0 && (
           <div className="mb-8">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">📋 Filter by Category</h3>
             
@@ -346,7 +381,7 @@ export default function GoalsPage() {
                     <span>📋</span>
                     All Goals
                   </div>
-                  <div className="text-sm text-gray-600">{totalGoals} total goals</div>
+                  <div className="text-sm text-gray-600">{activeTab === 'active' ? totalActiveGoals : totalCompletedGoals} {activeTab} goals</div>
                 </div>
                 {activeFilter === 'all' && (
                   <div className="text-gray-600">
