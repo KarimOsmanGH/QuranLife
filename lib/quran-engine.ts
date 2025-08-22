@@ -154,7 +154,9 @@ class QuranEngine {
       const keywords = this.extractKeywords(goal);
       const theme = this.determineTheme(keywords);
       
-      // Build multiple search attempts (title keywords, category, theme terms)
+      console.log('Goal analysis:', { goal, keywords, theme });
+      
+      // Build multiple search attempts with better strategy
       const distinctByNumber = (arr: any[]) => {
         const seen = new Set<number>();
         const out: any[] = [];
@@ -164,15 +166,30 @@ class QuranEngine {
         return out;
       };
 
-      const keywordQuery = keywords.slice(0, 6).join(' ');
-      const themeTerms = this.getThemeSearchTerms(theme);
-      const queries = [goal, keywordQuery, `${keywordQuery} ${theme}`.trim(), themeTerms].filter(q => q && q.length > 0);
+      // Create more targeted search queries
+      const searchQueries = this.buildSearchQueries(goal, keywords, theme);
+      console.log('Search queries:', searchQueries);
 
       let aggregated: any[] = [];
-      for (const q of queries) {
-        const res = await quranAPI.searchVerses(q, 'en');
-        aggregated = distinctByNumber([...aggregated, ...res]);
-        if (aggregated.length >= 3) break; // enough for UI
+      
+      // Try each search query until we get good results
+      for (const query of searchQueries) {
+        try {
+          console.log('Trying search query:', query);
+          const res = await quranAPI.searchVerses(query, 'en');
+          console.log(`Query "${query}" returned ${res.length} results`);
+          
+          aggregated = distinctByNumber([...aggregated, ...res]);
+          
+          // If we have enough good results, stop searching
+          if (aggregated.length >= 5) {
+            console.log('Enough results found, stopping search');
+            break;
+          }
+        } catch (error) {
+          console.log(`Search query "${query}" failed:`, error);
+          continue;
+        }
       }
       
       // If no search results, try direct goal search as fallback
@@ -215,10 +232,28 @@ class QuranEngine {
         return await this.getThematicVersesForGoal(theme, goal);
       }
 
-      // Convert API results to goal matches
+      // Convert API results to goal matches with better ranking
       const matches: GoalMatchResult[] = [];
       
-      for (const apiVerse of aggregated.slice(0, 1)) { // Show only 1 verse initially
+      // Sort results by relevance before processing
+      const sortedResults = aggregated
+        .map(apiVerse => ({
+          apiVerse,
+          relevanceScore: this.calculateRelevanceScore(goal, { 
+            text_en: apiVerse.translation || '', 
+            reflection: '' 
+          } as any)
+        }))
+        .sort((a, b) => b.relevanceScore - a.relevanceScore)
+        .slice(0, 3); // Get top 3 most relevant results
+      
+      console.log('Top results by relevance:', sortedResults.map(r => ({ 
+        verse: r.apiVerse.number, 
+        score: r.relevanceScore,
+        text: r.apiVerse.translation?.substring(0, 100) + '...'
+      })));
+      
+      for (const { apiVerse } of sortedResults.slice(0, 1)) { // Show only 1 verse initially
         const quranVerse = await this.convertAPIVerseToQuranVerse({
           verse: apiVerse,
           surah: { number: Math.floor(apiVerse.number / 1000) + 1 } as any, // Approximate surah from verse number
@@ -255,7 +290,9 @@ class QuranEngine {
       const keywords = this.extractKeywords(goal);
       const theme = this.determineTheme(keywords);
       
-      // Build multiple search attempts
+      console.log('Loading additional verses for goal:', { goal, currentCount });
+      
+      // Build multiple search attempts with better strategy
       const distinctByNumber = (arr: any[]) => {
         const seen = new Set<number>();
         const out: any[] = [];
@@ -265,25 +302,59 @@ class QuranEngine {
         return out;
       };
 
-      const keywordQuery = keywords.slice(0, 6).join(' ');
-      const themeTerms = this.getThemeSearchTerms(theme);
-      const queries = [goal, keywordQuery, `${keywordQuery} ${theme}`.trim(), themeTerms].filter(q => q && q.length > 0);
+      // Create more targeted search queries
+      const searchQueries = this.buildSearchQueries(goal, keywords, theme);
+      console.log('Additional search queries:', searchQueries);
 
       let aggregated: any[] = [];
-      for (const q of queries) {
-        const res = await quranAPI.searchVerses(q, 'en');
-        aggregated = distinctByNumber([...aggregated, ...res]);
-        if (aggregated.length >= 5) break; // Get more results for additional verses
+      
+      // Try each search query until we get good results
+      for (const query of searchQueries) {
+        try {
+          console.log('Trying additional search query:', query);
+          const res = await quranAPI.searchVerses(query, 'en');
+          console.log(`Additional query "${query}" returned ${res.length} results`);
+          
+          aggregated = distinctByNumber([...aggregated, ...res]);
+          
+          // Get more results for additional verses
+          if (aggregated.length >= 10) {
+            console.log('Enough results for additional verses, stopping search');
+            break;
+          }
+        } catch (error) {
+          console.log(`Additional search query "${query}" failed:`, error);
+          continue;
+        }
       }
       
       if (aggregated.length === 0) {
+        console.log('No additional results found, using thematic fallback');
         return await this.getThematicVersesForGoal(theme, goal);
       }
 
-      // Convert API results to goal matches, starting from where we left off
+      // Sort results by relevance and get additional verses
+      const sortedResults = aggregated
+        .map(apiVerse => ({
+          apiVerse,
+          relevanceScore: this.calculateRelevanceScore(goal, { 
+            text_en: apiVerse.translation || '', 
+            reflection: '' 
+          } as any)
+        }))
+        .sort((a, b) => b.relevanceScore - a.relevanceScore)
+        .slice(currentCount, currentCount + 3); // Get next 3 most relevant results
+      
+      console.log('Additional results by relevance:', sortedResults.map(r => ({ 
+        verse: r.apiVerse.number, 
+        score: r.relevanceScore,
+        text: r.apiVerse.translation?.substring(0, 100) + '...'
+      })));
+
+      // Convert API results to goal matches
       const matches: GoalMatchResult[] = [];
       
-      for (const apiVerse of aggregated.slice(currentCount, currentCount + 2)) { // Get 2 more verses
+      for (const { apiVerse } of sortedResults) {
         const quranVerse = await this.convertAPIVerseToQuranVerse({
           verse: apiVerse,
           surah: { number: Math.floor(apiVerse.number / 1000) + 1 } as any,
@@ -436,7 +507,7 @@ class QuranEngine {
         "Set small, achievable milestones to maintain motivation while exercising patience."
       ],
       prayer: [
-        "Incorporate this verse into your daily dhikr routine for spiritual strengthening."
+        "Reflect on this verse during your daily prayers for deeper spiritual connection."
       ],
       change: [
         "Apply this verse's wisdom by taking one concrete step toward your goal today.",
@@ -626,6 +697,81 @@ class QuranEngine {
     };
     
     return habitMap[theme] || habitMap.prayer;
+  }
+
+  private buildSearchQueries(goal: string, keywords: string[], theme: string): string[] {
+    const queries: string[] = [];
+    
+    // 1. Direct goal search (most specific)
+    queries.push(goal);
+    
+    // 2. Key goal words (remove common words)
+    const keyWords = keywords.filter(word => 
+      !['the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'do', 'get', 'make', 'have', 'be', 'is', 'are', 'was', 'were', 'will', 'would', 'could', 'should', 'can', 'may', 'might', 'must', 'shall'].includes(word)
+    );
+    
+    if (keyWords.length > 0) {
+      // 3. Key words combined
+      queries.push(keyWords.slice(0, 4).join(' '));
+      
+      // 4. Key words with theme
+      queries.push(`${keyWords.slice(0, 3).join(' ')} ${theme}`);
+    }
+    
+    // 5. Theme-specific search terms
+    const themeTerms = this.getThemeSearchTerms(theme);
+    if (themeTerms && themeTerms !== 'guidance wisdom') {
+      queries.push(themeTerms);
+    }
+    
+    // 6. Goal-specific theme terms
+    const goalSpecificTerms = this.getGoalSpecificTerms(goal, theme);
+    if (goalSpecificTerms) {
+      queries.push(goalSpecificTerms);
+    }
+    
+    // 7. Fallback: general guidance terms
+    queries.push('guidance wisdom help');
+    
+    // Remove duplicates and empty queries
+    const filteredQueries = queries.filter(q => q && q.trim().length > 0);
+    return Array.from(new Set(filteredQueries));
+  }
+
+  private getGoalSpecificTerms(goal: string, theme: string): string {
+    const goalLower = goal.toLowerCase();
+    
+    // Fitness-related goals
+    if (theme === 'fitness' || goalLower.includes('fitness') || goalLower.includes('exercise') || goalLower.includes('workout')) {
+      return 'strength power ability body physical';
+    }
+    
+    // Health-related goals
+    if (theme === 'health' || goalLower.includes('health') || goalLower.includes('wellness')) {
+      return 'body care trust healing';
+    }
+    
+    // Prayer-related goals
+    if (theme === 'prayer' || goalLower.includes('pray') || goalLower.includes('worship')) {
+      return 'prayer worship remembrance establish';
+    }
+    
+    // Success-related goals
+    if (theme === 'success' || goalLower.includes('success') || goalLower.includes('achieve')) {
+      return 'success achievement blessing victory';
+    }
+    
+    // Family-related goals
+    if (theme === 'family' || goalLower.includes('family') || goalLower.includes('parent')) {
+      return 'family children parents relationship';
+    }
+    
+    // Patience-related goals
+    if (theme === 'patience' || goalLower.includes('patience') || goalLower.includes('wait')) {
+      return 'patience perseverance endurance';
+    }
+    
+    return '';
   }
 
   private getThemeSearchTerms(theme: string): string {

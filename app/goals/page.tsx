@@ -216,7 +216,7 @@ export default function GoalsPage() {
       </div>
 
       {/* Mobile Stats Cards */}
-      <div className="grid grid-cols-3 gap-4 mb-8 md:hidden">
+      <div className="grid grid-cols-2 gap-4 mb-8 md:hidden">
         <div className="bg-white rounded-xl p-4 border border-gray-100">
           <div className="text-2xl font-bold text-green-600">{totalCompletedGoals}</div>
           <div className="text-sm text-gray-600">Completed</div>
@@ -224,10 +224,6 @@ export default function GoalsPage() {
         <div className="bg-white rounded-xl p-4 border border-gray-100">
           <div className="text-2xl font-bold text-green-600">{totalActiveGoals}</div>
           <div className="text-sm text-gray-600">Active</div>
-        </div>
-        <div className="bg-white rounded-xl p-4 border border-gray-100">
-          <div className="text-2xl font-bold text-green-600">{totalActiveGoals + totalCompletedGoals}</div>
-          <div className="text-sm text-gray-600">Total Goals</div>
         </div>
       </div>
 
@@ -245,10 +241,6 @@ export default function GoalsPage() {
             <div className="bg-white rounded-xl p-4 border border-gray-100">
               <div className="text-2xl font-bold text-green-600">{totalActiveGoals}</div>
               <div className="text-sm text-gray-600">Active Goals</div>
-            </div>
-            <div className="bg-white rounded-xl p-4 border border-gray-100">
-              <div className="text-2xl font-bold text-green-600">{totalActiveGoals + totalCompletedGoals}</div>
-              <div className="text-sm text-gray-600">Total Goals</div>
             </div>
           </div>
 
