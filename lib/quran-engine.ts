@@ -154,18 +154,36 @@ class QuranEngine {
       const keywords = this.extractKeywords(goal);
       const theme = this.determineTheme(keywords);
       
-      // Search for verses using the API
-      const searchResults = await quranAPI.searchVerses(goal, 'en');
+      // Build multiple search attempts (title keywords, category, theme terms)
+      const distinctByNumber = (arr: any[]) => {
+        const seen = new Set<number>();
+        const out: any[] = [];
+        for (const v of arr) {
+          if (!seen.has(v.number)) { seen.add(v.number); out.push(v); }
+        }
+        return out;
+      };
+
+      const keywordQuery = keywords.slice(0, 6).join(' ');
+      const themeTerms = this.getThemeSearchTerms(theme);
+      const queries = [goal, keywordQuery, `${keywordQuery} ${theme}`.trim(), themeTerms].filter(q => q && q.length > 0);
+
+      let aggregated: any[] = [];
+      for (const q of queries) {
+        const res = await quranAPI.searchVerses(q, 'en');
+        aggregated = distinctByNumber([...aggregated, ...res]);
+        if (aggregated.length >= 3) break; // enough for UI
+      }
       
-      if (searchResults.length === 0) {
-        // If no direct matches, try thematic search
+      if (aggregated.length === 0) {
+        // If no direct matches, try thematic search (with curated fallback inside)
         return await this.getThematicVersesForGoal(theme, goal);
       }
 
       // Convert API results to goal matches
       const matches: GoalMatchResult[] = [];
       
-      for (const apiVerse of searchResults.slice(0, 3)) { // Limit to top 3 results
+      for (const apiVerse of aggregated.slice(0, 3)) { // Limit to top 3 results
         const quranVerse = await this.convertAPIVerseToQuranVerse({
           verse: apiVerse,
           surah: { number: Math.floor(apiVerse.number / 1000) + 1 } as any, // Approximate surah from verse number

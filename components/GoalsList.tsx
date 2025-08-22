@@ -125,6 +125,20 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
     }
   };
 
+  const handleQuickAddHabitForGoal = (goal: Goal) => {
+    const habitGoal: Omit<Goal, 'id'> = {
+      title: `${goal.title} - Daily Practice`,
+      description: goal.description || '',
+      category: goal.category,
+      priority: goal.priority,
+      dueDate: new Date().toISOString().split('T')[0],
+      recurring: 'daily',
+      completed: false
+    } as any;
+    onAddGoal(habitGoal);
+    setSelectedGoal(goal.id);
+  };
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high': return 'bg-green-100 text-green-700 border-green-200';
@@ -184,14 +198,15 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
             onChange={(e) => setNewGoal({ ...newGoal, recurring: e.target.value as Goal['recurring'] })}
             className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
           >
-            <option value="none">No Recurring</option>
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
+            <option value="none">No Recurring (one-time goal)</option>
+            <option value="daily">Daily (habit)</option>
+            <option value="weekly">Weekly (habit)</option>
+            <option value="monthly">Monthly (habit)</option>
+            <option value="yearly">Yearly (habit)</option>
           </select>
           {newGoal.recurring && newGoal.recurring !== 'none' && (
             <p className="text-xs text-gray-600">
-              🔄 This goal will automatically reset every {newGoal.recurring.slice(0, -2)} so you can track your progress continuously.
+              🔄 This will be treated as a habit and automatically reset on the selected cadence.
             </p>
           )}
           <div className="flex gap-3">
@@ -286,10 +301,11 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
                   onChange={(e) => setEditGoal({ ...editGoal, recurring: e.target.value as Goal['recurring'] })}
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
-                  <option value="none">No Recurring</option>
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="monthly">Monthly</option>
+                  <option value="none">No Recurring (one-time goal)</option>
+                  <option value="daily">Daily (habit)</option>
+                  <option value="weekly">Weekly (habit)</option>
+                  <option value="monthly">Monthly (habit)</option>
+                  <option value="yearly">Yearly (habit)</option>
                 </select>
                 <div className="flex gap-3">
                   <select
@@ -399,6 +415,15 @@ export default function GoalsList({ goals, onToggleGoal, onAddGoal, onEditGoal, 
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                       </svg>
                     )}
+                  </button>
+                  <button
+                    onClick={() => handleQuickAddHabitForGoal(goal)}
+                    className="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200"
+                    title="Add a recurring habit for this goal"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
                   </button>
                   <button
                     onClick={() => handleEditStart(goal)}

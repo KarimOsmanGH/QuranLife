@@ -173,7 +173,6 @@ export default function RootLayout({
                     <span className="text-xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
                       QuranLife
                     </span>
-                    <span className="text-xs text-gray-600 hidden md:inline">Personal growth with Quran</span>
                   </div>
                 </Link>
                 
@@ -205,7 +204,6 @@ export default function RootLayout({
                     <span className="text-lg font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
                       QuranLife
                     </span>
-                    <span className="text-[10px] text-gray-600 hidden xs:inline">Personal growth with Quran</span>
                   </div>
                 </Link>
               </div>
@@ -252,7 +250,6 @@ export default function RootLayout({
                     </div>
                     <div className="flex items-center gap-2">
                       <h3 className="text-lg font-bold text-gray-800">QuranLife</h3>
-                      <span className="text-xs text-gray-600">Personal growth with Quran</span>
                     </div>
                   </div>
                   <p className="text-sm text-gray-600 leading-relaxed">
