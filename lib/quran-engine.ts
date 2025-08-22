@@ -223,6 +223,12 @@ class QuranEngine {
         }
       }
 
+      // Curated fallback if no thematic search results (e.g., prayer keywords vary)
+      if (verses.length === 0) {
+        const curated = await this.getCuratedThemeVerses(theme);
+        verses.push(...curated);
+      }
+
       const collection: ThematicCollection = {
         theme: this.capitalizeTheme(theme),
         description: this.getThemeDescription(theme),
@@ -461,7 +467,7 @@ class QuranEngine {
   private getThemeSearchTerms(theme: string): string {
     const searchTerms: Record<string, string> = {
       patience: 'patience perseverance endurance',
-      prayer: 'prayer worship remembrance',
+      prayer: 'prayer worship remembrance establish prayer salah salat',
       change: 'change transformation growth',
       family: 'family children parents',
       anxiety: 'peace comfort trust',
@@ -500,6 +506,39 @@ class QuranEngine {
     };
     
     return actions[theme] || actions.prayer;
+  }
+
+  // Curated verses for themes when search is weak
+  private async getCuratedThemeVerses(theme: string): Promise<QuranVerse[]> {
+    try {
+      const results: QuranVerse[] = [];
+      if (theme === 'prayer') {
+        const refs: Array<[number, number]> = [
+          [2, 43],   // Establish prayer and give zakah
+          [11, 114], // Establish prayer at the two ends of the day
+          [29, 45],  // Recite what has been revealed... establish prayer
+          [4, 103],  // Indeed, prayer has been decreed upon the believers
+          [17, 78]   // Establish prayer at the decline of the sun
+        ];
+        for (const [s, a] of refs) {
+          const [verse, surah] = await Promise.all([
+            quranAPI.getVerse(s, a),
+            quranAPI.getSurah(s)
+          ]);
+          const qv = await this.convertAPIVerseToQuranVerse({
+            verse,
+            surah,
+            theme: 'prayer',
+            context: 'Thematic guidance: prayer'
+          } as any);
+          if (qv) results.push(qv);
+        }
+      }
+      return results;
+    } catch (error) {
+      console.error('Error building curated theme verses:', error);
+      return [];
+    }
   }
 
   private capitalizeTheme(theme: string): string {

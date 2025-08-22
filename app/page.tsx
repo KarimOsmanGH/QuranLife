@@ -206,13 +206,24 @@ export default function Dashboard() {
   const loadDailyVerse = async () => {
     try {
       setLoading(true);
-      
-      // Small delay to ensure UI updates
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Show fallback verse immediately with correct audio URL
-      console.log('Loading fallback verse (Al-Fatiha)...');
-      
+
+      const today = new Date().toISOString().split('T')[0];
+      const cached = storage.get('quranlife-daily-verse', null as any);
+
+      if (cached && cached.date === today && cached.verse) {
+        setDailyVerse(cached.verse);
+        return;
+      }
+
+      // Fetch new daily verse via engine
+      const fetched = await quranEngine.getDailyVerse();
+      if (fetched) {
+        setDailyVerse(fetched as any);
+        storage.set('quranlife-daily-verse', { date: today, verse: fetched });
+        return;
+      }
+
+      // Fallback if fetch returned null
       setDailyVerse({
         id: 6,
         surah: "Al-Fatiha",
@@ -228,11 +239,11 @@ export default function Dashboard() {
           "Seek knowledge and wisdom in your spiritual journey"
         ],
         context: "Al-Fatiha - Always available for guidance",
-        audio: `/api/audio?surah=1&ayah=6&edition=ar.alafasy` // Use our audio API
+        audio: `/api/audio?surah=1&ayah=6&edition=ar.alafasy`
       });
     } catch (error) {
       console.error('Error loading daily verse:', error);
-      
+
       // Show fallback verse on error
       setDailyVerse({
         id: 6,
@@ -249,7 +260,7 @@ export default function Dashboard() {
           "Seek knowledge and wisdom in your spiritual journey"
         ],
         context: "Al-Fatiha - Always available for guidance",
-        audio: `/api/audio?surah=1&ayah=6&edition=ar.alafasy` // Use our audio API
+        audio: `/api/audio?surah=1&ayah=6&edition=ar.alafasy`
       });
     } finally {
       setLoading(false);
@@ -362,8 +373,8 @@ export default function Dashboard() {
                     ></div>
                   </div>
                 </div>
-                <a href="/habits" className="text-xs text-green-600 hover:text-green-700 block">
-                  View all habits →
+                <a href="/goals" className="text-xs text-green-600 hover:text-green-700 block">
+                  Manage your recurring goals →
                 </a>
               </div>
             </div>
@@ -439,10 +450,10 @@ export default function Dashboard() {
               </div>
               <div className="mt-3 pt-2 border-t border-emerald-200">
                 <Link 
-                  href="/habits" 
+                  href="/goals" 
                   className="text-xs text-emerald-600 hover:text-emerald-700 transition-colors"
                 >
-                  View all habits →
+                  Explore recurring goals →
                 </Link>
               </div>
             </div>
@@ -511,6 +522,28 @@ export default function Dashboard() {
 
       {/* Mobile Single Column Layout */}
       <div className="md:hidden">
+        {/* Mobile Daily Verse */}
+        <DashboardCard
+          title="Today's Guidance"
+          icon={
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          }
+        >
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+            </div>
+          ) : dailyVerse ? (
+            <VerseCard verse={dailyVerse} />
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              Unable to load daily verse. Please check your connection.
+            </div>
+          )}
+        </DashboardCard>
+
         {/* Mobile Progress Overview */}
         <div className={`grid gap-4 mb-8 ${totalGoals > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}>
           <div className="bg-white rounded-xl p-4 border border-gray-100">
@@ -569,28 +602,6 @@ export default function Dashboard() {
             </div>
           </div>
         )}
-
-        {/* Mobile Daily Verse */}
-        <DashboardCard
-          title="Today's Guidance"
-          icon={
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-          }
-        >
-          {loading ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
-            </div>
-          ) : dailyVerse ? (
-            <VerseCard verse={dailyVerse} />
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              Unable to load daily verse. Please check your connection.
-            </div>
-          )}
-        </DashboardCard>
 
       </div>
     </div>

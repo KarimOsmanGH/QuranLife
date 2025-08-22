@@ -54,7 +54,6 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
   if (guidance.length === 0) {
     return (
       <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-6 border border-green-100">
-        <h4 className="font-semibold text-green-800 mb-2">🌟 General Islamic Guidance</h4>
         <p className="text-green-700 text-sm mb-4">
           While we couldn't find specific verses for this goal, remember that every good intention and effort is rewarded by Allah.
         </p>

@@ -316,7 +316,11 @@ export default function GoalsPage() {
       {/* Goals Calendar - Full Width */}
       {goals.length > 0 && (
         <div className="mt-8">
-          <GoalsCalendar goals={goals} onGoalClick={handleGoalClick} />
+          <div className="overflow-x-auto md:overflow-visible">
+            <div className="inline-block min-w-full align-middle">
+              <GoalsCalendar goals={goals} onGoalClick={handleGoalClick} />
+            </div>
+          </div>
         </div>
       )}
 

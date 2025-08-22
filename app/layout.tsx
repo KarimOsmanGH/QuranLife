@@ -184,9 +184,6 @@ export default function RootLayout({
                   <Link href="/goals" className="text-gray-700 hover:text-green-600 transition-colors font-medium">
                     Goals
                   </Link>
-                  <Link href="/habits" className="text-gray-700 hover:text-green-600 transition-colors font-medium">
-                    Habits
-                  </Link>
                   <Link href="/settings" className="text-gray-700 hover:text-green-600 transition-colors font-medium">
                     Settings
                   </Link>
@@ -226,12 +223,6 @@ export default function RootLayout({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
                   <span className="text-xs">Goals</span>
-                </Link>
-                <Link href="/habits" className="flex flex-col items-center py-2 px-3 text-gray-600 hover:text-green-600 transition-colors">
-                  <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span className="text-xs">Habits</span>
                 </Link>
                 <Link href="/settings" className="flex flex-col items-center py-2 px-3 text-gray-600 hover:text-green-600 transition-colors">
                   <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -278,9 +269,6 @@ export default function RootLayout({
                     </Link>
                     <Link href="/goals" className="block text-sm text-gray-600 hover:text-green-600 transition-colors">
                       Goals
-                    </Link>
-                    <Link href="/habits" className="block text-sm text-gray-600 hover:text-green-600 transition-colors">
-                      Habits
                     </Link>
                     <Link href="/settings" className="block text-sm text-gray-600 hover:text-green-600 transition-colors">
                       Settings

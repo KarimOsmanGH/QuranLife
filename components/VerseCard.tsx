@@ -43,7 +43,11 @@ export default function VerseCard({ verse }: VerseCardProps) {
   const getAudioUrl = () => {
     console.log('VerseCard verse object:', verse);
     console.log('VerseCard verse.audio:', verse.audio);
-    return verse.audio || undefined;
+    if (verse.audio && verse.audio.trim().length > 0) return verse.audio;
+    if (verse.surah_number && verse.ayah) {
+      return `/api/audio?surah=${verse.surah_number}&ayah=${verse.ayah}&edition=ar.alafasy`;
+    }
+    return undefined;
   };
 
   const audioUrl = getAudioUrl();
