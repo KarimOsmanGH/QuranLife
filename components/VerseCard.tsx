@@ -41,8 +41,6 @@ export default function VerseCard({ verse }: VerseCardProps) {
 
   // Generate audio URL - use from verse data or return undefined
   const getAudioUrl = () => {
-    console.log('VerseCard verse object:', verse);
-    console.log('VerseCard verse.audio:', verse.audio);
     if (verse.audio && verse.audio.trim().length > 0) return verse.audio;
     if (verse.surah_number && verse.ayah) {
       return `/api/audio?surah=${verse.surah_number}&ayah=${verse.ayah}&edition=ar.alafasy`;
@@ -127,10 +125,12 @@ export default function VerseCard({ verse }: VerseCardProps) {
   };
 
   const handleAudioError = () => {
-    console.error('Audio failed to load');
-    console.error('Audio URL:', audioUrl);
-    console.error('Audio readyState:', audioRef.current?.readyState);
-    console.error('Audio error:', audioRef.current?.error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Audio failed to load');
+      console.error('Audio URL:', audioUrl);
+      console.error('Audio readyState:', audioRef.current?.readyState);
+      console.error('Audio error:', audioRef.current?.error);
+    }
     
     setIsLoading(false);
     setIsPlaying(false);
@@ -179,6 +179,7 @@ export default function VerseCard({ verse }: VerseCardProps) {
             onClick={handleAudioToggle}
             onTouchStart={() => {}}
             disabled={isLoading}
+            aria-label={isPlaying ? "Pause verse recitation" : "Play verse recitation"}
             className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 touch-manipulation ${
               isPlaying
                 ? 'bg-green-500 text-white shadow-md hover:bg-green-600 active:bg-green-700'

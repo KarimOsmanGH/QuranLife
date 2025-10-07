@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ReactNode } from 'react';
+import { ReactNode, memo } from 'react';
 
 interface DashboardCardProps {
   title: string | ReactNode;
@@ -10,7 +10,7 @@ interface DashboardCardProps {
   icon?: ReactNode;
 }
 
-export default function DashboardCard({ title, children, className = '', icon }: DashboardCardProps) {
+function DashboardCard({ title, children, className = '', icon }: DashboardCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -29,4 +29,6 @@ export default function DashboardCard({ title, children, className = '', icon }:
       {children}
     </motion.div>
   );
-} 
+}
+
+export default memo(DashboardCard); 
