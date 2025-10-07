@@ -7,8 +7,6 @@ export async function GET(req: NextRequest): Promise<Response> {
     const ayah = searchParams.get('ayah');
     const edition = searchParams.get('edition') || 'ar.alafasy';
 
-    console.log('Audio API called with:', { surah, ayah, edition });
-
     if (!surah || !ayah) {
       return new Response(JSON.stringify({ error: 'Missing required params: surah and ayah' }), {
         status: 400,
@@ -18,7 +16,6 @@ export async function GET(req: NextRequest): Promise<Response> {
 
     // First fetch the verse metadata to get the global verse number
     const metaUrl = `https://api.alquran.cloud/v1/ayah/${surah}:${ayah}/${edition}`;
-    console.log('Fetching metadata from:', metaUrl);
     
     let metaRes;
     try {
@@ -49,14 +46,14 @@ export async function GET(req: NextRequest): Promise<Response> {
     try {
       meta = await metaRes.json();
     } catch (jsonError) {
-      console.error('JSON parse error:', jsonError);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('JSON parse error:', jsonError);
+      }
       return new Response(JSON.stringify({ error: 'Invalid JSON response from metadata API' }), {
         status: 500,
         headers: { 'content-type': 'application/json' }
       });
     }
-    
-    console.log('Metadata response received, status:', meta?.code);
     
     const verseNumber = meta?.data?.number;
     if (!verseNumber) {
@@ -69,7 +66,6 @@ export async function GET(req: NextRequest): Promise<Response> {
 
     // Construct the audio URL using the global verse number
     const audioUrl = `https://cdn.islamic.network/quran/audio/128/${edition}/${verseNumber}.mp3`;
-    console.log('Audio URL:', audioUrl);
 
     // Forward Range header for streaming support
     const range = req.headers.get('range') || undefined;
@@ -116,7 +112,6 @@ export async function GET(req: NextRequest): Promise<Response> {
       headers.set('cache-control', 'public, max-age=3600');
     }
 
-    console.log('Streaming audio response');
     return new Response(audioRes.body, {
       status: audioRes.status, // could be 200 or 206
       headers

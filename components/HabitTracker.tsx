@@ -126,6 +126,7 @@ export default function HabitTracker({ habits, onToggleHabit, onAddTemplateHabit
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => onToggleHabit(habit.id)}
+                  aria-label={`${habit.completed ? 'Unmark' : 'Mark'} ${habit.name} as complete`}
                   className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
                     habit.completed
                       ? 'bg-green-500 border-green-500 text-white shadow-sm'
