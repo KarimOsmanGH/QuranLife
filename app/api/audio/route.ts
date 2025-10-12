@@ -1,8 +1,11 @@
 import type { NextRequest } from 'next/server';
 
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest): Promise<Response> {
   try {
-    const { searchParams } = new URL(req.url);
+    const searchParams = req.nextUrl.searchParams;
     const surah = searchParams.get('surah');
     const ayah = searchParams.get('ayah');
     const edition = searchParams.get('edition') || 'ar.alafasy';

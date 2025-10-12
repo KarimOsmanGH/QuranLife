@@ -1,8 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { quranEngine, GoalMatchResult } from '@/lib/quran-engine';
+import { logger } from '@/lib/logger';
 
 interface SmartGuidanceProps {
   goalTitle: string;
@@ -18,26 +19,29 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
   const [audioStates, setAudioStates] = useState<{ [key: number]: { isPlaying: boolean; isLoading: boolean; error: string | null } }>({});
   const audioRefs = useRef<{ [key: number]: HTMLAudioElement | null }>({});
 
-  useEffect(() => {
-    loadGuidance();
-  }, [goalTitle, goalDescription, goalCategory]);
-
-  const loadGuidance = async () => {
+  const loadGuidance = useCallback(async () => {
     try {
       setLoading(true);
       
       // Use the new QuranEngine API to find verses for the goal
       const goalText = `${goalTitle} ${goalDescription} ${goalCategory}`.trim();
-      const matches = await quranEngine.findVersesForGoal(goalText);
+      const matches = await logger.performance.measure('loadGuidance', async () => {
+        return await quranEngine.findVersesForGoal(goalText);
+      });
       
       setGuidance(matches);
+      logger.info('Guidance loaded successfully', { goalText, matchCount: matches.length });
     } catch (error) {
-      console.error('Failed to load guidance:', error);
+      logger.error('Failed to load guidance', error, 'SmartGuidance.loadGuidance');
       setGuidance([]); // Set empty array on error
     } finally {
       setLoading(false);
     }
-  };
+  }, [goalTitle, goalDescription, goalCategory]);
+
+  useEffect(() => {
+    loadGuidance();
+  }, [loadGuidance]);
 
   const handleToggleExpand = (index: number) => {
     setExpanded(expanded === index ? null : index);
@@ -83,7 +87,7 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
         }));
       }
     } catch (error) {
-      console.error('Error playing audio:', error);
+      logger.error('Error playing audio', error, 'SmartGuidance.handleAudioToggle');
       setAudioStates(prev => ({
         ...prev,
         [index]: { 
