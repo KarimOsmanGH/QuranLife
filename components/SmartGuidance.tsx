@@ -279,7 +279,7 @@ export default function SmartGuidance({ goalTitle, goalDescription = '', goalCat
             {/* Reflection */}
             <div className="mb-4 p-3 bg-white rounded-lg border-l-4 border-green-400">
               <p className="text-sm text-gray-700">
-                <strong className="text-green-700">Reflection: </strong>
+                <strong className="text-green-700">How this applies to your goal: </strong>
                 {match.verse.reflection}
               </p>
             </div>

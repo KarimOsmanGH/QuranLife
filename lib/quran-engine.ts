@@ -507,6 +507,21 @@ class QuranEngine {
         "Divine guidance illuminates our path when we sincerely seek Allah's direction.",
         "This verse reminds us that true wisdom comes from following Islamic teachings.",
         "Guidance is available to all who approach Allah with humility and openness to learn."
+      ],
+      fitness: [
+        "Islam teaches us to care for our bodies as a trust (amanah) from Allah. This verse reminds us that striving and effort are valued in Islam - whether spiritual or physical.",
+        "Physical strength enables us to better serve Allah, our families, and our communities. This verse encourages perseverance in all beneficial efforts.",
+        "The Prophet ﷺ said 'The strong believer is better than the weak believer.' This verse guides us to pursue strength with the right intention - to serve Allah better."
+      ],
+      strength: [
+        "True strength comes from both physical capability and spiritual fortitude. This verse reminds us to seek strength through faith and effort.",
+        "Building strength - whether of body, character, or faith - requires consistent effort and reliance on Allah's help.",
+        "Physical strength is a blessing that enables us to fulfill our duties better. This verse encourages us to strive with gratitude."
+      ],
+      health: [
+        "Our health is a precious gift from Allah, and maintaining it is part of our worship. This verse reminds us of Allah's care and mercy.",
+        "Taking care of our health allows us to worship Allah better and serve others. This verse encourages mindful living.",
+        "Islam emphasizes preventive care and balance. This verse guides us to approach health with gratitude and trust in Allah."
       ]
     };
 
@@ -587,8 +602,9 @@ class QuranEngine {
         'stress', 'management', 'hygiene', 'clean', 'sanitize', 'vaccine', 'immunization', 'prevention', 'screening'
       ],
       strength: [
-        'strong', 'power', 'force', 'endurance', 'mighty', 'powerful', 'robust', 'sturdy', 'tough', 'resilient',
-        'unyielding', 'steadfast', 'firm', 'solid', 'unbreakable', 'indomitable', 'invincible', 'unconquerable'
+        'strong', 'strength', 'power', 'powerful', 'force', 'endurance', 'mighty', 'robust', 'sturdy', 'tough', 'resilient',
+        'unyielding', 'steadfast', 'firm', 'solid', 'unbreakable', 'indomitable', 'invincible', 'unconquerable',
+        'strive', 'striving', 'effort', 'persevere', 'perseverance', 'persist', 'persistent'
       ],
       prayer: [
         'pray', 'prayer', 'salah', 'salat', 'worship', 'dua', 'dhikr', 'mosque', 'qibla', 'adhan', 'azan', 'iqama',
@@ -780,49 +796,55 @@ class QuranEngine {
   private getGoalSpecificTerms(goal: string, theme: string): string {
     const goalLower = goal.toLowerCase();
     
-    // Fitness-related goals - map to Quran terms
-    if (theme === 'fitness' || goalLower.includes('fitness') || goalLower.includes('exercise') || goalLower.includes('workout')) {
-      return 'strength power ability strive effort work';
+    // Fitness-related goals - map to Quran concepts about strength, striving, and caring for the body
+    if (theme === 'fitness' || theme === 'strength' || goalLower.includes('fitness') || goalLower.includes('exercise') || goalLower.includes('workout') || goalLower.includes('gym') || goalLower.includes('train')) {
+      // Use Quran concepts: striving, strength, health, body as trust
+      return 'strive effort persevere strong strength';
     }
     
-    // Health-related goals - map to Quran terms
-    if (theme === 'health' || goalLower.includes('health') || goalLower.includes('wellness')) {
-      return 'healing care trust body blessing';
+    // Health-related goals - map to Quran terms about well-being and Allah's blessings
+    if (theme === 'health' || goalLower.includes('health') || goalLower.includes('wellness') || goalLower.includes('heal')) {
+      return 'cure healing bless good mercy';
     }
     
     // Prayer-related goals - already Quran terms
-    if (theme === 'prayer' || goalLower.includes('pray') || goalLower.includes('worship')) {
-      return 'prayer worship remembrance establish salah';
+    if (theme === 'prayer' || goalLower.includes('pray') || goalLower.includes('worship') || goalLower.includes('salah')) {
+      return 'prayer worship establish salah remember';
     }
     
-    // Success-related goals - map to Quran terms
-    if (theme === 'success' || goalLower.includes('success') || goalLower.includes('achieve')) {
-      return 'success blessing victory triumph reward';
+    // Success-related goals - map to Quran terms about success and achievement
+    if (theme === 'success' || goalLower.includes('success') || goalLower.includes('achieve') || goalLower.includes('accomplish')) {
+      return 'success prosper triumph victory believer';
     }
     
     // Family-related goals - map to Quran terms
-    if (theme === 'family' || goalLower.includes('family') || goalLower.includes('parent')) {
-      return 'family children parents spouse marriage';
+    if (theme === 'family' || goalLower.includes('family') || goalLower.includes('parent') || goalLower.includes('child') || goalLower.includes('spouse')) {
+      return 'parents children family righteous mercy';
     }
     
     // Patience-related goals - already Quran terms
-    if (theme === 'patience' || goalLower.includes('patience') || goalLower.includes('wait')) {
-      return 'patience perseverance endurance steadfast';
+    if (theme === 'patience' || goalLower.includes('patience') || goalLower.includes('wait') || goalLower.includes('persever')) {
+      return 'patient patience persever endure steadfast';
     }
     
-    // Study/learning goals - map to Quran terms
-    if (goalLower.includes('study') || goalLower.includes('learn') || goalLower.includes('read')) {
-      return 'knowledge wisdom understanding learning';
+    // Study/learning goals - map to Quran terms about knowledge
+    if (goalLower.includes('study') || goalLower.includes('learn') || goalLower.includes('read') || goalLower.includes('knowledge')) {
+      return 'knowledge wisdom understand learn reflect';
     }
     
-    // Work/career goals - map to Quran terms
-    if (goalLower.includes('work') || goalLower.includes('career') || goalLower.includes('job')) {
-      return 'work effort strive provision blessing';
+    // Work/career goals - map to Quran terms about effort and provision
+    if (goalLower.includes('work') || goalLower.includes('career') || goalLower.includes('job') || goalLower.includes('business')) {
+      return 'work strive effort provision sustenance';
     }
     
-    // Relationship goals - map to Quran terms
-    if (goalLower.includes('relationship') || goalLower.includes('friend') || goalLower.includes('love')) {
-      return 'love mercy kindness relationship friendship';
+    // Relationship goals - map to Quran terms about kindness and mercy
+    if (goalLower.includes('relationship') || goalLower.includes('friend') || goalLower.includes('love') || goalLower.includes('kindness')) {
+      return 'mercy compassion love kindness righteous';
+    }
+    
+    // Change/improvement goals - map to transformation and renewal
+    if (goalLower.includes('change') || goalLower.includes('improve') || goalLower.includes('better') || goalLower.includes('transform')) {
+      return 'change believe good righteous repent';
     }
     
     return '';
@@ -940,28 +962,28 @@ class QuranEngine {
           [17, 24]   // And lower to them the wing of humility out of mercy
         ],
         health: [
-          [2, 195],  // And do good; indeed, Allah loves the doers of good
-          [7, 31],   // O children of Adam, take your adornment at every masjid
-          [16, 14],  // And it is He who subjected the sea for you to eat from it
+          [26, 80],  // And when I am ill, it is He who cures me - perfect for health goals
           [17, 82],  // And We send down of the Quran that which is healing
-          [26, 80],  // And when I am ill, it is He who cures me
-          [2, 168],  // O mankind, eat from whatever is on earth
-          [5, 88],   // And eat of what Allah has provided for you
-          [16, 69],  // Then eat from all the fruits
-          [39, 21],  // Have you not seen that Allah sends down rain
-          [80, 24]   // Then let mankind look at his food
+          [7, 31],   // O children of Adam, take your adornment... and eat and drink but be not excessive
+          [2, 195],  // And do good; indeed, Allah loves the doers of good
+          [16, 69],  // Then eat from all the fruits and follow the ways of your Lord - about nutrition
+          [2, 168],  // O mankind, eat from whatever is on earth [that which is] lawful and good
+          [5, 88],   // And eat of what Allah has provided for you [that which is] lawful and good
+          [2, 286],  // Allah does not burden a soul beyond that it can bear
+          [65, 3],   // And whoever relies upon Allah - then He is sufficient for him
+          [94, 5]    // For indeed, with hardship [will be] ease
         ],
         fitness: [
-          [2, 195],  // And do good; indeed, Allah loves the doers of good
-          [3, 139],  // So do not weaken and do not grieve
-          [8, 45],   // And when you are among them and lead them in prayer
-          [9, 40],   // If you do not aid him - Allah has already aided him
-          [22, 78],  // And strive for Allah with the striving due to Him
+          [22, 78],  // And strive for Allah with the striving due to Him - perfect for fitness/effort
           [29, 69],  // And those who strive for Us - We will surely guide them
-          [47, 31],  // And We will surely test you until We make evident
-          [61, 4],   // Indeed, Allah loves those who fight in His cause
-          [73, 20],  // Indeed, your Lord knows, [O Muhammad]
-          [110, 3]   // Then exalt [Him] with praise of your Lord
+          [3, 139],  // So do not weaken and do not grieve - encouragement for strength
+          [2, 195],  // And do good; indeed, Allah loves the doers of good
+          [8, 46],   // And be patient. Indeed, Allah is with the patient - for perseverance in training
+          [94, 5],   // For indeed, with hardship [will be] ease - motivation during tough workouts
+          [2, 286],  // Allah does not burden a soul beyond that it can bear
+          [103, 3],  // Except for those who have believed and done righteous deeds - including caring for health
+          [65, 3],   // And whoever relies upon Allah - then He is sufficient for him
+          [13, 11]   // Indeed, Allah will not change the condition of a people until they change themselves
         ],
         anxiety: [
           [2, 286],  // Allah does not burden a soul beyond that it can bear
